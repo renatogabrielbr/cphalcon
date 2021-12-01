@@ -27,24 +27,28 @@
  * LICENSE.txt file that was distributed with this source code.
  */
 /**
- * This is an implementation of the Phalcon\Flash\FlashInterface that
- * immediately outputs any message passed to it.
+ * Class Direct
+ *
+ * @package Phalcon\Flash
  */
-ZEPHIR_INIT_CLASS(Phalcon_Flash_Direct) {
-
+ZEPHIR_INIT_CLASS(Phalcon_Flash_Direct)
+{
 	ZEPHIR_REGISTER_CLASS_EX(Phalcon\\Flash, Direct, phalcon, flash_direct, phalcon_flash_abstractflash_ce, phalcon_flash_direct_method_entry, 0);
 
 	return SUCCESS;
-
 }
 
 /**
  * Outputs a message
  *
- * @return null|string|void
+ * @param string $type
+ * @param mixed  $message
+ *
+ * @return string|null
+ * @throws Exception
  */
-PHP_METHOD(Phalcon_Flash_Direct, message) {
-
+PHP_METHOD(Phalcon_Flash_Direct, message)
+{
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zend_long ZEPHIR_LAST_CALL_STATUS;
 	zval *type_param = NULL, *message, message_sub;
@@ -59,27 +63,24 @@ PHP_METHOD(Phalcon_Flash_Direct, message) {
 		Z_PARAM_STR(type)
 		Z_PARAM_ZVAL(message)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 2, 0, &type_param, &message);
-
 	zephir_get_strval(&type, type_param);
 
 
 	ZEPHIR_RETURN_CALL_METHOD(this_ptr, "outputmessage", NULL, 0, &type, message);
 	zephir_check_call_status();
 	RETURN_MM();
-
 }
 
 /**
  * Prints the messages accumulated in the flasher
  */
-PHP_METHOD(Phalcon_Flash_Direct, output) {
-
+PHP_METHOD(Phalcon_Flash_Direct, output)
+{
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zephir_fcall_cache_entry *_3 = NULL;
 	zend_long ZEPHIR_LAST_CALL_STATUS;
@@ -96,13 +97,11 @@ PHP_METHOD(Phalcon_Flash_Direct, output) {
 		Z_PARAM_OPTIONAL
 		Z_PARAM_BOOL(remove)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 0, 1, &remove_param);
-
 	if (!remove_param) {
 		remove = 1;
 	} else {
@@ -111,7 +110,7 @@ PHP_METHOD(Phalcon_Flash_Direct, output) {
 
 
 	zephir_read_property(&_0, this_ptr, ZEND_STRL("messages"), PH_NOISY_CC | PH_READONLY);
-	zephir_is_iterable(&_0, 0, "phalcon/Flash/Direct.zep", 40);
+	zephir_is_iterable(&_0, 0, "phalcon/Flash/Direct.zep", 45);
 	if (Z_TYPE_P(&_0) == IS_ARRAY) {
 		ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(&_0), _1)
 		{
@@ -141,6 +140,5 @@ PHP_METHOD(Phalcon_Flash_Direct, output) {
 		zephir_check_call_status();
 	}
 	ZEPHIR_MM_RESTORE();
-
 }
 

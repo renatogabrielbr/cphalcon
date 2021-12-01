@@ -21,7 +21,7 @@ interface AdapterInterface
     /**
      * Do a role inherit from another existing role
      */
-    public function addInherit(string roleName, roleToInherit) -> bool;
+    public function addInherit(string roleName, roleToInherits) -> bool;
 
     /**
      * Adds a role to the ACL list. Second parameter lets to inherit access data
@@ -35,7 +35,7 @@ interface AdapterInterface
      * Access names can be a particular action, by example
      * search, update, delete, etc or a list of them
      */
-    public function addComponent(componentObject, accessList) -> bool;
+    public function addComponent(componentValue, accessList) -> bool;
 
     /**
      * Adds access to components
@@ -75,9 +75,21 @@ interface AdapterInterface
     public function getActiveComponent() -> null | string;
 
     /**
+     * Return an array with every component registered in the list
+     */
+    public function getComponents() -> <ComponentInterface[]>;
+
+    /**
      * Returns the default ACL access level
      */
     public function getDefaultAction() -> int;
+
+    /**
+     * Returns the inherited roles for a passed role name. If no role name
+     * has been specified it will return the whole array. If the role has not
+     * been found it returns an empty array
+     */
+    public function getInheritedRoles(string roleName = "") -> array;
 
     /**
      * Returns the default ACL access level for no arguments provided in
@@ -90,10 +102,6 @@ interface AdapterInterface
      */
     public function getRoles() -> <RoleInterface[]>;
 
-    /**
-     * Return an array with every component registered in the list
-     */
-    public function getComponents() -> <ComponentInterface[]>;
 
     /**
      * Check whether a role is allowed to access an action from a component

@@ -11,29 +11,45 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Unit\Logger\Adapter\Noop;
+namespace Phalcon\Tests\Unit\Logger\Adapter\Noop;
 
-use Phalcon\Logger;
+use DateTimeImmutable;
+use DateTimeZone;
 use Phalcon\Logger\Adapter\Noop;
 use Phalcon\Logger\Item;
+use Phalcon\Logger\Logger;
 use UnitTester;
+
+use function date_default_timezone_get;
 
 class ProcessCest
 {
     /**
      * Tests Phalcon\Logger\Adapter\Noop :: process()
      *
+     * @param UnitTester $I
+     *
      * @author Phalcon Team <team@phalcon.io>
-     * @since  2018-11-13
+     * @since  2020-09-09
      */
     public function loggerAdapterNoopProcess(UnitTester $I)
     {
         $I->wantToTest('Logger\Adapter\Noop - process()');
 
-        $adapter = new Noop();
+        $timezone = date_default_timezone_get();
+        $datetime = new DateTimeImmutable('now', new DateTimeZone($timezone));
+        $adapter  = new Noop();
 
-        $item = new Item('Message 1', 'debug', Logger::DEBUG);
+        $item = new Item(
+            'Message 1',
+            'debug',
+            Logger::DEBUG,
+            $datetime
+        );
 
         $adapter->process($item);
+
+        $actual = $adapter->close();
+        $I->assertTrue($actual);
     }
 }

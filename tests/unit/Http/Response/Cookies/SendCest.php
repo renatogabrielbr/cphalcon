@@ -11,11 +11,11 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Unit\Http\Response\Cookies;
+namespace Phalcon\Tests\Unit\Http\Response\Cookies;
 
 use Phalcon\Http\Response\Cookies;
-use Phalcon\Test\Fixtures\Traits\CookieTrait;
-use Phalcon\Test\Unit\Http\Helper\HttpBase;
+use Phalcon\Tests\Fixtures\Traits\CookieTrait;
+use Phalcon\Tests\Unit\Http\Helper\HttpBase;
 use UnitTester;
 
 class SendCest extends HttpBase
@@ -52,5 +52,39 @@ class SendCest extends HttpBase
         $oCookie->set($sName, $sValue);
 
         $I->assertTrue($oCookie->send());
+    }
+
+    /**
+     * Tests Phalcon\Http\Response\Cookies :: send() - twice
+     *
+     * @author Phalcon Team <team@phalcon.io>
+     * @since  2021-04-22
+     * @issue  15334
+     */
+    public function httpResponseCookiesSendTwice(UnitTester $I)
+    {
+        $I->wantToTest('Http\Response\Cookies - send() - twice');
+
+        $name  = 'framework';
+        $value = 'phalcon';
+
+        $this->setDiService('crypt');
+        $container = $this->getDi();
+
+        $cookie = new Cookies();
+        $cookie->setDI($container);
+        $cookie->set($name, $value);
+
+        $actual = $cookie->isSent();
+        $I->assertFalse($actual);
+
+        $actual = $cookie->send();
+        $I->assertTrue($actual);
+
+        $actual = $cookie->isSent();
+        $I->assertTrue($actual);
+
+        $actual = $cookie->send();
+        $I->assertFalse($actual);
     }
 }

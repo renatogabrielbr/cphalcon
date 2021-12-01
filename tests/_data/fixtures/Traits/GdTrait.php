@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Fixtures\Traits;
+namespace Phalcon\Tests\Fixtures\Traits;
 
 use UnitTester;
 
@@ -59,7 +59,7 @@ trait GdTrait
             'png' => dataDir('assets/images/logo.png'),
         ];
 
-        if ($this->hasJpegSupport()) {
+        if (true === $this->hasJpegSupport()) {
             $images['jpg'] = dataDir('assets/images/phalconphp.jpg');
         }
 

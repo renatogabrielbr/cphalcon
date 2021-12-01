@@ -11,16 +11,16 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Integration\Mvc\Dispatcher\Refactor;
+namespace Phalcon\Tests\Integration\Mvc\Dispatcher\Refactor;
 
 use Exception;
 use IntegrationTester;
-use Phalcon\Test\Integration\Mvc\Dispatcher\Helper\BaseDispatcher;
+use Phalcon\Tests\Integration\Mvc\Dispatcher\Helper\BaseDispatcher;
 
 /**
  * Class DispatcherInitializeMethodCest
  *
- * @package Phalcon\Test\Integration\Mvc\Dispatcher
+ * @package Phalcon\Tests\Integration\Mvc\Dispatcher
  * @todo: refactor
  */
 class DispatcherInitializeMethodCest extends BaseDispatcher
@@ -155,7 +155,7 @@ class DispatcherInitializeMethodCest extends BaseDispatcher
         $dispatcher->getEventsManager()->attach(
             'dispatch:beforeException',
             function () use ($dispatcherListener) {
-                // Returning anything other then <tt>false</tt> should bubble the exception.
+                // Returning anything other than <tt>false</tt> should bubble the exception.
                 $dispatcherListener->trace(
                     'beforeException: custom before exception bubble'
                 );

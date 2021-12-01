@@ -11,15 +11,17 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Integration\Cache\Adapter\Redis;
+namespace Phalcon\Tests\Integration\Cache\Adapter\Redis;
 
-use Phalcon\Cache\Adapter\Redis;
-use Phalcon\Storage\Exception;
-use Phalcon\Storage\SerializerFactory;
-use Phalcon\Test\Fixtures\Traits\RedisTrait;
 use IntegrationTester;
+use Phalcon\Cache\Adapter\Redis;
+use Phalcon\Cache\Exception as CacheException;
+use Phalcon\Storage\SerializerFactory;
+use Phalcon\Support\Exception as HelperException;
+use Phalcon\Tests\Fixtures\Traits\RedisTrait;
 
 use function getOptionsRedis;
+use function uniqid;
 
 class DecrementCest
 {
@@ -28,22 +30,25 @@ class DecrementCest
     /**
      * Tests Phalcon\Cache\Adapter\Redis :: decrement()
      *
-     * @throws Exception
-     * @since  2019-03-31
+     * @param IntegrationTester $I
+     *
+     * @throws CacheException
+     * @throws HelperException
      *
      * @author Phalcon Team <team@phalcon.io>
+     * @since  2020-09-09
      */
-    public function cacheAdapterRedisDecrement(IntegrationTester $I)
+    public function storageAdapterRedisDecrement(IntegrationTester $I)
     {
         $I->wantToTest('Cache\Adapter\Redis - decrement()');
-        $I->skipTest('Check this');
 
         $serializer = new SerializerFactory();
         $adapter    = new Redis($serializer, getOptionsRedis());
 
-        $key    = uniqid();
-        $result = $adapter->set($key, 100);
-        $I->assertTrue($result);
+        $key      = uniqid();
+        $expected = 100;
+        $actual   = $adapter->increment($key, 100);
+        $I->assertEquals($expected, $actual);
 
         $expected = 99;
         $actual   = $adapter->decrement($key);
@@ -62,8 +67,9 @@ class DecrementCest
         /**
          * unknown key
          */
-        $key    = 'unknown';
-        $result = $adapter->decrement($key);
-        $I->assertFalse($result);
+        $key      = uniqid();
+        $expected = -9;
+        $actual   = $adapter->decrement($key, 9);
+        $I->assertEquals($expected, $actual);
     }
 }

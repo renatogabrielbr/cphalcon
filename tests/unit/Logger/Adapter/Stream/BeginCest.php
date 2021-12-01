@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Unit\Logger\Adapter\Stream;
+namespace Phalcon\Tests\Unit\Logger\Adapter\Stream;
 
 use Phalcon\Logger\Adapter\Stream;
 use UnitTester;
@@ -20,6 +20,11 @@ class BeginCest
 {
     /**
      * Tests Phalcon\Logger\Adapter\Stream :: begin()
+     *
+     * @param UnitTester $I
+     *
+     * @author Phalcon Team <team@phalcon.io>
+     * @since  2020-09-09
      */
     public function loggerAdapterStreamBegin(UnitTester $I)
     {
@@ -33,6 +38,7 @@ class BeginCest
         $actual = $adapter->inTransaction();
         $I->assertTrue($actual);
 
+        $adapter->rollback();
         $adapter->close();
         $I->safeDeleteFile($outputPath . $fileName);
     }

@@ -21,45 +21,55 @@
  * LICENSE.txt file that was distributed with this source code.
  */
 /**
- * Phalcon\Flash\FlashInterface
+ * Interface FlashInterface
  *
- * Interface for Phalcon\Flash classes
+ * @package Phalcon\Flash
  */
-ZEPHIR_INIT_CLASS(Phalcon_Flash_FlashInterface) {
-
+ZEPHIR_INIT_CLASS(Phalcon_Flash_FlashInterface)
+{
 	ZEPHIR_REGISTER_INTERFACE(Phalcon\\Flash, FlashInterface, phalcon, flash_flashinterface, phalcon_flash_flashinterface_method_entry);
 
 	return SUCCESS;
-
 }
 
 /**
  * Shows a HTML error message
  *
- * @return null|string|void
+ * @param string $message
+ *
+ * @return string|null
  */
 ZEPHIR_DOC_METHOD(Phalcon_Flash_FlashInterface, error);
 /**
  * Outputs a message
  *
- * @return null|string|void
+ * @param string $type
+ * @param mixed  $message
+ *
+ * @return string|null
  */
 ZEPHIR_DOC_METHOD(Phalcon_Flash_FlashInterface, message);
 /**
  * Shows a HTML notice/information message
  *
- * @return null|string|void
+ * @param string $message
+ *
+ * @return string|null
  */
 ZEPHIR_DOC_METHOD(Phalcon_Flash_FlashInterface, notice);
 /**
  * Shows a HTML success message
  *
- * @return null|string|void
+ * @param string $message
+ *
+ * @return string|null
  */
 ZEPHIR_DOC_METHOD(Phalcon_Flash_FlashInterface, success);
 /**
  * Shows a HTML warning message
  *
- * @return null|string|void
+ * @param string $message
+ *
+ * @return string|null
  */
 ZEPHIR_DOC_METHOD(Phalcon_Flash_FlashInterface, warning);

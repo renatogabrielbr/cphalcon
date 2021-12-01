@@ -29,19 +29,18 @@
  * For the full copyright and license information, please view the LICENSE.txt
  * file that was distributed with this source code.
  */
-ZEPHIR_INIT_CLASS(Phalcon_Paginator_PaginatorFactory) {
-
+ZEPHIR_INIT_CLASS(Phalcon_Paginator_PaginatorFactory)
+{
 	ZEPHIR_REGISTER_CLASS_EX(Phalcon\\Paginator, PaginatorFactory, phalcon, paginator_paginatorfactory, phalcon_factory_abstractfactory_ce, phalcon_paginator_paginatorfactory_method_entry, 0);
 
 	return SUCCESS;
-
 }
 
 /**
  * AdapterFactory constructor.
  */
-PHP_METHOD(Phalcon_Paginator_PaginatorFactory, __construct) {
-
+PHP_METHOD(Phalcon_Paginator_PaginatorFactory, __construct)
+{
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zend_long ZEPHIR_LAST_CALL_STATUS;
 	zval *services_param = NULL;
@@ -55,13 +54,11 @@ PHP_METHOD(Phalcon_Paginator_PaginatorFactory, __construct) {
 		Z_PARAM_OPTIONAL
 		Z_PARAM_ARRAY(services)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 0, 1, &services_param);
-
 	if (!services_param) {
 		ZEPHIR_INIT_VAR(&services);
 		array_init(&services);
@@ -73,7 +70,6 @@ PHP_METHOD(Phalcon_Paginator_PaginatorFactory, __construct) {
 	ZEPHIR_CALL_METHOD(NULL, this_ptr, "init", NULL, 0, &services);
 	zephir_check_call_status();
 	ZEPHIR_MM_RESTORE();
-
 }
 
 /**
@@ -106,57 +102,56 @@ PHP_METHOD(Phalcon_Paginator_PaginatorFactory, __construct) {
  *     'builder' => null
  * ]
  */
-PHP_METHOD(Phalcon_Paginator_PaginatorFactory, load) {
-
+PHP_METHOD(Phalcon_Paginator_PaginatorFactory, load)
+{
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
-	zephir_fcall_cache_entry *_1 = NULL;
 	zend_long ZEPHIR_LAST_CALL_STATUS;
-	zval *config = NULL, config_sub, name, options, _0, _2, _3;
+	zval *config = NULL, config_sub, name, options, _0, _1;
 	zval *this_ptr = getThis();
 
 	ZVAL_UNDEF(&config_sub);
 	ZVAL_UNDEF(&name);
 	ZVAL_UNDEF(&options);
 	ZVAL_UNDEF(&_0);
-	ZVAL_UNDEF(&_2);
-	ZVAL_UNDEF(&_3);
+	ZVAL_UNDEF(&_1);
 #if PHP_VERSION_ID >= 80000
 	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_ZVAL(config)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 1, 0, &config);
-
 	ZEPHIR_SEPARATE_PARAM(config);
 
 
 	ZEPHIR_CALL_METHOD(&_0, this_ptr, "checkconfig", NULL, 0, config);
 	zephir_check_call_status();
 	ZEPHIR_CPY_WRT(config, &_0);
+	ZEPHIR_INIT_VAR(&_1);
+	ZVAL_STRING(&_1, "adapter");
+	ZEPHIR_CALL_METHOD(&_0, this_ptr, "checkconfigelement", NULL, 0, config, &_1);
+	zephir_check_call_status();
+	ZEPHIR_CPY_WRT(config, &_0);
 	ZEPHIR_OBS_VAR(&name);
 	zephir_array_fetch_string(&name, config, SL("adapter"), PH_NOISY, "phalcon/Paginator/PaginatorFactory.zep", 62);
-	ZEPHIR_INIT_VAR(&_2);
-	array_init(&_2);
-	ZEPHIR_INIT_VAR(&_3);
-	ZVAL_STRING(&_3, "options");
-	ZEPHIR_CALL_CE_STATIC(&options, phalcon_helper_arr_ce, "get", &_1, 16, config, &_3, &_2);
-	zephir_check_call_status();
+	ZEPHIR_OBS_VAR(&options);
+	if (!(zephir_array_isset_string_fetch(&options, config, SL("options"), 0))) {
+		ZEPHIR_INIT_NVAR(&options);
+		array_init(&options);
+	}
 	ZEPHIR_RETURN_CALL_METHOD(this_ptr, "newinstance", NULL, 0, &name, &options);
 	zephir_check_call_status();
 	RETURN_MM();
-
 }
 
 /**
  * Create a new instance of the adapter
  */
-PHP_METHOD(Phalcon_Paginator_PaginatorFactory, newInstance) {
-
+PHP_METHOD(Phalcon_Paginator_PaginatorFactory, newInstance)
+{
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zend_long ZEPHIR_LAST_CALL_STATUS;
 	zval options, _0;
@@ -175,13 +170,11 @@ PHP_METHOD(Phalcon_Paginator_PaginatorFactory, newInstance) {
 		Z_PARAM_OPTIONAL
 		Z_PARAM_ARRAY(options)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 1, 1, &name_param, &options_param);
-
 	if (UNEXPECTED(Z_TYPE_P(name_param) != IS_STRING && Z_TYPE_P(name_param) != IS_NULL)) {
 		zephir_throw_exception_string(spl_ce_InvalidArgumentException, SL("Parameter 'name' must be of the type string"));
 		RETURN_MM_NULL();
@@ -190,7 +183,6 @@ PHP_METHOD(Phalcon_Paginator_PaginatorFactory, newInstance) {
 		zephir_get_strval(&name, name_param);
 	} else {
 		ZEPHIR_INIT_VAR(&name);
-		ZVAL_EMPTY_STRING(&name);
 	}
 	if (!options_param) {
 		ZEPHIR_INIT_VAR(&options);
@@ -208,11 +200,27 @@ PHP_METHOD(Phalcon_Paginator_PaginatorFactory, newInstance) {
 	ZEPHIR_LAST_CALL_STATUS = zephir_create_instance_params(return_value, &definition, &_0);
 	zephir_check_call_status();
 	RETURN_MM();
-
 }
 
-PHP_METHOD(Phalcon_Paginator_PaginatorFactory, getAdapters) {
+/**
+ * @return string
+ */
+PHP_METHOD(Phalcon_Paginator_PaginatorFactory, getExceptionClass)
+{
+	zval *this_ptr = getThis();
 
+
+
+	RETURN_STRING("Phalcon\\Paginator\\Exception");
+}
+
+/**
+ * Returns the available adapters
+ *
+ * @return string[]
+ */
+PHP_METHOD(Phalcon_Paginator_PaginatorFactory, getServices)
+{
 	zval *this_ptr = getThis();
 
 
@@ -222,6 +230,5 @@ PHP_METHOD(Phalcon_Paginator_PaginatorFactory, getAdapters) {
 	add_assoc_stringl_ex(return_value, SL("nativeArray"), SL("Phalcon\\Paginator\\Adapter\\NativeArray"));
 	add_assoc_stringl_ex(return_value, SL("queryBuilder"), SL("Phalcon\\Paginator\\Adapter\\QueryBuilder"));
 	return;
-
 }
 

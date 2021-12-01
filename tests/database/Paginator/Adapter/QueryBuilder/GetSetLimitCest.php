@@ -11,15 +11,15 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Database\Paginator\Adapter\QueryBuilder;
+namespace Phalcon\Tests\Database\Paginator\Adapter\QueryBuilder;
 
 use DatabaseTester;
 use Phalcon\Paginator\Adapter\QueryBuilder;
 use Phalcon\Paginator\Exception;
-use Phalcon\Test\Fixtures\Migrations\InvoicesMigration;
-use Phalcon\Test\Fixtures\Traits\DiTrait;
-use Phalcon\Test\Fixtures\Traits\RecordsTrait;
-use Phalcon\Test\Models\Invoices;
+use Phalcon\Tests\Fixtures\Migrations\InvoicesMigration;
+use Phalcon\Tests\Fixtures\Traits\DiTrait;
+use Phalcon\Tests\Fixtures\Traits\RecordsTrait;
+use Phalcon\Tests\Models\Invoices;
 
 class GetSetLimitCest
 {
@@ -74,7 +74,7 @@ class GetSetLimitCest
 
         $I->expectThrowable(
             new Exception(
-                'Limit must be greater then zero'
+                'Limit must be greater than zero'
             ),
             function () use ($builder) {
                 $paginator = new QueryBuilder(

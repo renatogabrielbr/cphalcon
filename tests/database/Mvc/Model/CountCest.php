@@ -11,16 +11,16 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Database\Mvc\Model;
+namespace Phalcon\Tests\Database\Mvc\Model;
 
 use DatabaseTester;
 use Phalcon\Mvc\Model\Resultset\Simple;
 use Phalcon\Storage\Exception;
-use Phalcon\Test\Fixtures\Migrations\InvoicesMigration;
-use Phalcon\Test\Fixtures\Traits\DiTrait;
-use Phalcon\Test\Fixtures\Traits\RecordsTrait;
-use Phalcon\Test\Models\Invoices;
-use Phalcon\Test\Models\InvoicesMap;
+use Phalcon\Tests\Fixtures\Migrations\InvoicesMigration;
+use Phalcon\Tests\Fixtures\Traits\DiTrait;
+use Phalcon\Tests\Fixtures\Traits\RecordsTrait;
+use Phalcon\Tests\Models\Invoices;
+use Phalcon\Tests\Models\InvoicesMap;
 
 class CountCest
 {
@@ -61,11 +61,12 @@ class CountCest
      *
      * @group  mysql
      * @group  pgsql
+     * @group  sqlite
      */
     public function mvcModelCount(DatabaseTester $I)
     {
         /**
-         * @todo The following tests need to skip sqlite because we will get
+         * TODO: The following tests need to skip sqlite because we will get
          *       a General Error 5 database is locked error
          */
         $invId = ('sqlite' === $I->getDriver()) ? 'null' : 'default';
@@ -113,6 +114,19 @@ class CountCest
         $I->assertEquals(12, (int) $results[1]->rowcount);
         $I->assertEquals(1, (int) $results[2]->inv_cst_id);
         $I->assertEquals(20, (int) $results[2]->rowcount);
+
+        /**
+         * @issue https://github.com/phalcon/cphalcon/issues/15486
+         */
+        $total = Invoices::count(
+            [
+                'conditions' => 'inv_cst_id IN ({ids:array})',
+                'bind' => [
+                    'ids' => [2],
+                ],
+            ]
+        );
+        $I->assertEquals(12, $total);
     }
 
     /**

@@ -9,7 +9,7 @@
 
 namespace Phalcon\Session;
 
-use Phalcon\Collection;
+use Phalcon\Support\Collection;
 use Phalcon\Di;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\InjectionAwareInterface;
@@ -30,24 +30,41 @@ use Phalcon\Di\InjectionAwareInterface;
  */
 class Bag extends Collection implements InjectionAwareInterface
 {
+    /**
+     * @var DiInterface|null
+     */
     private container;
 
-    private name = null;
+    /**
+     * Session Bag name
+     *
+     * @var string
+     */
+    private name;
 
+    /**
+     * @var \Phalcon\Session\ManagerInterface
+     */
     private session;
 
     /**
      * Phalcon\Session\Bag constructor
      */
-    public function __construct(string! name)
+    public function __construct(string! name, <DiInterface> container = null)
     {
-        var container, data, session;
+        var data, session;
 
         let this->name = name;
 
-        let container = Di::getDefault();
+        if unlikely null === container {
+            throw new Exception(
+                Exception::containerServiceNotFound(
+                    "the 'session' service"
+                )
+            );
+        }
 
-        if unlikely typeof container != "object" {
+        if unlikely true !== container->has("session") {
             throw new Exception(
                 Exception::containerServiceNotFound(
                     "the 'session' service"
@@ -65,7 +82,7 @@ class Bag extends Collection implements InjectionAwareInterface
             let data = [];
         }
 
-        parent::__construct(data);
+        this->init(data);
     }
 
     /**
@@ -92,6 +109,8 @@ class Bag extends Collection implements InjectionAwareInterface
     public function init(array! data = []) -> void
     {
         parent::init(data);
+
+        this->session->set(this->name, this->data);
     }
 
     /**

@@ -29,19 +29,18 @@
  * For the full copyright and license information, please view the LICENSE.txt
  * file that was distributed with this source code.
  */
-ZEPHIR_INIT_CLASS(Phalcon_Validation_ValidatorFactory) {
-
+ZEPHIR_INIT_CLASS(Phalcon_Validation_ValidatorFactory)
+{
 	ZEPHIR_REGISTER_CLASS_EX(Phalcon\\Validation, ValidatorFactory, phalcon, validation_validatorfactory, phalcon_factory_abstractfactory_ce, phalcon_validation_validatorfactory_method_entry, 0);
 
 	return SUCCESS;
-
 }
 
 /**
  * TagFactory constructor.
  */
-PHP_METHOD(Phalcon_Validation_ValidatorFactory, __construct) {
-
+PHP_METHOD(Phalcon_Validation_ValidatorFactory, __construct)
+{
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zend_long ZEPHIR_LAST_CALL_STATUS;
 	zval *services_param = NULL;
@@ -55,13 +54,11 @@ PHP_METHOD(Phalcon_Validation_ValidatorFactory, __construct) {
 		Z_PARAM_OPTIONAL
 		Z_PARAM_ARRAY(services)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 0, 1, &services_param);
-
 	if (!services_param) {
 		ZEPHIR_INIT_VAR(&services);
 		array_init(&services);
@@ -73,14 +70,13 @@ PHP_METHOD(Phalcon_Validation_ValidatorFactory, __construct) {
 	ZEPHIR_CALL_METHOD(NULL, this_ptr, "init", NULL, 0, &services);
 	zephir_check_call_status();
 	ZEPHIR_MM_RESTORE();
-
 }
 
 /**
  * Creates a new instance
  */
-PHP_METHOD(Phalcon_Validation_ValidatorFactory, newInstance) {
-
+PHP_METHOD(Phalcon_Validation_ValidatorFactory, newInstance)
+{
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zend_long ZEPHIR_LAST_CALL_STATUS;
 	zval *name_param = NULL, definition;
@@ -94,13 +90,11 @@ PHP_METHOD(Phalcon_Validation_ValidatorFactory, newInstance) {
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_STR(name)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 1, 0, &name_param);
-
 	if (UNEXPECTED(Z_TYPE_P(name_param) != IS_STRING && Z_TYPE_P(name_param) != IS_NULL)) {
 		zephir_throw_exception_string(spl_ce_InvalidArgumentException, SL("Parameter 'name' must be of the type string"));
 		RETURN_MM_NULL();
@@ -109,7 +103,6 @@ PHP_METHOD(Phalcon_Validation_ValidatorFactory, newInstance) {
 		zephir_get_strval(&name, name_param);
 	} else {
 		ZEPHIR_INIT_VAR(&name);
-		ZVAL_EMPTY_STRING(&name);
 	}
 
 
@@ -118,11 +111,27 @@ PHP_METHOD(Phalcon_Validation_ValidatorFactory, newInstance) {
 	ZEPHIR_LAST_CALL_STATUS = zephir_create_instance(return_value, &definition);
 	zephir_check_call_status();
 	RETURN_MM();
-
 }
 
-PHP_METHOD(Phalcon_Validation_ValidatorFactory, getAdapters) {
+/**
+ * @return string
+ */
+PHP_METHOD(Phalcon_Validation_ValidatorFactory, getExceptionClass)
+{
+	zval *this_ptr = getThis();
 
+
+
+	RETURN_STRING("Phalcon\\Validation\\Exception");
+}
+
+/**
+ * Returns the available adapters
+ *
+ * @return string[]
+ */
+PHP_METHOD(Phalcon_Validation_ValidatorFactory, getServices)
+{
 	zval *this_ptr = getThis();
 
 
@@ -150,6 +159,5 @@ PHP_METHOD(Phalcon_Validation_ValidatorFactory, getAdapters) {
 	add_assoc_stringl_ex(return_value, SL("uniqueness"), SL("Phalcon\\Validation\\Validator\\Uniqueness"));
 	add_assoc_stringl_ex(return_value, SL("url"), SL("Phalcon\\Validation\\Validator\\Url"));
 	return;
-
 }
 

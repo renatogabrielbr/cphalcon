@@ -11,15 +11,15 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Database\Mvc\Model\Query;
+namespace Phalcon\Tests\Database\Mvc\Model\Query;
 
 use DatabaseTester;
 use Phalcon\Mvc\Model\Query;
 use Phalcon\Storage\Exception;
-use Phalcon\Test\Fixtures\Migrations\InvoicesMigration;
-use Phalcon\Test\Fixtures\Traits\DiTrait;
-use Phalcon\Test\Fixtures\Traits\RecordsTrait;
-use Phalcon\Test\Models\Invoices;
+use Phalcon\Tests\Fixtures\Migrations\InvoicesMigration;
+use Phalcon\Tests\Fixtures\Traits\DiTrait;
+use Phalcon\Tests\Fixtures\Traits\RecordsTrait;
+use Phalcon\Tests\Models\Invoices;
 
 class GetSqlCest
 {
@@ -34,7 +34,8 @@ class GetSqlCest
     /**
      * Executed before each test
      *
-     * @param  DatabaseTester $I
+     * @param DatabaseTester $I
+     *
      * @return void
      */
     public function _before(DatabaseTester $I): void
@@ -53,7 +54,7 @@ class GetSqlCest
     /**
      * Tests Phalcon\Mvc\Model\Query :: getSql() - Issue 14657
      *
-     * @param  DatabaseTester $I
+     * @param DatabaseTester $I
      *
      * @author Phalcon Team <team@phalcon.io>
      * @since  2020-05-06
@@ -85,8 +86,8 @@ class GetSqlCest
 
         $I->assertEquals(
             [
-                'sql' => $sql,
-                'bind' => [],
+                'sql'       => $sql,
+                'bind'      => [],
                 'bindTypes' => [],
             ],
             $query->getSql()

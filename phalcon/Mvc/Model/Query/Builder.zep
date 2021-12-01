@@ -13,7 +13,6 @@ namespace Phalcon\Mvc\Model\Query;
 use Phalcon\Di;
 use Phalcon\Db\Column;
 use Phalcon\Di\DiInterface;
-use Phalcon\Helper\Arr;
 use Phalcon\Mvc\Model\Exception;
 use Phalcon\Di\InjectionAwareInterface;
 use Phalcon\Mvc\Model\QueryInterface;
@@ -56,22 +55,64 @@ use Phalcon\Mvc\Model\QueryInterface;
  */
 class Builder implements BuilderInterface, InjectionAwareInterface
 {
-    protected bindParams;
-    protected bindTypes;
-    protected columns;
-    protected conditions;
-    protected container;
-    protected distinct;
-    protected forUpdate;
+    /**
+     * @var array
+     */
+    protected bindParams = [];
 
     /**
      * @var array
      */
-    protected group;
+    protected bindTypes = [];
 
-    protected having;
+    /**
+     * @var array|string|null
+     */
+    protected columns = null;
+
+    /**
+     * @var array|string|null
+     */
+    protected conditions = null;
+
+    /**
+     * @var DiInterface|null
+     */
+    protected container;
+
+    /**
+     * @var mixed
+     */
+    protected distinct = null;
+
+    /**
+     * @var bool
+     */
+    protected forUpdate = false;
+
+    /**
+     * @var array
+     */
+    protected group = [];
+
+    /**
+     * @var string|null
+     */
+    protected having = null;
+
+    /**
+     * @var int
+     */
     protected hiddenParamNumber = 0;
-    protected joins;
+
+    /**
+     * @var array
+     */
+    protected joins = [];
+
+    /**
+     * @var array|string
+     */
     protected limit;
 
     /**
@@ -79,12 +120,26 @@ class Builder implements BuilderInterface, InjectionAwareInterface
      */
     protected models;
 
-    protected offset;
+    /**
+     * @var int
+     */
+    protected offset = 0;
+
+    /**
+     * @var array|string
+     */
     protected order;
-    protected sharedLock;
+
+    /**
+     * @var bool
+     */
+    protected sharedLock = false;
 
     /**
      * Phalcon\Mvc\Model\Query\Builder constructor
+     *
+     * @param array|string|null params
+     * @param DiInterface|null container
      */
     public function __construct(var params = null, <DiInterface> container = null)
     {
@@ -497,7 +552,7 @@ class Builder implements BuilderInterface, InjectionAwareInterface
     /**
      * Return the columns to be queried
      *
-     * @return string|array
+     * @return array|string
      */
     public function getColumns()
     {
@@ -523,7 +578,7 @@ class Builder implements BuilderInterface, InjectionAwareInterface
     /**
      * Return the models who makes part of the query
      *
-     * @return string|array
+     * @return array|string
      */
     public function getFrom()
     {
@@ -557,7 +612,7 @@ class Builder implements BuilderInterface, InjectionAwareInterface
     /**
      * Returns the current LIMIT clause
      *
-     * @return string|array
+     * @return array|string
      */
     public function getLimit()
     {
@@ -572,7 +627,7 @@ class Builder implements BuilderInterface, InjectionAwareInterface
         var models = this->models;
 
         if typeof models == "array" && count(models) == 1 {
-            return Arr::first(models);
+            return reset(models);
         }
 
         return models;
@@ -589,7 +644,7 @@ class Builder implements BuilderInterface, InjectionAwareInterface
     /**
      * Returns the set ORDER BY clause
      *
-     * @return string|array
+     * @return array|string
      */
     public function getOrderBy()
     {
@@ -852,7 +907,7 @@ class Builder implements BuilderInterface, InjectionAwareInterface
          * Process group parameters
          */
         let group = this->group;
-        if group !== null {
+        if !empty group {
             let groupItems = [];
 
             for groupItem in group {
@@ -1009,7 +1064,7 @@ class Builder implements BuilderInterface, InjectionAwareInterface
     /**
      * Return the conditions for the query
      *
-     * @return string|array
+     * @return array|string
      */
     public function getWhere()
     {
@@ -1027,7 +1082,7 @@ class Builder implements BuilderInterface, InjectionAwareInterface
      * );
      *```
      *
-     * @param string|array group
+     * @param array|string group
      */
     public function groupBy(var group) -> <BuilderInterface>
     {
@@ -1058,7 +1113,7 @@ class Builder implements BuilderInterface, InjectionAwareInterface
      * );
      *```
      */
-    public function having(var conditions, array bindParams = [], array bindTypes = []) -> <BuilderInterface>
+    public function having(string conditions, array bindParams = [], array bindTypes = []) -> <BuilderInterface>
     {
         var currentBindParams, currentBindTypes;
 
@@ -1311,7 +1366,7 @@ class Builder implements BuilderInterface, InjectionAwareInterface
      * $builder->orderBy(["Robots.name DESC"]);
      *```
      *
-     * @param string|array orderBy
+     * @param array|string orderBy
      */
     public function orderBy(var orderBy) -> <BuilderInterface>
     {

@@ -64,12 +64,12 @@ class Sqlite extends PdoAdapter
      * This method is automatically called in Phalcon\Db\Adapter\Pdo
      * constructor. Call it when you need to restore a database connection.
      */
-    public function connect(array descriptor = null) -> bool
+    public function connect(array! descriptor = []) -> void
     {
         var dbname;
 
         if empty descriptor {
-            let descriptor = (array) this->descriptor;
+            let descriptor = this->descriptor;
         }
 
         if fetch dbname, descriptor["dbname"] {
@@ -82,7 +82,7 @@ class Sqlite extends PdoAdapter
             );
         }
 
-        return parent::connect(descriptor);
+        parent::connect(descriptor);
     }
 
     /**
@@ -146,7 +146,7 @@ class Sqlite extends PdoAdapter
                  */
                 let definition["type"] = Column::TYPE_BIGINTEGER,
                     definition["isNumeric"] = true,
-                    definition["bindType"] = Column::BIND_PARAM_INT;
+                    definition["bindType"] = Column::BIND_PARAM_STR;
             } elseif memstr(columnType, "int") || memstr(columnType, "INT") {
                 /**
                  * Smallint/Integers/Int are int

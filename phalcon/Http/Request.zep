@@ -14,7 +14,7 @@ use Phalcon\Di\DiInterface;
 use Phalcon\Di\AbstractInjectionAware;
 use Phalcon\Events\ManagerInterface;
 use Phalcon\Filter\FilterInterface;
-use Phalcon\Helper\Json;
+use Phalcon\Http\Message\RequestMethodInterface;
 use Phalcon\Http\Request\File;
 use Phalcon\Http\Request\FileInterface;
 use Phalcon\Http\Request\Exception;
@@ -47,9 +47,12 @@ use stdClass;
  * $request->getLanguages();
  *```
  */
-class Request extends AbstractInjectionAware implements RequestInterface
+class Request extends AbstractInjectionAware implements RequestInterface, RequestMethodInterface
 {
-    private filterService;
+    /**
+     * @var FilterInterface|null
+     */
+    private filterService = null;
 
     /**
      * @var bool
@@ -61,9 +64,15 @@ class Request extends AbstractInjectionAware implements RequestInterface
      */
     private queryFilters = [];
 
-    private putCache;
+    /**
+     * @var array|null
+     */
+    private putCache = null;
 
-    private rawBody;
+    /**
+     * @var string
+     */
+    private rawBody = "";
 
     /**
      * @var bool
@@ -82,8 +91,13 @@ class Request extends AbstractInjectionAware implements RequestInterface
      * $userEmail = $request->get("user_email", "email");
      *```
      */
-    public function get(string! name = null, var filters = null, var defaultValue = null, bool notAllowEmpty = false, bool noRecursive = false) -> var
-    {
+    public function get(
+        string! name = null,
+        var filters = null,
+        var defaultValue = null,
+        bool notAllowEmpty = false,
+        bool noRecursive = false
+    ) -> var {
         return this->getHelper(
             _REQUEST,
             name,
@@ -267,11 +281,15 @@ class Request extends AbstractInjectionAware implements RequestInterface
     /**
      * Retrieves a query/get value always sanitized with the preset filters
      */
-    public function getFilteredQuery(string! name = null, var defaultValue = null, bool notAllowEmpty = false, bool noRecursive = false) -> var
-    {
+    public function getFilteredQuery(
+        string! name = null,
+        var defaultValue = null,
+        bool notAllowEmpty = false,
+        bool noRecursive = false
+    ) -> var {
         var filters;
 
-        if !fetch filters, this->queryFilters["get"][name] {
+        if !fetch filters, this->queryFilters[self::METHOD_GET][name] {
             let filters = [];
         }
 
@@ -287,11 +305,15 @@ class Request extends AbstractInjectionAware implements RequestInterface
     /**
      * Retrieves a post value always sanitized with the preset filters
      */
-    public function getFilteredPost(string! name = null, var defaultValue = null, bool notAllowEmpty = false, bool noRecursive = false) -> var
-    {
+    public function getFilteredPost(
+        string! name = null,
+        var defaultValue = null,
+        bool notAllowEmpty = false,
+        bool noRecursive = false
+    ) -> var {
         var filters;
 
-        if !fetch filters, this->queryFilters["post"][name] {
+        if !fetch filters, this->queryFilters[self::METHOD_POST][name] {
             let filters = [];
         }
 
@@ -307,11 +329,15 @@ class Request extends AbstractInjectionAware implements RequestInterface
     /**
      * Retrieves a put value always sanitized with the preset filters
      */
-    public function getFilteredPut(string! name = null, var defaultValue = null, bool notAllowEmpty = false, bool noRecursive = false) -> var
-    {
+    public function getFilteredPut(
+        string! name = null,
+        var defaultValue = null,
+        bool notAllowEmpty = false,
+        bool noRecursive = false
+    ) -> var {
         var filters;
 
-        if !fetch filters, this->queryFilters["put"][name] {
+        if !fetch filters, this->queryFilters[self::METHOD_PUT][name] {
             let filters = [];
         }
 
@@ -567,10 +593,10 @@ class Request extends AbstractInjectionAware implements RequestInterface
         if likely fetch requestMethod, server["REQUEST_METHOD"] {
             let returnMethod = strtoupper(requestMethod);
         } else {
-            return "GET";
+            return self::METHOD_GET;
         }
 
-        if "POST" === returnMethod {
+        if self::METHOD_POST === returnMethod {
             let overridedMethod = this->getHeader("X-HTTP-METHOD-OVERRIDE");
 
             if !empty overridedMethod {
@@ -583,7 +609,7 @@ class Request extends AbstractInjectionAware implements RequestInterface
         }
 
         if !this->isValidHttpMethod(returnMethod) {
-            return "GET";
+            return self::METHOD_GET;
         }
 
         return returnMethod;
@@ -628,8 +654,13 @@ class Request extends AbstractInjectionAware implements RequestInterface
      * $userEmail = $request->getPost("user_email", "email");
      *```
      */
-    public function getPost(string! name = null, var filters = null, var defaultValue = null, bool notAllowEmpty = false, bool noRecursive = false) -> var
-    {
+    public function getPost(
+        string! name = null,
+        var filters = null,
+        var defaultValue = null,
+        bool notAllowEmpty = false,
+        bool noRecursive = false
+    ) -> var {
         return this->getHelper(
             _POST,
             name,
@@ -651,13 +682,18 @@ class Request extends AbstractInjectionAware implements RequestInterface
      * $userEmail = $request->getPut("user_email", "email");
      *```
      */
-    public function getPut(string! name = null, var filters = null, var defaultValue = null, bool notAllowEmpty = false, bool noRecursive = false) -> var
-    {
+    public function getPut(
+        string! name = null,
+        var filters = null,
+        var defaultValue = null,
+        bool notAllowEmpty = false,
+        bool noRecursive = false
+    ) -> var {
         var put, contentType;
 
         let put = this->putCache;
 
-        if typeof put != "array" {
+        if null === put {
             let contentType = this->getContentType();
 
             if typeof contentType == "string" && stripos(contentType, "json") != false {
@@ -700,8 +736,13 @@ class Request extends AbstractInjectionAware implements RequestInterface
      * $id = $request->getQuery("id", null, 150);
      *```
      */
-    public function getQuery(string! name = null, var filters = null, var defaultValue = null, bool notAllowEmpty = false, bool noRecursive = false) -> var
-    {
+    public function getQuery(
+        string! name = null,
+        var filters = null,
+        var defaultValue = null,
+        bool notAllowEmpty = false,
+        bool noRecursive = false
+    ) -> var {
         return this->getHelper(
             _GET,
             name,
@@ -802,8 +843,10 @@ class Request extends AbstractInjectionAware implements RequestInterface
     /**
      * Gets attached files as Phalcon\Http\Request\File instances
      */
-    public function getUploadedFiles(bool onlySuccessful = false, bool namedKeys = false) -> <FileInterface[]>
-    {
+    public function getUploadedFiles(
+        bool onlySuccessful = false,
+        bool namedKeys = false
+    ) -> <FileInterface[]> {
         var superFiles, prefix, input, smoothInput, file, dataFile;
         array files = [];
 
@@ -977,7 +1020,8 @@ class Request extends AbstractInjectionAware implements RequestInterface
      */
     public function isAjax() -> bool
     {
-        return this->hasServer("HTTP_X_REQUESTED_WITH") && this->getServer("HTTP_X_REQUESTED_WITH") === "XMLHttpRequest";
+        return this->hasServer("HTTP_X_REQUESTED_WITH") &&
+            this->getServer("HTTP_X_REQUESTED_WITH") === "XMLHttpRequest";
     }
 
     /**
@@ -986,7 +1030,7 @@ class Request extends AbstractInjectionAware implements RequestInterface
      */
     public function isConnect() -> bool
     {
-        return this->getMethod() === "CONNECT";
+        return this->getMethod() === self::METHOD_CONNECT;
     }
 
     /**
@@ -995,7 +1039,7 @@ class Request extends AbstractInjectionAware implements RequestInterface
      */
     public function isDelete() -> bool
     {
-        return this->getMethod() === "DELETE";
+        return this->getMethod() === self::METHOD_DELETE;
     }
 
     /**
@@ -1004,7 +1048,7 @@ class Request extends AbstractInjectionAware implements RequestInterface
      */
     public function isGet() -> bool
     {
-        return this->getMethod() === "GET";
+        return this->getMethod() === self::METHOD_GET;
     }
 
     /**
@@ -1013,7 +1057,7 @@ class Request extends AbstractInjectionAware implements RequestInterface
      */
     public function isHead() -> bool
     {
-        return this->getMethod() === "HEAD";
+        return this->getMethod() === self::METHOD_HEAD;
     }
 
     /**
@@ -1057,7 +1101,7 @@ class Request extends AbstractInjectionAware implements RequestInterface
      */
     public function isOptions() -> bool
     {
-        return this->getMethod() === "OPTIONS";
+        return this->getMethod() === self::METHOD_OPTIONS;
     }
 
     /**
@@ -1066,7 +1110,7 @@ class Request extends AbstractInjectionAware implements RequestInterface
      */
     public function isPatch() -> bool
     {
-        return this->getMethod() === "PATCH";
+        return this->getMethod() === self::METHOD_PATCH;
     }
 
     /**
@@ -1075,7 +1119,7 @@ class Request extends AbstractInjectionAware implements RequestInterface
      */
     public function isPost() -> bool
     {
-        return this->getMethod() === "POST";
+        return this->getMethod() === self::METHOD_POST;
     }
 
     /**
@@ -1084,7 +1128,7 @@ class Request extends AbstractInjectionAware implements RequestInterface
      */
     public function isPut() -> bool
     {
-        return this->getMethod() === "PUT";
+        return this->getMethod() === self::METHOD_PUT;
     }
 
     /**
@@ -1093,7 +1137,7 @@ class Request extends AbstractInjectionAware implements RequestInterface
      */
     public function isPurge() -> bool
     {
-        return this->getMethod() === "PURGE";
+        return this->getMethod() === self::METHOD_PURGE;
     }
 
     /**
@@ -1139,7 +1183,7 @@ class Request extends AbstractInjectionAware implements RequestInterface
      */
     public function isTrace() -> bool
     {
-        return this->getMethod() === "TRACE";
+        return this->getMethod() === self::METHOD_TRACE;
     }
 
     /**
@@ -1148,16 +1192,16 @@ class Request extends AbstractInjectionAware implements RequestInterface
     public function isValidHttpMethod(string method) -> bool
     {
         switch strtoupper(method) {
-            case "GET":
-            case "POST":
-            case "PUT":
-            case "DELETE":
-            case "HEAD":
-            case "OPTIONS":
-            case "PATCH":
-            case "PURGE": // Squid and Varnish support
-            case "TRACE":
-            case "CONNECT":
+            case self::METHOD_CONNECT:
+            case self::METHOD_DELETE:
+            case self::METHOD_GET:
+            case self::METHOD_HEAD:
+            case self::METHOD_OPTIONS:
+            case self::METHOD_PATCH:
+            case self::METHOD_POST:
+            case self::METHOD_PURGE:  // Squid and Varnish support
+            case self::METHOD_PUT:
+            case self::METHOD_TRACE:
                 return true;
         }
 
@@ -1202,8 +1246,11 @@ class Request extends AbstractInjectionAware implements RequestInterface
      * Sets automatic sanitizers/filters for a particular field and for
      * particular methods
      */
-    public function setParameterFilters(string! name, array filters = [], array scope = []) -> <RequestInterface>
-    {
+    public function setParameterFilters(
+        string! name,
+        array filters = [],
+        array scope = []
+    ) -> <RequestInterface> {
         var filterService, sanitizer, localScope, scopeMethod;
 
         if unlikely count(filters) < 1 {
@@ -1223,13 +1270,17 @@ class Request extends AbstractInjectionAware implements RequestInterface
         }
 
         if count(scope) < 1 {
-            let localScope = ["get", "post", "put"];
+            let localScope = [
+                self::METHOD_GET,
+                self::METHOD_POST,
+                self::METHOD_PUT
+            ];
         } else {
             let localScope = scope;
         }
 
         for scopeMethod in localScope {
-            let this->queryFilters[scopeMethod][name] = filters;
+            let this->queryFilters[strtoupper(scopeMethod)][name] = filters;
         }
 
         return this;

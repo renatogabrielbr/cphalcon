@@ -10,7 +10,7 @@
 
 namespace Phalcon\Logger\Formatter;
 
-use Phalcon\Helper\Json as JsonHelper;
+use JsonException;
 use Phalcon\Logger\Item;
 
 /**
@@ -21,7 +21,9 @@ use Phalcon\Logger\Item;
 class Json extends AbstractFormatter
 {
     /**
-     * Phalcon\Logger\Formatter\Json construct
+     * Json constructor.
+     *
+     * @param string $dateFormat
      */
     public function __construct(string dateFormat = "c")
     {
@@ -30,26 +32,35 @@ class Json extends AbstractFormatter
 
     /**
      * Applies a format to a message before sent it to the internal log
+     *
+     * @param Item $item
+     *
+     * @return string
+     * @throws JsonException
      */
     public function format(<Item> item) -> string
     {
-        var message;
+        var message, options;
 
-        if typeof item->getContext() === "array" {
-            let message = this->interpolate(
-                item->getMessage(),
-                item->getContext()
-            );
-        } else {
-            let message = item->getMessage();
-        }
+        let options = JSON_HEX_TAG
+            + JSON_HEX_APOS
+            + JSON_HEX_AMP
+            + JSON_HEX_QUOT
+            + JSON_UNESCAPED_SLASHES
+            + JSON_THROW_ON_ERROR;
 
-        return JsonHelper::encode(
+        let message = this->toInterpolate(
+            item->getMessage(),
+            item->getContext()
+        );
+
+        return json_encode(
             [
-                "type"      : item->getName(),
+                "level"     : item->getLevelName(),
                 "message"   : message,
-                "timestamp" : this->getFormattedDate()
-            ]
+                "timestamp" : this->getFormattedDate(item)
+            ],
+            options
         );
     }
 }

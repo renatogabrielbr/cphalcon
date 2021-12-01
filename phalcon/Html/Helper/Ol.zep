@@ -15,7 +15,6 @@ namespace Phalcon\Html\Helper;
  */
 class Ol extends AbstractList
 {
-
     /**
      * Add an element to the list
      *
@@ -23,7 +22,7 @@ class Ol extends AbstractList
      * @param array  $attributes
      * @param bool   $raw
      *
-     * @return $this
+     * @return AbstractList
      */
     public function add(
         string text,

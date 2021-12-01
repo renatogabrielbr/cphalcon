@@ -19,6 +19,8 @@ use Phalcon\Mvc\ModelInterface;
 use Phalcon\Mvc\Model\Query\Builder;
 use Phalcon\Mvc\Model\Query\BuilderInterface;
 use Phalcon\Mvc\Model\Query\StatusInterface;
+use ReflectionClass;
+use ReflectionProperty;
 
 /**
  * Phalcon\Mvc\Model\Manager
@@ -47,105 +49,170 @@ use Phalcon\Mvc\Model\Query\StatusInterface;
  */
 class Manager implements ManagerInterface, InjectionAwareInterface, EventsAwareInterface
 {
+    /**
+     * @var array
+     */
     protected aliases = [];
 
     /**
      * Models' behaviors
+     *
+     * @var array
      */
     protected behaviors = [];
 
     /**
      * Belongs to relations
+     *
+     * @var array
      */
     protected belongsTo = [];
 
     /**
      * All the relationships by model
+     *
+     * @var array
      */
     protected belongsToSingle = [];
 
-    protected container;
+    /**
+     * @var DiInterface|null
+     */
+    protected container = null;
 
+    /**
+     * @var array
+     */
     protected customEventsManager = [];
 
     /**
      * Does the model use dynamic update, instead of updating all rows?
+     *
+     * @var array
      */
     protected dynamicUpdate = [];
 
-    protected eventsManager;
+    /**
+     * @var EventsManagerInterface|null
+     */
+    protected eventsManager = null;
 
     /**
      * Has many relations
+     *
+     * @var array
      */
     protected hasMany = [];
 
     /**
      * Has many relations by model
+     *
+     * @var array
      */
     protected hasManySingle = [];
 
     /**
      * Has many-Through relations
+     *
+     * @var array
      */
     protected hasManyToMany = [];
 
     /**
      * Has many-Through relations by model
+     *
+     * @var array
      */
     protected hasManyToManySingle = [];
 
     /**
      * Has one relations
+     *
+     * @var array
      */
     protected hasOne = [];
 
     /**
      * Has one relations by model
+     *
+     * @var array
      */
     protected hasOneSingle = [];
 
     /**
      * Has one through relations
+     *
+     * @var array
      */
     protected hasOneThrough = [];
 
     /**
      * Has one through relations by model
+     *
+     * @var array
      */
     protected hasOneThroughSingle = [];
 
     /**
      * Mark initialized models
+     *
+     * @var array
      */
     protected initialized = [];
 
+    /**
+     * @var array
+     */
     protected keepSnapshots = [];
 
     /**
      * Last model initialized
+     *
+     * @var ModelInterface|null
      */
-    protected lastInitialized;
+    protected lastInitialized = null;
 
     /**
      * Last query created/executed
+     *
+     * @var QueryInterface|null
      */
-    protected lastQuery;
+    protected lastQuery = null;
 
+    /**
+     * @var array
+     */
     protected modelVisibility = [];
 
+    /**
+     * @var string
+     */
     protected prefix = "";
 
+    /**
+     * @var array
+     */
     protected readConnectionServices = [];
 
+    /**
+     * @var array
+     */
     protected sources = [];
 
+    /**
+     * @var array
+     */
     protected schemas = [];
 
+    /**
+     * @var array
+     */
     protected writeConnectionServices = [];
 
     /**
      * Stores a list of reusable instances
+     *
+     * @var array
      */
     protected reusable = [];
 
@@ -352,12 +419,19 @@ class Manager implements ManagerInterface, InjectionAwareInterface, EventsAwareI
      */
     final public function isVisibleModelProperty(<ModelInterface> model, string property) -> bool
     {
-        var properties, className;
+        var properties, className, publicProperties, classReflection,
+            reflectionProperties, reflectionProperty;
 
         let className = get_class(model);
 
         if !isset this->modelVisibility[className] {
-            let this->modelVisibility[className] = get_object_vars(model);
+            let publicProperties = [];
+            let classReflection = new ReflectionClass(className);
+            let reflectionProperties = classReflection->getProperties(ReflectionProperty::IS_PUBLIC);
+            for reflectionProperty in reflectionProperties {
+                let publicProperties[reflectionProperty->name] = true;
+            }
+            let this->modelVisibility[className] = publicProperties;
         }
 
         let properties = this->modelVisibility[className];
@@ -397,12 +471,12 @@ class Manager implements ManagerInterface, InjectionAwareInterface, EventsAwareI
     /**
      * Returns the mapped schema for a model
      */
-    public function getModelSchema(<ModelInterface> model) -> string
+    public function getModelSchema(<ModelInterface> model) -> string | null
     {
         var schema;
 
         if !fetch schema, this->schemas[get_class_lower(model)] {
-            return "";
+            return null;
         }
 
         return schema;
@@ -1312,6 +1386,11 @@ class Manager implements ManagerInterface, InjectionAwareInterface, EventsAwareI
 
     /**
      * Returns a relation by its alias
+     *
+     * @param string modelName
+     * @param string alias
+     *
+     * @return RelationInterface|bool
      */
     public function getRelationByAlias(string! modelName, string! alias) -> <RelationInterface> | bool
     {
@@ -1391,7 +1470,7 @@ class Manager implements ManagerInterface, InjectionAwareInterface, EventsAwareI
     /**
      * Helper method to query records based on a relation definition
      *
-     * @return \Phalcon\Mvc\Model\Resultset\Simple|Phalcon\Mvc\Model\Resultset\Simple|int|false
+     * @return \Phalcon\Mvc\Model\Resultset\Simple|int|false
      */
     public function getRelationRecords(<RelationInterface> relation, <ModelInterface> record, var parameters = null, string method = null)
     {
@@ -1996,6 +2075,8 @@ class Manager implements ManagerInterface, InjectionAwareInterface, EventsAwareI
 
     /**
      * Creates a Phalcon\Mvc\Model\Query\Builder
+     *
+     * @param array|string|null params
      */
     public function createBuilder(var params = null) -> <BuilderInterface>
     {

@@ -11,16 +11,22 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Unit\Translate\Adapter\Gettext;
+namespace Phalcon\Tests\Unit\Translate\Adapter\Gettext;
 
 use ArrayAccess;
-use Phalcon\Test\Fixtures\Traits\TranslateGettextTrait;
+use Codeception\Stub;
+use Phalcon\Tests\Fixtures\Traits\TranslateGettextTrait;
 use Phalcon\Translate\Adapter\AdapterInterface;
 use Phalcon\Translate\Adapter\Gettext;
 use Phalcon\Translate\Exception;
 use Phalcon\Translate\InterpolatorFactory;
 use UnitTester;
 
+/**
+ * Class ConstructCest
+ *
+ * @package Phalcon\Tests\Unit\Translate\Adapter\Gettext
+ */
 class ConstructCest
 {
     use TranslateGettextTrait;
@@ -28,46 +34,96 @@ class ConstructCest
     /**
      * Tests Phalcon\Translate\Adapter\Gettext :: __construct()
      *
+     * @param UnitTester $I
+     *
      * @author Phalcon Team <team@phalcon.io>
-     * @since  2018-11-13
+     * @since  2020-09-09
      */
     public function translateAdapterGettextConstruct(UnitTester $I)
     {
         $I->wantToTest('Translate\Adapter\Gettext - constructor');
 
         $params     = $this->getGettextConfig();
-        $translator = new Gettext(
-            new InterpolatorFactory(),
-            $params
-        );
+        $translator = new Gettext(new InterpolatorFactory(), $params);
 
-        $I->assertInstanceOf(
-            ArrayAccess::class,
-            $translator
-        );
-
-        $I->assertInstanceOf(
-            AdapterInterface::class,
-            $translator
-        );
+        $I->assertInstanceOf(ArrayAccess::class, $translator);
+        $I->assertInstanceOf(AdapterInterface::class, $translator);
     }
 
     /**
      * Tests Phalcon\Translate\Adapter\Gettext :: __construct() - Exception
+     * 'locale' not passed in options
      *
-     * @author Ivan Zubok <chi_no@ukr.net>
-     * @since  2014-11-04
+     * @param UnitTester $I
+     *
+     * @author Phalcon Team <team@phalcon.io>
+     * @since  2020-09-09
      */
-    public function translateAdapterGettextContentParamExist(UnitTester $I)
+    public function translateAdapterGettextContentParamLocaleExist(UnitTester $I)
     {
         $I->wantToTest('Translate\Adapter\Gettext - constructor without "locale" throws exception');
 
         $I->expectThrowable(
             new Exception("Parameter 'locale' is required"),
             function () {
+                new Gettext(new InterpolatorFactory(), []);
+            }
+        );
+    }
+
+    /**
+     * Tests Phalcon\Translate\Adapter\Gettext :: __construct() - Exception
+     * 'directory' not passed in options
+     *
+     * @param UnitTester $I
+     *
+     * @author Phalcon Team <team@phalcon.io>
+     * @since  2020-09-09
+     */
+    public function translateAdapterGettextContentParamDirectoryExist(UnitTester $I)
+    {
+        $I->wantToTest('Translate\Adapter\Gettext - constructor without "directory" throws exception');
+
+        $I->expectThrowable(
+            new Exception("Parameter 'directory' is required"),
+            function () {
                 new Gettext(
                     new InterpolatorFactory(),
-                    []
+                    [
+                        'locale' => 'en_US.utf8',
+                    ]
+                );
+            }
+        );
+    }
+
+    /**
+     * Tests Phalcon\Translate\Adapter\Gettext :: __construct() - Exception
+     * no gettext extension loaded
+     *
+     * @param UnitTester $I
+     *
+     * @author Phalcon Team <team@phalcon.io>
+     * @since  2020-09-09
+     */
+    public function translateAdapterGettextConstructNoGettextException(UnitTester $I)
+    {
+        $I->wantToTest('Translate\Adapter\Gettext - __construct() - no gettext exception');
+
+        $I->expectThrowable(
+            new \Exception('This class requires the gettext extension for PHP'),
+            function () {
+                $gettext = Stub::construct(
+                    Gettext::class,
+                    [
+                        new InterpolatorFactory(),
+                        [
+                            'locale' => 'en_US.utf8',
+                        ],
+                    ],
+                    [
+                        'phpFunctionExists' => false,
+                    ]
                 );
             }
         );

@@ -43,7 +43,7 @@ abstract class AbstractAdapter implements SessionHandlerInterface
     /**
      * Garbage Collector
      */
-    public function gc(var maxlifetime) -> bool
+    public function gc(var maxlifetime)
     {
         return true;
     }
@@ -73,5 +73,22 @@ abstract class AbstractAdapter implements SessionHandlerInterface
     public function write(var id, var data) -> bool
     {
         return this->adapter->set(id, data);
+    }
+
+    /**
+     * @todo Remove this when we get traits
+     */
+    protected function getArrVal(
+        array! collection,
+        var index,
+        var defaultValue = null
+    ) -> var {
+        var value;
+
+        if unlikely !fetch value, collection[index] {
+            return defaultValue;
+        }
+
+        return value;
     }
 }

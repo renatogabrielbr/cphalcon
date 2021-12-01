@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Unit\Container;
+namespace Phalcon\Tests\Unit\Container;
 
 use Phalcon\Container;
 use Phalcon\Di;
@@ -31,12 +31,8 @@ class ConstructCest
         $I->wantToTest('Container - __construct()');
 
         $container = new Di();
+        $actual    = new Container($container);
 
-        $actual = new Container($container);
-
-        $I->assertInstanceOf(
-            ContainerInterface::class,
-            $actual
-        );
+        $I->assertInstanceOf(ContainerInterface::class, $actual);
     }
 }

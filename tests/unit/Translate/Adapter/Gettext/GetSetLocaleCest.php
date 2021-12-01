@@ -11,13 +11,18 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Unit\Translate\Adapter\Gettext;
+namespace Phalcon\Tests\Unit\Translate\Adapter\Gettext;
 
-use Phalcon\Test\Fixtures\Traits\TranslateGettextTrait;
+use Phalcon\Tests\Fixtures\Traits\TranslateGettextTrait;
 use Phalcon\Translate\Adapter\Gettext;
 use Phalcon\Translate\InterpolatorFactory;
 use UnitTester;
 
+/**
+ * Class GetSetLocaleCest
+ *
+ * @package Phalcon\Tests\Unit\Translate\Adapter\Gettext
+ */
 class GetSetLocaleCest
 {
     use TranslateGettextTrait;
@@ -25,8 +30,10 @@ class GetSetLocaleCest
     /**
      * Tests Phalcon\Translate\Adapter\Gettext :: getLocale()/setLocale()
      *
+     * @param UnitTester $I
+     *
      * @author Phalcon Team <team@phalcon.io>
-     * @since  2018-11-13
+     * @since  2020-09-09
      */
     public function translateAdapterGettextGetSetLocale(UnitTester $I)
     {
@@ -35,16 +42,20 @@ class GetSetLocaleCest
         $params     = $this->getGettextConfig();
         $translator = new Gettext(new InterpolatorFactory(), $params);
 
-        $I->assertEquals(
-            'en_US.utf8',
-            $translator->getLocale()
-        );
+        $expected = 'en_US.utf8';
+        $actual   = $translator->getLocale();
+        $I->assertEquals($expected, $actual);
 
-        $translator->setLocale(1, 'ru');
+        $translator->setLocale(1, ['ru']);
 
-        $I->assertEquals(
-            '',
-            $translator->getLocale()
-        );
+        $expected = '';
+        $actual   = $translator->getLocale();
+        $I->assertEquals($expected, $actual);
+
+        $translator->setLocale(1, ['ru_RU.utf8']);
+
+        $expected = 'ru_RU.utf8';
+        $actual   = $translator->getLocale();
+        $I->assertEquals($expected, $actual);
     }
 }

@@ -10,57 +10,32 @@
 
 namespace Phalcon\Logger\Formatter;
 
-use DateTimeImmutable;
-use DateTimeZone;
-use Phalcon\Logger;
 use Phalcon\Logger\Item;
+use Phalcon\Support\Helper\Str\AbstractStr;
 
-abstract class AbstractFormatter implements FormatterInterface
+/**
+ * Class AbstractFormatter
+ *
+ * @property string $dateFormat
+ */
+abstract class AbstractFormatter extends AbstractStr implements FormatterInterface
 {
     /**
      * Default date format
      *
      * @var string
      */
-    protected dateFormat { get, set };
-
-    /**
-     * Interpolates context values into the message placeholders
-     *
-     * @see http://www.php-fig.org/psr/psr-3/ Section 1.2 Message
-     * @param string $message
-     * @param array $context
-     */
-    public function interpolate(string message, var context = null)
-    {
-        var key, value;
-        array replace;
-
-        if typeof context == "array" && count(context) > 0 {
-            let replace = [];
-
-            for key, value in context {
-                let replace["{" . key . "}"] = value;
-            }
-
-            return strtr(message, replace);
-        }
-
-        return message;
-    }
+    protected dateFormat = "c" { get, set };
 
     /**
      * Returns the date formatted for the logger.
-     * @todo Not using the set time from the Item since we have interface
-     * misalignment which will break semver This will change in the future
+     *
+     * @param Item $item
+     *
+     * @return string
      */
-    protected function getFormattedDate() -> string
+    protected function getFormattedDate(<Item> item) -> string
     {
-        var date, timezone;
-
-        let timezone = date_default_timezone_get(),
-            date     = new DateTimeImmutable("now", new DateTimeZone(timezone));
-
-        return date->format(this->dateFormat);
+        return item->getDateTime()->format(this->dateFormat);
     }
 }

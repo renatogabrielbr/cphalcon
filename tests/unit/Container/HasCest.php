@@ -11,10 +11,10 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Unit\Container;
+namespace Phalcon\Tests\Unit\Container;
 
 use Phalcon\Container;
-use Phalcon\Test\Fixtures\Traits\DiTrait;
+use Phalcon\Tests\Fixtures\Traits\DiTrait;
 use UnitTester;
 
 class HasCest
@@ -36,8 +36,7 @@ class HasCest
 
         $container = new Container($this->container);
 
-        $I->assertTrue(
-            $container->has('filter')
-        );
+        $actual = $container->has('filter');
+        $I->assertTrue($actual);
     }
 }

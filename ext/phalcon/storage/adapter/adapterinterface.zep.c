@@ -23,12 +23,11 @@
 /**
  * Interface for Phalcon\Logger adapters
  */
-ZEPHIR_INIT_CLASS(Phalcon_Storage_Adapter_AdapterInterface) {
-
+ZEPHIR_INIT_CLASS(Phalcon_Storage_Adapter_AdapterInterface)
+{
 	ZEPHIR_REGISTER_INTERFACE(Phalcon\\Storage\\Adapter, AdapterInterface, phalcon, storage_adapter_adapterinterface, phalcon_storage_adapter_adapterinterface_method_entry);
 
 	return SUCCESS;
-
 }
 
 /**
@@ -45,6 +44,11 @@ ZEPHIR_DOC_METHOD(Phalcon_Storage_Adapter_AdapterInterface, decrement);
 ZEPHIR_DOC_METHOD(Phalcon_Storage_Adapter_AdapterInterface, delete);
 /**
  * Reads data from the adapter
+ *
+ * @param string key
+ * @param mixed|null defaultValue
+ *
+ * @return mixed
  */
 ZEPHIR_DOC_METHOD(Phalcon_Storage_Adapter_AdapterInterface, get);
 /**
@@ -69,6 +73,26 @@ ZEPHIR_DOC_METHOD(Phalcon_Storage_Adapter_AdapterInterface, has);
  */
 ZEPHIR_DOC_METHOD(Phalcon_Storage_Adapter_AdapterInterface, increment);
 /**
- * Stores data in the adapter
+ * Stores data in the adapter. If the TTL is `null` (default) or not defined
+ * then the default TTL will be used, as set in this adapter. If the TTL
+ * is `0` or a negative number, a `delete()` will be issued, since this
+ * item has expired. If you need to set this key forever, you should use
+ * the `setForever()` method.
+ *
+ * @param string                 $key
+ * @param mixed                  $value
+ * @param \DateInterval|int|null $ttl
+ *
+ * @return bool
  */
 ZEPHIR_DOC_METHOD(Phalcon_Storage_Adapter_AdapterInterface, set);
+/**
+ * Stores data in the adapter forever. The key needs to manually deleted
+ * from the adapter.
+ *
+ * @param string $key
+ * @param mixed  $value
+ *
+ * @return bool
+ */
+ZEPHIR_DOC_METHOD(Phalcon_Storage_Adapter_AdapterInterface, setForever);

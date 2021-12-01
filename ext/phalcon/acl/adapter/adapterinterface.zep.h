@@ -5,7 +5,7 @@ ZEPHIR_INIT_CLASS(Phalcon_Acl_Adapter_AdapterInterface);
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_acl_adapter_adapterinterface_addinherit, 0, 2, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, roleName, IS_STRING, 0)
-	ZEND_ARG_INFO(0, roleToInherit)
+	ZEND_ARG_INFO(0, roleToInherits)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_acl_adapter_adapterinterface_addrole, 0, 1, _IS_BOOL, 0)
@@ -14,7 +14,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_acl_adapter_adapterinter
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_acl_adapter_adapterinterface_addcomponent, 0, 2, _IS_BOOL, 0)
-	ZEND_ARG_INFO(0, componentObject)
+	ZEND_ARG_INFO(0, componentValue)
 	ZEND_ARG_INFO(0, accessList)
 ZEND_END_ARG_INFO()
 
@@ -54,7 +54,14 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_acl_adapter_adapterinterface_getactivecomponent, 0, 0, IS_STRING, 1)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_acl_adapter_adapterinterface_getcomponents, 0, 0, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_acl_adapter_adapterinterface_getdefaultaction, 0, 0, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_acl_adapter_adapterinterface_getinheritedroles, 0, 0, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, roleName, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_acl_adapter_adapterinterface_getnoargumentsdefaultaction, 0, 0, IS_LONG, 0)
@@ -63,14 +70,15 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_acl_adapter_adapterinterface_getroles, 0, 0, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_acl_adapter_adapterinterface_getcomponents, 0, 0, IS_ARRAY, 0)
-ZEND_END_ARG_INFO()
-
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_acl_adapter_adapterinterface_isallowed, 0, 3, _IS_BOOL, 0)
 	ZEND_ARG_INFO(0, roleName)
 	ZEND_ARG_INFO(0, componentName)
 	ZEND_ARG_TYPE_INFO(0, access, IS_STRING, 0)
+#if PHP_VERSION_ID >= 80000
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, parameters, IS_ARRAY, 1, "[]")
+#else
 	ZEND_ARG_ARRAY_INFO(0, parameters, 1)
+#endif
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_acl_adapter_adapterinterface_iscomponent, 0, 1, _IS_BOOL, 0)
@@ -102,10 +110,11 @@ ZEPHIR_INIT_FUNCS(phalcon_acl_adapter_adapterinterface_method_entry) {
 	PHP_ABSTRACT_ME(Phalcon_Acl_Adapter_AdapterInterface, getActiveAccess, arginfo_phalcon_acl_adapter_adapterinterface_getactiveaccess)
 	PHP_ABSTRACT_ME(Phalcon_Acl_Adapter_AdapterInterface, getActiveRole, arginfo_phalcon_acl_adapter_adapterinterface_getactiverole)
 	PHP_ABSTRACT_ME(Phalcon_Acl_Adapter_AdapterInterface, getActiveComponent, arginfo_phalcon_acl_adapter_adapterinterface_getactivecomponent)
+	PHP_ABSTRACT_ME(Phalcon_Acl_Adapter_AdapterInterface, getComponents, arginfo_phalcon_acl_adapter_adapterinterface_getcomponents)
 	PHP_ABSTRACT_ME(Phalcon_Acl_Adapter_AdapterInterface, getDefaultAction, arginfo_phalcon_acl_adapter_adapterinterface_getdefaultaction)
+	PHP_ABSTRACT_ME(Phalcon_Acl_Adapter_AdapterInterface, getInheritedRoles, arginfo_phalcon_acl_adapter_adapterinterface_getinheritedroles)
 	PHP_ABSTRACT_ME(Phalcon_Acl_Adapter_AdapterInterface, getNoArgumentsDefaultAction, arginfo_phalcon_acl_adapter_adapterinterface_getnoargumentsdefaultaction)
 	PHP_ABSTRACT_ME(Phalcon_Acl_Adapter_AdapterInterface, getRoles, arginfo_phalcon_acl_adapter_adapterinterface_getroles)
-	PHP_ABSTRACT_ME(Phalcon_Acl_Adapter_AdapterInterface, getComponents, arginfo_phalcon_acl_adapter_adapterinterface_getcomponents)
 	PHP_ABSTRACT_ME(Phalcon_Acl_Adapter_AdapterInterface, isAllowed, arginfo_phalcon_acl_adapter_adapterinterface_isallowed)
 	PHP_ABSTRACT_ME(Phalcon_Acl_Adapter_AdapterInterface, isComponent, arginfo_phalcon_acl_adapter_adapterinterface_iscomponent)
 	PHP_ABSTRACT_ME(Phalcon_Acl_Adapter_AdapterInterface, isRole, arginfo_phalcon_acl_adapter_adapterinterface_isrole)

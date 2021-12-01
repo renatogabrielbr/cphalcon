@@ -31,39 +31,46 @@
  * file that was distributed with this source code.
  */
 /**
- * Phalcon\Translate\Adapter\NativeArray
+ * Class NativeArray
  *
- * Allows to define translation lists using PHP arrays
+ * Defines translation lists using PHP arrays
+ *
+ * @package Phalcon\Translate\Adapter
+ *
+ * @property array $translate
+ * @property bool  $triggerError
  */
-ZEPHIR_INIT_CLASS(Phalcon_Translate_Adapter_NativeArray) {
-
+ZEPHIR_INIT_CLASS(Phalcon_Translate_Adapter_NativeArray)
+{
 	ZEPHIR_REGISTER_CLASS_EX(Phalcon\\Translate\\Adapter, NativeArray, phalcon, translate_adapter_nativearray, phalcon_translate_adapter_abstractadapter_ce, phalcon_translate_adapter_nativearray_method_entry, 0);
 
 	/**
 	 * @var array
 	 */
 	zend_declare_property_null(phalcon_translate_adapter_nativearray_ce, SL("translate"), ZEND_ACC_PRIVATE);
-
 	/**
 	 * @var bool
 	 */
 	zend_declare_property_bool(phalcon_translate_adapter_nativearray_ce, SL("triggerError"), 0, ZEND_ACC_PRIVATE);
+	phalcon_translate_adapter_nativearray_ce->create_object = zephir_init_properties_Phalcon_Translate_Adapter_NativeArray;
 
 	zend_class_implements(phalcon_translate_adapter_nativearray_ce, 1, zend_ce_arrayaccess);
 	return SUCCESS;
-
 }
 
 /**
- * Phalcon\Translate\Adapter\NativeArray constructor
+ * NativeArray constructor.
  *
- * @param array options = [
- *     'content' => '',
- *     'triggerError' => false
- * ]
+ * @param InterpolatorFactory $interpolator
+ * @param array               $options = [
+ *                                'content'      => '',
+ *                                'triggerError' => false
+ *                            ]
+ *
+ * @throws Exception
  */
-PHP_METHOD(Phalcon_Translate_Adapter_NativeArray, __construct) {
-
+PHP_METHOD(Phalcon_Translate_Adapter_NativeArray, __construct)
+{
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zend_long ZEPHIR_LAST_CALL_STATUS;
 	zephir_fcall_cache_entry *_0 = NULL;
@@ -83,13 +90,11 @@ PHP_METHOD(Phalcon_Translate_Adapter_NativeArray, __construct) {
 		Z_PARAM_OBJECT_OF_CLASS(interpolator, phalcon_translate_interpolatorfactory_ce)
 		Z_PARAM_ARRAY(options)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 2, 0, &interpolator, &options_param);
-
 	ZEPHIR_OBS_COPY_OR_DUP(&options, options_param);
 
 
@@ -97,7 +102,7 @@ PHP_METHOD(Phalcon_Translate_Adapter_NativeArray, __construct) {
 	zephir_check_call_status();
 	ZEPHIR_OBS_VAR(&data);
 	if (UNEXPECTED(!(zephir_array_isset_string_fetch(&data, &options, SL("content"), 0)))) {
-		ZEPHIR_THROW_EXCEPTION_DEBUG_STR(phalcon_translate_exception_ce, "Translation content was not provided", "phalcon/Translate/Adapter/NativeArray.zep", 49);
+		ZEPHIR_THROW_EXCEPTION_DEBUG_STR(phalcon_translate_exception_ce, "Translation content was not provided", "phalcon/Translate/Adapter/NativeArray.zep", 57);
 		return;
 	}
 	ZEPHIR_OBS_VAR(&error);
@@ -109,19 +114,22 @@ PHP_METHOD(Phalcon_Translate_Adapter_NativeArray, __construct) {
 		}
 	}
 	if (UNEXPECTED(Z_TYPE_P(&data) != IS_ARRAY)) {
-		ZEPHIR_THROW_EXCEPTION_DEBUG_STR(phalcon_translate_exception_ce, "Translation data must be an array", "phalcon/Translate/Adapter/NativeArray.zep", 57);
+		ZEPHIR_THROW_EXCEPTION_DEBUG_STR(phalcon_translate_exception_ce, "Translation data must be an array", "phalcon/Translate/Adapter/NativeArray.zep", 65);
 		return;
 	}
 	zephir_update_property_zval(this_ptr, ZEND_STRL("translate"), &data);
 	ZEPHIR_MM_RESTORE();
-
 }
 
 /**
  * Check whether is defined a translation key in the internal array
+ *
+ * @param string $index
+ *
+ * @return bool
  */
-PHP_METHOD(Phalcon_Translate_Adapter_NativeArray, exists) {
-
+PHP_METHOD(Phalcon_Translate_Adapter_NativeArray, exists)
+{
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zval *index_param = NULL, _0;
 	zval index;
@@ -134,13 +142,11 @@ PHP_METHOD(Phalcon_Translate_Adapter_NativeArray, exists) {
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_STR(index)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 1, 0, &index_param);
-
 	if (UNEXPECTED(Z_TYPE_P(index_param) != IS_STRING && Z_TYPE_P(index_param) != IS_NULL)) {
 		zephir_throw_exception_string(spl_ce_InvalidArgumentException, SL("Parameter 'index' must be of the type string"));
 		RETURN_MM_NULL();
@@ -149,20 +155,23 @@ PHP_METHOD(Phalcon_Translate_Adapter_NativeArray, exists) {
 		zephir_get_strval(&index, index_param);
 	} else {
 		ZEPHIR_INIT_VAR(&index);
-		ZVAL_EMPTY_STRING(&index);
 	}
 
 
 	zephir_read_property(&_0, this_ptr, ZEND_STRL("translate"), PH_NOISY_CC | PH_READONLY);
 	RETURN_MM_BOOL(zephir_array_isset(&_0, &index));
-
 }
 
 /**
  * Whenever a key is not found this method will be called
+ *
+ * @param string $index
+ *
+ * @return string
+ * @throws Exception
  */
-PHP_METHOD(Phalcon_Translate_Adapter_NativeArray, notFound) {
-
+PHP_METHOD(Phalcon_Translate_Adapter_NativeArray, notFound)
+{
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zend_long ZEPHIR_LAST_CALL_STATUS;
 	zval *index_param = NULL, _0, _1$$3;
@@ -178,13 +187,11 @@ PHP_METHOD(Phalcon_Translate_Adapter_NativeArray, notFound) {
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_STR(index)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 1, 0, &index_param);
-
 	if (UNEXPECTED(Z_TYPE_P(index_param) != IS_STRING && Z_TYPE_P(index_param) != IS_NULL)) {
 		zephir_throw_exception_string(spl_ce_InvalidArgumentException, SL("Parameter 'index' must be of the type string"));
 		RETURN_MM_NULL();
@@ -193,7 +200,6 @@ PHP_METHOD(Phalcon_Translate_Adapter_NativeArray, notFound) {
 		zephir_get_strval(&index, index_param);
 	} else {
 		ZEPHIR_INIT_VAR(&index);
-		ZVAL_EMPTY_STRING(&index);
 	}
 
 
@@ -205,53 +211,55 @@ PHP_METHOD(Phalcon_Translate_Adapter_NativeArray, notFound) {
 		ZEPHIR_CONCAT_SV(&_2$$3, "Cannot find translation key: ", &index);
 		ZEPHIR_CALL_METHOD(NULL, &_1$$3, "__construct", NULL, 8, &_2$$3);
 		zephir_check_call_status();
-		zephir_throw_exception_debug(&_1$$3, "phalcon/Translate/Adapter/NativeArray.zep", 77);
+		zephir_throw_exception_debug(&_1$$3, "phalcon/Translate/Adapter/NativeArray.zep", 94);
 		ZEPHIR_MM_RESTORE();
 		return;
 	}
 	RETURN_CTOR(&index);
-
 }
 
 /**
  * Returns the translation related to the given key
+ *
+ * @param string $index
+ * @param array  $placeholders
+ *
+ * @return string
+ * @throws Exception
  */
-PHP_METHOD(Phalcon_Translate_Adapter_NativeArray, query) {
-
+PHP_METHOD(Phalcon_Translate_Adapter_NativeArray, query)
+{
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zend_long ZEPHIR_LAST_CALL_STATUS;
 	zval placeholders;
-	zval *index_param = NULL, *placeholders_param = NULL, translation, _0;
-	zval index;
+	zval *translateKey_param = NULL, *placeholders_param = NULL, translation, _0;
+	zval translateKey;
 	zval *this_ptr = getThis();
 
-	ZVAL_UNDEF(&index);
+	ZVAL_UNDEF(&translateKey);
 	ZVAL_UNDEF(&translation);
 	ZVAL_UNDEF(&_0);
 	ZVAL_UNDEF(&placeholders);
 #if PHP_VERSION_ID >= 80000
 	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 2)
-		Z_PARAM_STR(index)
+		Z_PARAM_STR(translateKey)
 		Z_PARAM_OPTIONAL
 		Z_PARAM_ARRAY(placeholders)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
-	zephir_fetch_params(1, 1, 1, &index_param, &placeholders_param);
-
-	if (UNEXPECTED(Z_TYPE_P(index_param) != IS_STRING && Z_TYPE_P(index_param) != IS_NULL)) {
-		zephir_throw_exception_string(spl_ce_InvalidArgumentException, SL("Parameter 'index' must be of the type string"));
+	zephir_fetch_params(1, 1, 1, &translateKey_param, &placeholders_param);
+	if (UNEXPECTED(Z_TYPE_P(translateKey_param) != IS_STRING && Z_TYPE_P(translateKey_param) != IS_NULL)) {
+		zephir_throw_exception_string(spl_ce_InvalidArgumentException, SL("Parameter 'translateKey' must be of the type string"));
 		RETURN_MM_NULL();
 	}
-	if (EXPECTED(Z_TYPE_P(index_param) == IS_STRING)) {
-		zephir_get_strval(&index, index_param);
+	if (EXPECTED(Z_TYPE_P(translateKey_param) == IS_STRING)) {
+		zephir_get_strval(&translateKey, translateKey_param);
 	} else {
-		ZEPHIR_INIT_VAR(&index);
-		ZVAL_EMPTY_STRING(&index);
+		ZEPHIR_INIT_VAR(&translateKey);
 	}
 	if (!placeholders_param) {
 		ZEPHIR_INIT_VAR(&placeholders);
@@ -263,14 +271,37 @@ PHP_METHOD(Phalcon_Translate_Adapter_NativeArray, query) {
 
 	ZEPHIR_OBS_VAR(&translation);
 	zephir_read_property(&_0, this_ptr, ZEND_STRL("translate"), PH_NOISY_CC | PH_READONLY);
-	if (!(zephir_array_isset_fetch(&translation, &_0, &index, 0))) {
-		ZEPHIR_RETURN_CALL_METHOD(this_ptr, "notfound", NULL, 0, &index);
+	if (!(zephir_array_isset_fetch(&translation, &_0, &translateKey, 0))) {
+		ZEPHIR_RETURN_CALL_METHOD(this_ptr, "notfound", NULL, 0, &translateKey);
 		zephir_check_call_status();
 		RETURN_MM();
 	}
 	ZEPHIR_RETURN_CALL_METHOD(this_ptr, "replaceplaceholders", NULL, 0, &translation, &placeholders);
 	zephir_check_call_status();
 	RETURN_MM();
+}
 
+zend_object *zephir_init_properties_Phalcon_Translate_Adapter_NativeArray(zend_class_entry *class_type)
+{
+		zval _0, _1$$3;
+	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
+		ZVAL_UNDEF(&_0);
+	ZVAL_UNDEF(&_1$$3);
+	
+
+		ZEPHIR_MM_GROW();
+	
+	{
+		zval local_this_ptr, *this_ptr = &local_this_ptr;
+		ZEPHIR_CREATE_OBJECT(this_ptr, class_type);
+		zephir_read_property_ex(&_0, this_ptr, ZEND_STRL("translate"), PH_NOISY_CC | PH_READONLY);
+		if (Z_TYPE_P(&_0) == IS_NULL) {
+			ZEPHIR_INIT_VAR(&_1$$3);
+			array_init(&_1$$3);
+			zephir_update_property_zval_ex(this_ptr, ZEND_STRL("translate"), &_1$$3);
+		}
+		ZEPHIR_MM_RESTORE();
+		return Z_OBJ_P(this_ptr);
+	}
 }
 

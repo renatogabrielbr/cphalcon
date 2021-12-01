@@ -14,9 +14,8 @@
 
 namespace Phalcon\Http\Message;
 
-use Phalcon\Collection;
-use Phalcon\Collection\CollectionInterface;
-use Phalcon\Helper\Arr;
+use Phalcon\Support\Collection;
+use Phalcon\Support\Collection\CollectionInterface;
 use Phalcon\Http\Message\Exception\InvalidArgumentException;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -26,7 +25,7 @@ use Psr\Http\Message\UploadedFileInterface;
 /**
  * PSR-17 ServerRequestFactory
  */
-class ServerRequestFactory implements ServerRequestFactoryInterface
+class ServerRequestFactory implements ServerRequestFactoryInterface, RequestMethodInterface
 {
     /**
      * Create a new server request.
@@ -114,7 +113,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             get               = this->checkNullArray(get, globalGet),
             post              = this->checkNullArray(post, globalPost),
             serverCollection  = this->parseServer(server),
-            method            = serverCollection->get("REQUEST_METHOD", "GET"),
+            method            = serverCollection->get("REQUEST_METHOD", self::METHOD_GET),
             protocol          = this->parseProtocol(serverCollection),
             headers           = this->parseHeaders(serverCollection),
             filesCollection   = this->parseUploadedFiles(files),
@@ -292,7 +291,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
      */
     private function checkNullArray(var source, array super) -> array
     {
-        if unlikely null === source {
+        if unlikely empty source {
             return super;
         }
 
@@ -556,7 +555,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             }
         }
 
-        return $collection;
+        return collection;
     }
 
     /**

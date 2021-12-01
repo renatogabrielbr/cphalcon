@@ -10,13 +10,13 @@
 
 namespace Phalcon\Logger\Formatter;
 
-use DateTime;
+use Exception;
 use Phalcon\Logger\Item;
 
 /**
- * Phalcon\Logger\Formatter\Line
+ * Class Line
  *
- * Formats messages using an one-line string
+ * @property string $format
  */
 class Line extends AbstractFormatter
 {
@@ -28,50 +28,40 @@ class Line extends AbstractFormatter
     protected format { get, set };
 
     /**
-     * Phalcon\Logger\Formatter\Line construct
+     * Line constructor.
+     *
+     * @param string $format
+     * @param string $dateFormat
      */
-    public function __construct(string format = "[%date%][%type%] %message%", string dateFormat = "c")
-    {
+    public function __construct(
+        string format = "[%date%][%level%] %message%",
+        string dateFormat = "c"
+    ) {
         let this->format     = format,
             this->dateFormat = dateFormat;
     }
 
     /**
      * Applies a format to a message before sent it to the internal log
+     *
+     * @param Item $item
+     *
+     * @return string
+     * @throws Exception
      */
     public function format(<Item> item) -> string
     {
-        var format;
+        var message;
 
-        let format = this->format;
+        let message = strtr(
+            this->format,
+            [
+                "%date%"    : this->getFormattedDate(item),
+                "%level%"   : item->getLevelName(),
+                "%message%" : item->getMessage()
+            ]
+        );
 
-        /**
-         * Check if the format has the %date% placeholder
-         */
-        if memstr(format, "%date%") {
-            let format = str_replace(
-                "%date%",
-                this->getFormattedDate(),
-                format
-            );
-        }
-
-        /**
-         * Check if the format has the %type% placeholder
-         */
-        if memstr(format, "%type%") {
-            let format = str_replace("%type%", item->getName(), format);
-        }
-
-        let format = str_replace("%message%", item->getMessage(), format);
-
-        if typeof item->getContext() === "array" {
-            return this->interpolate(
-                format,
-                item->getContext()
-            );
-        }
-
-        return format;
+        return this->toInterpolate(message, item->getContext());
     }
 }

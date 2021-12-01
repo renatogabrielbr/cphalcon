@@ -40,7 +40,20 @@ class SerializerFactory extends AbstractFactory
         return create_instance(definition);
     }
 
-    protected function getAdapters() -> array
+    /**
+     * @return string
+     */
+    protected function getExceptionClass() -> string
+    {
+        return "Phalcon\\Storage\\Exception";
+    }
+
+    /**
+     * Returns the available adapters
+     *
+     * @return string[]
+     */
+    protected function getServices() -> array
     {
         return [
             "base64"   : "Phalcon\\Storage\\Serializer\\Base64",

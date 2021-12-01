@@ -11,39 +11,46 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Unit\Logger\Formatter\Line;
+namespace Phalcon\Tests\Unit\Logger\Formatter\Line;
 
-use Phalcon\Logger;
+use DateTimeImmutable;
+use DateTimeZone;
+use Exception;
 use Phalcon\Logger\Formatter\Line;
 use Phalcon\Logger\Item;
+use Phalcon\Logger\Logger;
 use UnitTester;
+
+use function date_default_timezone_get;
 
 class FormatCest
 {
     /**
      * Tests Phalcon\Logger\Formatter\Line :: format()
      *
+     * @param UnitTester $I
+     *
+     * @throws Exception
+     * @since  2020-09-09
      * @author Phalcon Team <team@phalcon.io>
-     * @since  2018-11-13
      */
     public function loggerFormatterLineFormat(UnitTester $I)
     {
         $I->wantToTest('Logger\Formatter\Line - format()');
 
+        $timezone  = date_default_timezone_get();
+        $datetime  = new DateTimeImmutable('now', new DateTimeZone($timezone));
         $formatter = new Line();
-
-        $time = time();
-
-        $item = new Item(
+        $item      = new Item(
             'log message',
             'debug',
             Logger::DEBUG,
-            $time
+            $datetime
         );
 
         $expected = sprintf(
             '[%s][debug] log message',
-            date('c', $time)
+            $datetime->format('c')
         );
 
         $I->assertEquals(
@@ -55,27 +62,29 @@ class FormatCest
     /**
      * Tests Phalcon\Logger\Formatter\Line :: format() -custom
      *
+     * @param UnitTester $I
+     *
+     * @throws Exception
+     * @since  2020-09-09
      * @author Phalcon Team <team@phalcon.io>
-     * @since  2018-11-13
      */
     public function loggerFormatterLineFormatCustom(UnitTester $I)
     {
         $I->wantToTest('Logger\Formatter\Line - format() - custom');
 
-        $formatter = new Line('%message%-[%type%]-%date%');
-
-        $time = time();
-
-        $item = new Item(
+        $formatter = new Line('%message%-[%level%]-%date%');
+        $timezone  = date_default_timezone_get();
+        $datetime  = new DateTimeImmutable('now', new DateTimeZone($timezone));
+        $item      = new Item(
             'log message',
             'debug',
             Logger::DEBUG,
-            $time
+            $datetime
         );
 
         $expected = sprintf(
             'log message-[debug]-%s',
-            date('c', $time)
+            $datetime->format('c')
         );
 
         $I->assertEquals(
@@ -85,25 +94,30 @@ class FormatCest
     }
 
     /**
-     * Tests Phalcon\Logger\Formatter\Line :: format() -custom with miliseconds
+     * Tests Phalcon\Logger\Formatter\Line :: format() -custom with milliseconds
      *
+     * @param UnitTester $I
+     *
+     * @throws Exception
+     * @since  2020-09-09
      * @author Phalcon Team <team@phalcon.io>
-     * @since  2019-12-23
      */
-    public function loggerFormatterLineFormatCustomWithMiliseconds(UnitTester $I)
+    public function loggerFormatterLineFormatCustomWithMilliseconds(UnitTester $I)
     {
         $I->wantToTest('Logger\Formatter\Line - format() - custom - with milliseconds');
 
         $formatter = new Line(
-            '%message%-[%type%]-%date%',
+            '%message%-[%level%]-%date%',
             'U.u'
         );
 
-        $item = new Item(
+        $timezone = date_default_timezone_get();
+        $datetime = new DateTimeImmutable('now', new DateTimeZone($timezone));
+        $item     = new Item(
             'log message',
             'debug',
             Logger::DEBUG,
-            time()
+            $datetime
         );
 
         $result = $formatter->format($item);

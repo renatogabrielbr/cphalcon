@@ -25,32 +25,43 @@
  *
  * Interface for Phalcon\Logger adapters
  */
-ZEPHIR_INIT_CLASS(Phalcon_Logger_Adapter_AdapterInterface) {
-
+ZEPHIR_INIT_CLASS(Phalcon_Logger_Adapter_AdapterInterface)
+{
 	ZEPHIR_REGISTER_INTERFACE(Phalcon\\Logger\\Adapter, AdapterInterface, phalcon, logger_adapter_adapterinterface, phalcon_logger_adapter_adapterinterface_method_entry);
 
 	return SUCCESS;
-
 }
 
 /**
  * Adds a message in the queue
+ *
+ * @param Item $item
+ *
+ * @return AdapterInterface
  */
 ZEPHIR_DOC_METHOD(Phalcon_Logger_Adapter_AdapterInterface, add);
 /**
  * Starts a transaction
+ *
+ * @return AdapterInterface
  */
 ZEPHIR_DOC_METHOD(Phalcon_Logger_Adapter_AdapterInterface, begin);
 /**
  * Closes the logger
+ *
+ * @return bool
  */
 ZEPHIR_DOC_METHOD(Phalcon_Logger_Adapter_AdapterInterface, close);
 /**
  * Commits the internal transaction
+ *
+ * @return AdapterInterface
  */
 ZEPHIR_DOC_METHOD(Phalcon_Logger_Adapter_AdapterInterface, commit);
 /**
  * Returns the internal formatter
+ *
+ * @return FormatterInterface
  */
 ZEPHIR_DOC_METHOD(Phalcon_Logger_Adapter_AdapterInterface, getFormatter);
 /**
@@ -62,13 +73,21 @@ ZEPHIR_DOC_METHOD(Phalcon_Logger_Adapter_AdapterInterface, getFormatter);
 ZEPHIR_DOC_METHOD(Phalcon_Logger_Adapter_AdapterInterface, inTransaction);
 /**
  * Processes the message in the adapter
+ *
+ * @param Item $item
  */
 ZEPHIR_DOC_METHOD(Phalcon_Logger_Adapter_AdapterInterface, process);
 /**
  * Rollbacks the internal transaction
+ *
+ * @return AdapterInterface
  */
 ZEPHIR_DOC_METHOD(Phalcon_Logger_Adapter_AdapterInterface, rollback);
 /**
  * Sets the message formatter
+ *
+ * @param FormatterInterface $formatter
+ *
+ * @return AdapterInterface
  */
 ZEPHIR_DOC_METHOD(Phalcon_Logger_Adapter_AdapterInterface, setFormatter);

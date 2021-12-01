@@ -31,25 +31,28 @@
  */
 /**
  * Factory to create Cache adapters
+ *
+ * @property SerializerFactory $serializerFactory
  */
-ZEPHIR_INIT_CLASS(Phalcon_Cache_AdapterFactory) {
-
+ZEPHIR_INIT_CLASS(Phalcon_Cache_AdapterFactory)
+{
 	ZEPHIR_REGISTER_CLASS_EX(Phalcon\\Cache, AdapterFactory, phalcon, cache_adapterfactory, phalcon_factory_abstractfactory_ce, phalcon_cache_adapterfactory_method_entry, 0);
 
 	/**
 	 * @var SerializerFactory
 	 */
 	zend_declare_property_null(phalcon_cache_adapterfactory_ce, SL("serializerFactory"), ZEND_ACC_PRIVATE);
-
 	return SUCCESS;
-
 }
 
 /**
  * AdapterFactory constructor.
+ *
+ * @param SerializerFactory $factory
+ * @param array             $services
  */
-PHP_METHOD(Phalcon_Cache_AdapterFactory, __construct) {
-
+PHP_METHOD(Phalcon_Cache_AdapterFactory, __construct)
+{
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zend_long ZEPHIR_LAST_CALL_STATUS;
 	zval services;
@@ -65,13 +68,11 @@ PHP_METHOD(Phalcon_Cache_AdapterFactory, __construct) {
 		Z_PARAM_OPTIONAL
 		Z_PARAM_ARRAY(services)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 1, 1, &factory, &services_param);
-
 	if (!services_param) {
 		ZEPHIR_INIT_VAR(&services);
 		array_init(&services);
@@ -84,35 +85,38 @@ PHP_METHOD(Phalcon_Cache_AdapterFactory, __construct) {
 	ZEPHIR_CALL_METHOD(NULL, this_ptr, "init", NULL, 0, &services);
 	zephir_check_call_status();
 	ZEPHIR_MM_RESTORE();
-
 }
 
 /**
  * Create a new instance of the adapter
  *
- * @param array options = [
+ * @param string $name
+ * @param array  $options = [
  *     'servers' => [
  *         [
- *             'host' => 'localhost',
- *             'port' => 11211,
+ *             'host'   => 'localhost',
+ *             'port'   => 11211,
  *             'weight' => 1,
  *         ]
  *     ],
- *     'host' => '127.0.0.1',
- *     'port' => 6379,
- *     'index' => 0,
- *     'persistent' => false,
- *     'auth' => '',
- *     'socket' => '',
+ *     'host'              => '127.0.0.1',
+ *     'port'              => 6379,
+ *     'index'             => 0,
+ *     'persistent'        => false,
+ *     'auth'              => '',
+ *     'socket'            => '',
  *     'defaultSerializer' => 'Php',
- *     'lifetime' => 3600,
- *     'serializer' => null,
- *     'prefix' => 'phalcon',
- *     'storageDir' => ''
+ *     'lifetime'          => 3600,
+ *     'serializer'        => null,
+ *     'prefix'            => 'phalcon',
+ *     'storageDir'        => ''
  * ]
+ *
+ * @return AdapterInterface
+ * @throws Exception
  */
-PHP_METHOD(Phalcon_Cache_AdapterFactory, newInstance) {
-
+PHP_METHOD(Phalcon_Cache_AdapterFactory, newInstance)
+{
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zend_long ZEPHIR_LAST_CALL_STATUS;
 	zval options, _0;
@@ -132,13 +136,11 @@ PHP_METHOD(Phalcon_Cache_AdapterFactory, newInstance) {
 		Z_PARAM_OPTIONAL
 		Z_PARAM_ARRAY(options)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 1, 1, &name_param, &options_param);
-
 	if (UNEXPECTED(Z_TYPE_P(name_param) != IS_STRING && Z_TYPE_P(name_param) != IS_NULL)) {
 		zephir_throw_exception_string(spl_ce_InvalidArgumentException, SL("Parameter 'name' must be of the type string"));
 		RETURN_MM_NULL();
@@ -147,7 +149,6 @@ PHP_METHOD(Phalcon_Cache_AdapterFactory, newInstance) {
 		zephir_get_strval(&name, name_param);
 	} else {
 		ZEPHIR_INIT_VAR(&name);
-		ZVAL_EMPTY_STRING(&name);
 	}
 	if (!options_param) {
 		ZEPHIR_INIT_VAR(&options);
@@ -168,14 +169,27 @@ PHP_METHOD(Phalcon_Cache_AdapterFactory, newInstance) {
 	ZEPHIR_LAST_CALL_STATUS = zephir_create_instance_params(return_value, &definition, &_0);
 	zephir_check_call_status();
 	RETURN_MM();
+}
 
+/**
+ * @return string
+ */
+PHP_METHOD(Phalcon_Cache_AdapterFactory, getExceptionClass)
+{
+	zval *this_ptr = getThis();
+
+
+
+	RETURN_STRING("Phalcon\\Cache\\Exception\\Exception");
 }
 
 /**
  * Returns the available adapters
+ *
+ * @return string[]
  */
-PHP_METHOD(Phalcon_Cache_AdapterFactory, getAdapters) {
-
+PHP_METHOD(Phalcon_Cache_AdapterFactory, getServices)
+{
 	zval *this_ptr = getThis();
 
 
@@ -187,6 +201,5 @@ PHP_METHOD(Phalcon_Cache_AdapterFactory, getAdapters) {
 	add_assoc_stringl_ex(return_value, SL("redis"), SL("Phalcon\\Cache\\Adapter\\Redis"));
 	add_assoc_stringl_ex(return_value, SL("stream"), SL("Phalcon\\Cache\\Adapter\\Stream"));
 	return;
-
 }
 

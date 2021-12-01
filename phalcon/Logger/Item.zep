@@ -10,62 +10,66 @@
 
 namespace Phalcon\Logger;
 
+use DateTimeImmutable;
+
 /**
  * Phalcon\Logger\Item
  *
  * Represents each item in a logging transaction
  *
+ * @property array             $context
+ * @property string            $message
+ * @property int               $level
+ * @property string            $levelName
+ * @property DateTimeImmutable $datetime
  */
 class Item
 {
     /**
-     * Log Context
-     *      
-     * @var mixed
+     * @var array
      */
-    protected context { get };
+    protected context = [] { get };
 
     /**
-     * Log message
-     *
      * @var string
      */
     protected message { get };
 
     /**
-     * Log message
-     *
+     * @var int
+     */
+    protected level { get };
+
+    /**
      * @var string
      */
-    protected name { get };
+    protected levelName { get };
 
     /**
-     * Log timestamp
+     * @var DateTimeImmutable
+     */
+    protected dateTime { get };
+
+    /**
+     * Item constructor.
      *
-     * @var integer
+     * @param string            $message
+     * @param string            $levelName
+     * @param int               $level
+     * @param DateTimeImmutable $datetime
+     * @param array             $context
      */
-    protected time { get };
-
-    /**
-     * Log type
-     *
-     * @var integer
-     */
-    protected type { get };
-
-    /**
-     * Phalcon\Logger\Item constructor
-     * @todo Remove the time or change the signature to an array
-     */
-    public function __construct(string message, string name, int type, int time = 0, var context = [])
-    {
-        let this->message = message,
-            this->name    = name,
-            this->type    = type,
-            this->time    = time;
-
-        if typeof context == "array" {
-            let this->context = context;
-        }
+    public function __construct(
+        string message,
+        string levelName,
+        int level,
+        <DateTimeImmutable> dateTime,
+        array context = []
+    ) {
+        let this->message   = message,
+            this->levelName = levelName,
+            this->level     = level,
+            this->dateTime  = dateTime,
+            this->context   = context;
     }
 }

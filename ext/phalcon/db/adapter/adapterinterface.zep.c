@@ -23,12 +23,11 @@
 /**
  * Interface for Phalcon\Db adapters
  */
-ZEPHIR_INIT_CLASS(Phalcon_Db_Adapter_AdapterInterface) {
-
+ZEPHIR_INIT_CLASS(Phalcon_Db_Adapter_AdapterInterface)
+{
 	ZEPHIR_REGISTER_INTERFACE(Phalcon\\Db\\Adapter, AdapterInterface, phalcon, db_adapter_adapterinterface, phalcon_db_adapter_adapterinterface_method_entry);
 
 	return SUCCESS;
-
 }
 
 /**
@@ -84,6 +83,13 @@ ZEPHIR_DOC_METHOD(Phalcon_Db_Adapter_AdapterInterface, createTable);
 ZEPHIR_DOC_METHOD(Phalcon_Db_Adapter_AdapterInterface, createView);
 /**
  * Deletes data from a table using custom RDBMS SQL syntax
+ *
+ * @param array|string table
+ * @param string|null whereCondition
+ * @param array placeholders
+ * @param array dataTypes
+ *
+ * @return bool
  */
 ZEPHIR_DOC_METHOD(Phalcon_Db_Adapter_AdapterInterface, delete);
 /**
@@ -276,6 +282,8 @@ ZEPHIR_DOC_METHOD(Phalcon_Db_Adapter_AdapterInterface, isUnderTransaction);
 /**
  * Returns insert id for the auto_increment column inserted in the last SQL
  * statement
+ *
+ * @param string|null $name Name of the sequence object from which the ID should be returned.
  */
 ZEPHIR_DOC_METHOD(Phalcon_Db_Adapter_AdapterInterface, lastInsertId);
 /**

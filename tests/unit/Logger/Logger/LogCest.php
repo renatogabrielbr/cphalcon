@@ -11,22 +11,26 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Unit\Logger\Logger;
+namespace Phalcon\Tests\Unit\Logger\Logger;
 
-use Phalcon\Logger;
 use Phalcon\Logger\Adapter\Stream;
 use Phalcon\Logger\Adapter\Syslog;
-use Psr\Log\LogLevel;
+use Phalcon\Logger\Logger;
 use UnitTester;
 
 use function logsDir;
 use function sprintf;
-use function uniqid;
+use function strtoupper;
 
 class LogCest
 {
     /**
      * Tests Phalcon\Logger :: log()
+     *
+     * @param UnitTester $I
+     *
+     * @author Phalcon Team <team@phalcon.io>
+     * @since  2020-09-09
      */
     public function loggerLog(UnitTester $I)
     {
@@ -62,7 +66,6 @@ class LogCest
             'notice'          => 'notice',
             'warning'         => 'warning',
             'custom'          => 'custom',
-            'unknown'         => 'custom',
         ];
 
         foreach ($levels as $level => $levelName) {
@@ -75,7 +78,7 @@ class LogCest
         foreach ($levels as $levelName) {
             $expected = sprintf(
                 '[%s] Message %s',
-                $levelName,
+                strtoupper($levelName),
                 $levelName
             );
 
@@ -88,6 +91,11 @@ class LogCest
 
     /**
      * Tests Phalcon\Logger :: log() - logLevel
+     *
+     * @param UnitTester $I
+     *
+     * @author Phalcon Team <team@phalcon.io>
+     * @since  2020-09-09
      */
     public function loggerLogLogLevel(UnitTester $I)
     {
@@ -128,7 +136,6 @@ class LogCest
             'notice'        => 'notice',
             'warning'       => 'warning',
             'custom'        => 'custom',
-            'unknown'       => 'custom',
         ];
 
         foreach ($levelsYes as $level => $levelName) {
@@ -145,7 +152,7 @@ class LogCest
         foreach ($levelsYes as $levelName) {
             $expected = sprintf(
                 '[%s] Message %s',
-                $levelName,
+                strtoupper($levelName),
                 $levelName
             );
             $I->seeInThisFile($expected);
@@ -154,66 +161,11 @@ class LogCest
         foreach ($levelsNo as $levelName) {
             $expected = sprintf(
                 '[%s] Message %s',
-                $levelName,
+                strtoupper($levelName),
                 $levelName
             );
             $I->dontSeeInThisFile($expected);
         }
-
-        $adapter->close();
-        $I->safeDeleteFile($fileName);
-    }
-
-    /**
-     * Tests Phalcon\Logger :: log()
-     */
-    public function loggerLogSyslog(UnitTester $I)
-    {
-        $I->wantToTest('Logger - log() - syslog');
-
-        $adapter = new Syslog("php:://memory");
-
-        $logger = new Logger(
-            'my-logger',
-            [
-                'one' => $adapter,
-            ]
-        );
-
-        $logger->log(Logger::ERROR, 'Message Error');
-    }
-
-    /**
-     * Tests Phalcon\Logger :: log() - logLevel
-     *
-     * @issue #15214
-     */
-    public function loggerLogLogLevelPsr(UnitTester $I)
-    {
-        $I->wantToTest('Logger - log() - logLevel');
-
-        $unique    = uniqid();
-        $logPath   = logsDir();
-        $fileName  = $I->getNewFileName('log', 'log');
-        $adapter   = new Stream($logPath . $fileName);
-
-        $logger = new Logger(
-            'my-logger',
-            [
-                'one' => $adapter,
-            ]
-        );
-
-        $logger->log(Logger::INFO, 'info message ' . $unique);
-        $logger->log(LogLevel::INFO, 'info message psr ' . $unique);
-
-        $I->amInPath($logPath);
-        $I->openFile($fileName);
-
-        $expected = '[info] info message ' . $unique;
-        $I->seeInThisFile($expected);
-        $expected = '[info] info message psr ' . $unique;
-        $I->seeInThisFile($expected);
 
         $adapter->close();
         $I->safeDeleteFile($fileName);

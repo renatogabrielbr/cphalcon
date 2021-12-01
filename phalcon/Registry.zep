@@ -10,6 +10,7 @@
 
 namespace Phalcon;
 
+use Phalcon\Support\Collection;
 use Traversable;
 
 /**
@@ -67,7 +68,7 @@ final class Registry extends Collection
     /**
      * Constructor
      */
-    final public function __construct(array! data = null)
+    final public function __construct(array! data = [])
     {
         parent::__construct(data);
     }
@@ -162,7 +163,7 @@ final class Registry extends Collection
      *
      * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
      */
-    final public function jsonSerialize () -> array
+    final public function jsonSerialize() -> array
     {
         return parent::jsonSerialize();
     }

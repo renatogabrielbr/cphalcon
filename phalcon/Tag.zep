@@ -11,14 +11,13 @@
 namespace Phalcon;
 
 use Phalcon\Di\DiInterface;
-use Phalcon\Escaper\EscaperInterface;
+use Phalcon\Html\Escaper\EscaperInterface;
 use Phalcon\Html\Link\Link;
 use Phalcon\Html\Link\Serializer\Header;
-use Phalcon\Helper\Str;
-use Phalcon\Helper\Exception as HelperException;
 use Phalcon\Tag\Select;
 use Phalcon\Tag\Exception;
 use Phalcon\Url\UrlInterface;
+use Phalcon\Support\Helper\Str\Friendly;
 
 /**
  * Phalcon\Tag is designed to simplify building of HTML tags.
@@ -39,37 +38,66 @@ class Tag
     const XHTML20 = 10;
     const XHTML5 = 11;
 
+    /**
+     * @var bool
+     */
     protected static autoEscape = true;
 
     /**
      * DI Container
+     *
+     * @var DiInterface|null
      */
-    protected static container;
+    protected static container = null;
 
     /**
      * Pre-assigned values for components
+     *
+     * @var array
      */
     protected static displayValues;
 
-    protected static documentAppendTitle = null;
+    /**
+     * @var array
+     */
+    protected static documentAppendTitle;
 
-    protected static documentPrependTitle = null;
+    /**
+     * @var array
+     */
+    protected static documentPrependTitle;
 
     /**
      * HTML document title
+     *
+     * @var string|null
      */
     protected static documentTitle = null;
 
+    /**
+     * @var string|null
+     */
     protected static documentTitleSeparator = null;
 
+    /**
+     * @var int
+     */
     protected static documentType = 11;
 
+    /**
+     * @var EscaperInterface|null
+     */
     protected static escaperService = null;
 
+    /**
+     * @var UrlInterface|null
+     */
     protected static urlService = null;
 
     /**
      * Appends a text to current document title
+     *
+     * @param array|string title
      */
     public static function appendTitle(var title) -> void
     {
@@ -78,9 +106,9 @@ class Tag
         }
 
         if typeof title == "array" {
-            let self::documentAppendTitle = title ;
+            let self::documentAppendTitle = title;
         } else {
-            let self::documentAppendTitle[] = title ;
+            let self::documentAppendTitle[] = title;
         }
     }
 
@@ -274,8 +302,8 @@ class Tag
         var ex;
 
         try {
-            return Str::friendly(text, separator, lowercase, replace);
-        } catch HelperException, ex {
+            return (new Friendly())->__invoke(text, separator, lowercase, replace);
+        } catch \Exception, ex {
             throw new Exception(ex->getMessage());
         }
     }
@@ -765,6 +793,8 @@ class Tag
 
     /**
      * Prepends a text to current document title
+     *
+     * @param array|string title
      */
     public static function prependTitle(var title) -> void
     {
@@ -773,9 +803,9 @@ class Tag
         }
 
         if typeof title == "array" {
-            let self::documentPrependTitle = title ;
+            let self::documentPrependTitle = title;
         } else {
-            let self::documentPrependTitle[] = title ;
+            let self::documentPrependTitle[] = title;
         }
     }
 
@@ -1295,7 +1325,7 @@ class Tag
     /**
      * Builds a HTML input[type="time"] tag
      *
-     * @param array paramters = [
+     * @param array parameters = [
      *     'id' => '',
      *     'name' => '',
      *     'value' => '',
@@ -1310,7 +1340,7 @@ class Tag
     /**
      * Builds a HTML input[type="url"] tag
      *
-     * @param array paramters = [
+     * @param array parameters = [
      *     'id' => '',
      *     'name' => '',
      *     'value' => '',
@@ -1340,7 +1370,7 @@ class Tag
     /**
      * Builds generic INPUT tags
      *
-     * @param array paramters = [
+     * @param array parameters = [
      *     'id' => '',
      *     'name' => '',
      *     'value' => '',

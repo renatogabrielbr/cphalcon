@@ -14,8 +14,6 @@ use Closure;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\Injectable;
 use Phalcon\Events\ManagerInterface;
-use Phalcon\Helper\Arr;
-use Phalcon\Helper\Str;
 use Phalcon\Mvc\View\Exception;
 use Phalcon\Events\EventsAwareInterface;
 use Phalcon\Mvc\View\Engine\Php as PhpEngine;
@@ -78,28 +76,119 @@ class View extends Injectable implements ViewInterface, EventsAwareInterface
      */
     const LEVEL_AFTER_TEMPLATE = 4;
 
+    /**
+     * @var string
+     */
     protected actionName;
+
+    /**
+     * @var array
+     */
     protected activeRenderPaths;
+
+    /**
+     * @var string
+     */
     protected basePath = "";
+
+    /**
+     * @var string
+     */
     protected content = "";
+
+    /**
+     * @var string
+     */
     protected controllerName;
+
+    /**
+     * @var int
+     */
     protected currentRenderLevel = 0 { get };
+
+    /**
+     * @var bool
+     */
     protected disabled = false;
-    protected disabledLevels;
-    protected engines = false;
+
+    /**
+     * @var array
+     */
+    protected disabledLevels = [];
+
+    /**
+     * @var array|bool
+     */
+    protected engines = false; // TODO: Make always array
+
+    /**
+     * @var ManagerInterface|null
+     */
     protected eventsManager;
-    protected layout;
+
+    /**
+     * @var string|null
+     */
+    protected layout = null;
+
+    /**
+     * @var string
+     */
     protected layoutsDir = "";
+
+    /**
+     * @var string
+     */
     protected mainView = "index";
+
+    /**
+     * @var array
+     */
     protected options = [];
-    protected params;
-    protected pickView;
+
+    /**
+     * @var array
+     */
+    protected params = [];
+
+    /**
+     * @var array|null
+     */
+    protected pickView; // TODO: Make always array
+
+    /**
+     * @var string
+     */
     protected partialsDir = "";
+
+    /**
+     * @var array
+     */
     protected registeredEngines = [] { get };
+
+    /**
+     * @var int
+     */
     protected renderLevel = 5 { get };
+
+    /**
+     * @var array
+     */
     protected templatesAfter = [];
+
+    /**
+     * @var array
+     */
     protected templatesBefore = [];
+
+    /**
+     * @var array
+     */
     protected viewsDirs = [];
+
+    /**
+     * @var array
+     */
     protected viewParams = [];
 
     /**
@@ -859,7 +948,7 @@ class View extends Injectable implements ViewInterface, EventsAwareInterface
         }
 
         if typeof viewsDir == "string" {
-            let this->viewsDirs = Str::dirSeparator(viewsDir);
+            let this->viewsDirs = this->getDirSeparator(viewsDir);
         } else {
             let newViewsDir = [];
 
@@ -870,7 +959,7 @@ class View extends Injectable implements ViewInterface, EventsAwareInterface
                     );
                 }
 
-                let newViewsDir[position] = Str::dirSeparator(directory);
+                let newViewsDir[position] = this->getDirSeparator(directory);
             }
 
             let this->viewsDirs = newViewsDir;
@@ -1290,5 +1379,13 @@ class View extends Injectable implements ViewInterface, EventsAwareInterface
         }
 
         return true;
+    }
+
+    /**
+     * @todo Remove this when we get traits
+     */
+    private function getDirSeparator(string! directory) -> string
+    {
+        return rtrim(directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
     }
 }

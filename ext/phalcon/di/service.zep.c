@@ -42,34 +42,35 @@
  * $request = service->resolve();
  *```
  */
-ZEPHIR_INIT_CLASS(Phalcon_Di_Service) {
-
+ZEPHIR_INIT_CLASS(Phalcon_Di_Service)
+{
 	ZEPHIR_REGISTER_CLASS(Phalcon\\Di, Service, phalcon, di_service, phalcon_di_service_method_entry, 0);
 
+	/**
+	 * @var mixed
+	 */
 	zend_declare_property_null(phalcon_di_service_ce, SL("definition"), ZEND_ACC_PROTECTED);
-
 	/**
 	 * @var bool
 	 */
 	zend_declare_property_bool(phalcon_di_service_ce, SL("resolved"), 0, ZEND_ACC_PROTECTED);
-
 	/**
 	 * @var bool
 	 */
 	zend_declare_property_bool(phalcon_di_service_ce, SL("shared"), 0, ZEND_ACC_PROTECTED);
-
+	/**
+	 * @var mixed|null
+	 */
 	zend_declare_property_null(phalcon_di_service_ce, SL("sharedInstance"), ZEND_ACC_PROTECTED);
-
 	zend_class_implements(phalcon_di_service_ce, 1, phalcon_di_serviceinterface_ce);
 	return SUCCESS;
-
 }
 
 /**
  * Phalcon\Di\Service
  */
-PHP_METHOD(Phalcon_Di_Service, __construct) {
-
+PHP_METHOD(Phalcon_Di_Service, __construct)
+{
 	zend_bool shared;
 	zval *definition, definition_sub, *shared_param = NULL, __$true, __$false;
 	zval *this_ptr = getThis();
@@ -84,12 +85,10 @@ PHP_METHOD(Phalcon_Di_Service, __construct) {
 		Z_PARAM_OPTIONAL
 		Z_PARAM_BOOL(shared)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	zephir_fetch_params_without_memory_grow(1, 1, &definition, &shared_param);
-
 	if (!shared_param) {
 		shared = 0;
 	} else {
@@ -103,20 +102,18 @@ PHP_METHOD(Phalcon_Di_Service, __construct) {
 	} else {
 		zephir_update_property_zval(this_ptr, ZEND_STRL("shared"), &__$false);
 	}
-
 }
 
 /**
  * Returns the service definition
  */
-PHP_METHOD(Phalcon_Di_Service, getDefinition) {
-
+PHP_METHOD(Phalcon_Di_Service, getDefinition)
+{
 	zval *this_ptr = getThis();
 
 
 
 	RETURN_MEMBER(getThis(), "definition");
-
 }
 
 /**
@@ -124,8 +121,8 @@ PHP_METHOD(Phalcon_Di_Service, getDefinition) {
  *
  * @return array
  */
-PHP_METHOD(Phalcon_Di_Service, getParameter) {
-
+PHP_METHOD(Phalcon_Di_Service, getParameter)
+{
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zval *position_param = NULL, definition, arguments, parameter, _0;
 	zend_long position;
@@ -140,20 +137,18 @@ PHP_METHOD(Phalcon_Di_Service, getParameter) {
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_LONG(position)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 1, 0, &position_param);
-
 	position = zephir_get_intval(position_param);
 
 
 	zephir_read_property(&_0, this_ptr, ZEND_STRL("definition"), PH_NOISY_CC | PH_READONLY);
 	ZEPHIR_CPY_WRT(&definition, &_0);
 	if (UNEXPECTED(Z_TYPE_P(&definition) != IS_ARRAY)) {
-		ZEPHIR_THROW_EXCEPTION_DEBUG_STR(phalcon_di_exception_ce, "Definition must be an array to obtain its parameters", "phalcon/Di/Service.zep", 76);
+		ZEPHIR_THROW_EXCEPTION_DEBUG_STR(phalcon_di_exception_ce, "Definition must be an array to obtain its parameters", "phalcon/Di/Service.zep", 82);
 		return;
 	}
 	if (zephir_array_isset_string_fetch(&arguments, &definition, SL("arguments"), 1)) {
@@ -162,33 +157,30 @@ PHP_METHOD(Phalcon_Di_Service, getParameter) {
 		}
 	}
 	RETURN_MM_NULL();
-
 }
 
 /**
  * Returns true if the service was resolved
  */
-PHP_METHOD(Phalcon_Di_Service, isResolved) {
-
+PHP_METHOD(Phalcon_Di_Service, isResolved)
+{
 	zval *this_ptr = getThis();
 
 
 
 	RETURN_MEMBER(getThis(), "resolved");
-
 }
 
 /**
  * Check whether the service is shared or not
  */
-PHP_METHOD(Phalcon_Di_Service, isShared) {
-
+PHP_METHOD(Phalcon_Di_Service, isShared)
+{
 	zval *this_ptr = getThis();
 
 
 
 	RETURN_MEMBER(getThis(), "shared");
-
 }
 
 /**
@@ -196,8 +188,8 @@ PHP_METHOD(Phalcon_Di_Service, isShared) {
  *
  * @param array parameters
  */
-PHP_METHOD(Phalcon_Di_Service, resolve) {
-
+PHP_METHOD(Phalcon_Di_Service, resolve)
+{
 	zend_class_entry *_4$$14;
 	zend_bool found = 0, _2$$7;
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
@@ -223,16 +215,14 @@ PHP_METHOD(Phalcon_Di_Service, resolve) {
 	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(0, 2)
 		Z_PARAM_OPTIONAL
-		Z_PARAM_ZVAL(parameters)
+		Z_PARAM_ZVAL_OR_NULL(parameters)
 		Z_PARAM_OBJECT_OF_CLASS_OR_NULL(container, phalcon_di_diinterface_ce)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 0, 2, &parameters, &container);
-
 	if (!parameters) {
 		parameters = &parameters_sub;
 		parameters = &__$null;
@@ -280,7 +270,7 @@ PHP_METHOD(Phalcon_Di_Service, resolve) {
 		}
 	} else {
 		if (Z_TYPE_P(&definition) == IS_OBJECT) {
-			if (zephir_instance_of_ev(&definition, zend_ce_closure)) {
+			if (zephir_is_instance_of(&definition, SL("Closure"))) {
 				if (Z_TYPE_P(container) == IS_OBJECT) {
 					_4$$14 = zephir_fetch_class_str_ex(SL("Closure"), ZEND_FETCH_CLASS_AUTO);
 					ZEPHIR_CALL_CE_STATIC(&_3$$14, _4$$14, "bind", NULL, 0, &definition, container);
@@ -307,7 +297,8 @@ PHP_METHOD(Phalcon_Di_Service, resolve) {
 					ZEPHIR_CALL_METHOD(NULL, &builder, "__construct", NULL, 0);
 					zephir_check_call_status();
 				}
-				ZEPHIR_CALL_METHOD(&instance, &builder, "build", NULL, 242, container, &definition, parameters);
+
+				ZEPHIR_CALL_METHOD(&instance, &builder, "build", NULL, 227, container, &definition, parameters);
 				zephir_check_call_status();
 			} else {
 				found = 0;
@@ -319,7 +310,7 @@ PHP_METHOD(Phalcon_Di_Service, resolve) {
 		object_init_ex(&_5$$21, phalcon_di_exception_serviceresolutionexception_ce);
 		ZEPHIR_CALL_METHOD(NULL, &_5$$21, "__construct", NULL, 8);
 		zephir_check_call_status();
-		zephir_throw_exception_debug(&_5$$21, "phalcon/Di/Service.zep", 199);
+		zephir_throw_exception_debug(&_5$$21, "phalcon/Di/Service.zep", 205);
 		ZEPHIR_MM_RESTORE();
 		return;
 	}
@@ -332,14 +323,13 @@ PHP_METHOD(Phalcon_Di_Service, resolve) {
 		zephir_update_property_zval(this_ptr, ZEND_STRL("resolved"), &__$false);
 	}
 	RETURN_CCTOR(&instance);
-
 }
 
 /**
  * Set the service definition
  */
-PHP_METHOD(Phalcon_Di_Service, setDefinition) {
-
+PHP_METHOD(Phalcon_Di_Service, setDefinition)
+{
 	zval *definition, definition_sub;
 	zval *this_ptr = getThis();
 
@@ -349,23 +339,20 @@ PHP_METHOD(Phalcon_Di_Service, setDefinition) {
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_ZVAL(definition)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	zephir_fetch_params_without_memory_grow(1, 0, &definition);
 
 
-
 	zephir_update_property_zval(this_ptr, ZEND_STRL("definition"), definition);
-
 }
 
 /**
  * Changes a parameter in the definition without resolve the service
  */
-PHP_METHOD(Phalcon_Di_Service, setParameter) {
-
+PHP_METHOD(Phalcon_Di_Service, setParameter)
+{
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zval parameter;
 	zval *position_param = NULL, *parameter_param = NULL, definition, arguments, _0, _1$$5;
@@ -383,13 +370,11 @@ PHP_METHOD(Phalcon_Di_Service, setParameter) {
 		Z_PARAM_LONG(position)
 		Z_PARAM_ARRAY(parameter)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 2, 0, &position_param, &parameter_param);
-
 	position = zephir_get_intval(position_param);
 	ZEPHIR_OBS_COPY_OR_DUP(&parameter, parameter_param);
 
@@ -397,7 +382,7 @@ PHP_METHOD(Phalcon_Di_Service, setParameter) {
 	zephir_read_property(&_0, this_ptr, ZEND_STRL("definition"), PH_NOISY_CC | PH_READONLY);
 	ZEPHIR_CPY_WRT(&definition, &_0);
 	if (UNEXPECTED(Z_TYPE_P(&definition) != IS_ARRAY)) {
-		ZEPHIR_THROW_EXCEPTION_DEBUG_STR(phalcon_di_exception_ce, "Definition must be an array to update its parameters", "phalcon/Di/Service.zep", 234);
+		ZEPHIR_THROW_EXCEPTION_DEBUG_STR(phalcon_di_exception_ce, "Definition must be an array to update its parameters", "phalcon/Di/Service.zep", 240);
 		return;
 	}
 	ZEPHIR_OBS_VAR(&arguments);
@@ -412,14 +397,13 @@ PHP_METHOD(Phalcon_Di_Service, setParameter) {
 	zephir_array_update_string(&definition, SL("arguments"), &arguments, PH_COPY | PH_SEPARATE);
 	zephir_update_property_zval(this_ptr, ZEND_STRL("definition"), &definition);
 	RETURN_THIS();
-
 }
 
 /**
  * Sets if the service is shared or not
  */
-PHP_METHOD(Phalcon_Di_Service, setShared) {
-
+PHP_METHOD(Phalcon_Di_Service, setShared)
+{
 	zval *shared_param = NULL, __$true, __$false;
 	zend_bool shared;
 	zval *this_ptr = getThis();
@@ -431,12 +415,10 @@ PHP_METHOD(Phalcon_Di_Service, setShared) {
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_BOOL(shared)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	zephir_fetch_params_without_memory_grow(1, 0, &shared_param);
-
 	shared = zephir_get_boolval(shared_param);
 
 
@@ -445,14 +427,13 @@ PHP_METHOD(Phalcon_Di_Service, setShared) {
 	} else {
 		zephir_update_property_zval(this_ptr, ZEND_STRL("shared"), &__$false);
 	}
-
 }
 
 /**
  * Sets/Resets the shared instance related to the service
  */
-PHP_METHOD(Phalcon_Di_Service, setSharedInstance) {
-
+PHP_METHOD(Phalcon_Di_Service, setSharedInstance)
+{
 	zval *sharedInstance, sharedInstance_sub;
 	zval *this_ptr = getThis();
 
@@ -462,15 +443,12 @@ PHP_METHOD(Phalcon_Di_Service, setSharedInstance) {
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_ZVAL(sharedInstance)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	zephir_fetch_params_without_memory_grow(1, 0, &sharedInstance);
 
 
-
 	zephir_update_property_zval(this_ptr, ZEND_STRL("sharedInstance"), sharedInstance);
-
 }
 

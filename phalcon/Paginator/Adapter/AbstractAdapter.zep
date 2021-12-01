@@ -21,16 +21,22 @@ abstract class AbstractAdapter implements AdapterInterface
 {
     /**
      * Configuration of paginator
+     *
+     * @var array
      */
     protected config;
 
     /**
      * Number of rows to show in the paginator. By default is null
+     *
+     * @var int|null
      */
     protected limitRows = null;
 
     /**
      * Current page in paginate
+     *
+     * @var int|null
      */
     protected page = null;
 
@@ -43,6 +49,8 @@ abstract class AbstractAdapter implements AdapterInterface
 
     /**
      * Phalcon\Paginator\Adapter\AbstractAdapter constructor
+     *
+     * @param array $config
      */
     public function __construct(array! config)
     {
@@ -88,12 +96,12 @@ abstract class AbstractAdapter implements AdapterInterface
     /**
      * Set current rows limit
      */
-    public function setLimit(int limitRows) -> <AdapterInterface>
+    public function setLimit(int limit) -> <AdapterInterface>
     {
-        if limitRows <= 0 {
-            throw new Exception("Limit must be greater then zero");
+        if limit <= 0 {
+            throw new Exception("Limit must be greater than zero");
         }
-        let this->limitRows = limitRows;
+        let this->limitRows = limit;
 
         return this;
     }

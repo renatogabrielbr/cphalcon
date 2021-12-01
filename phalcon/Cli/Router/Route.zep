@@ -17,26 +17,59 @@ class Route implements RouteInterface
 {
     const DEFAULT_DELIMITER = " ";
 
-    protected beforeMatch;
+    /**
+     * @var mixed|null
+     */
+    protected beforeMatch = null;
 
-    protected compiledPattern;
+    /**
+     * @var string|null
+     */
+    protected compiledPattern = null;
 
-    protected converters;
+    /**
+     * @var array
+     */
+    protected converters = [];
 
+    /**
+     * @var string
+     */
     protected delimiter;
 
+    /**
+     * @var string
+     */
     protected static delimiterPath = self::DEFAULT_DELIMITER;
 
-    protected description;
+    /**
+     * @var string|null
+     */
+    protected description = null;
 
+    /**
+     * @var string
+     */
     protected id;
 
-    protected name;
+    /**
+     * @var string|null
+     */
+    protected name = null;
 
-    protected paths;
+    /**
+     * @var array
+     */
+    protected paths = [];
 
+    /**
+     * @var string
+     */
     protected pattern;
 
+    /**
+     * @var int|string
+     */
     protected static uniqueId = 0;
 
     /**
@@ -66,7 +99,7 @@ class Route implements RouteInterface
      * The developer can implement any arbitrary conditions here
      * If the callback returns false the route is treated as not matched
      *
-     * @param callback callback
+     * @param mixed callback
      */
     public function beforeMatch(var callback) -> <RouteInterface>
     {
@@ -392,7 +425,10 @@ class Route implements RouteInterface
     /**
      * Reconfigure the route adding a new pattern and a set of paths
      *
-     * @param array|string paths
+     * @param string pattern
+     * @param array|string|null paths
+     *
+     * @return void
      */
     public function reConfigure(string! pattern, paths = null) -> void
     {

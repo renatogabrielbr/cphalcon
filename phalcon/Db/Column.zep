@@ -82,6 +82,11 @@ class Column implements ColumnInterface
     const TYPE_BIT = 19;
 
     /**
+     * Binary abstract data type
+     */
+    const TYPE_BINARY = 26;
+
+    /**
      * Blob abstract data type
      */
     const TYPE_BLOB = 11;
@@ -202,6 +207,11 @@ class Column implements ColumnInterface
     const TYPE_TINYTEXT = 25;
 
     /**
+     * Varbinary abstract data type
+     */
+    const TYPE_VARBINARY = 27;
+
+    /**
      * Varchar abstract data type
      */
     const TYPE_VARCHAR = 2;
@@ -211,7 +221,7 @@ class Column implements ColumnInterface
      *
      * @var string|null
      */
-    protected after;
+    protected after = null;
 
     /**
      * Column is autoIncrement?
@@ -222,11 +232,15 @@ class Column implements ColumnInterface
 
     /**
      * Bind Type
+     *
+     * @var int
      */
     protected bindType = 2;
 
     /**
      * Default column value
+     *
+     * @var mixed|null
      */
     protected _default = null { get };
 
@@ -239,6 +253,8 @@ class Column implements ColumnInterface
 
     /**
      * The column have some numeric type?
+     *
+     * @var bool
      */
     protected isNumeric = false;
 
@@ -252,7 +268,7 @@ class Column implements ColumnInterface
     /**
      * Column's comment
      *
-     * @var string
+     * @var string|null
      */
      protected comment = null { get };
 
@@ -267,6 +283,8 @@ class Column implements ColumnInterface
 
     /**
      * Column is part of the primary key?
+     *
+     * @var bool
      */
     protected primary = false;
 
@@ -280,7 +298,7 @@ class Column implements ColumnInterface
     /**
      * Integer column size
      *
-     * @var int | string
+     * @var int|string
      */
     protected size = 0 { get };
 

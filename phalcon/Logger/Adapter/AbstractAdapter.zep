@@ -10,11 +10,19 @@
 
 namespace Phalcon\Logger\Adapter;
 
-use Phalcon\Logger;
 use Phalcon\Logger\Exception;
 use Phalcon\Logger\Formatter\FormatterInterface;
+use Phalcon\Logger\Formatter\Line;
 use Phalcon\Logger\Item;
 
+/**
+ * Class AbstractAdapter
+ *
+ * @property string             $defaultFormatter
+ * @property FormatterInterface $formatter
+ * @property bool               $inTransaction
+ * @property array              $queue
+ */
 abstract class AbstractAdapter implements AdapterInterface
 {
     /**
@@ -22,12 +30,12 @@ abstract class AbstractAdapter implements AdapterInterface
      *
      * @var string
      */
-    protected defaultFormatter = "Line";
+    protected defaultFormatter = "Phalcon\\Logger\Formatter\\Line";
 
     /**
      * Formatter
      *
-     * @var FormatterInterface
+     * @var FormatterInterface|null
      */
     protected formatter;
 
@@ -47,18 +55,40 @@ abstract class AbstractAdapter implements AdapterInterface
 
     /**
      * Destructor cleanup
+     *
+     * @throws Exception
      */
     public function __destruct()
     {
         if this->inTransaction {
-            this->commit();
+            throw new Exception("There is an active transaction");
         }
 
         this->close();
     }
 
     /**
+     * Prevent serialization
+     */
+    public function __serialize() -> array
+    {
+        throw new Exception("This object cannot be serialized");
+    }
+
+    /**
+     * Prevent unserialization
+     */
+    public function __unserialize(array data) -> void
+    {
+        throw new Exception("This object cannot be unserialized");
+    }
+
+    /**
      * Adds a message to the queue
+     *
+     * @param Item $item
+     *
+     * @return AdapterInterface
      */
     public function add(<Item> item) -> <AdapterInterface>
     {
@@ -79,17 +109,17 @@ abstract class AbstractAdapter implements AdapterInterface
 
     /**
      * Commits the internal transaction
+     *
+     * @return AdapterInterface
+     * @throws Exception
      */
     public function commit() -> <AdapterInterface>
     {
-        var inTransaction, item, queue;
+        var item, queue;
 
-        let inTransaction = this->inTransaction,
-            queue         = this->queue;
+        this->checkTransaction();
 
-        if !inTransaction {
-            throw new Exception("There is no active transaction");
-        }
+        let queue = this->queue;
 
         /**
          * Check if the queue has something to log
@@ -99,28 +129,26 @@ abstract class AbstractAdapter implements AdapterInterface
         }
 
         // Clear logger queue at commit
-        let inTransaction = false,
-            this->queue = [],
-            this->inTransaction = inTransaction;
+        this->resetTransaction();
 
         return this;
     }
 
+    /**
+     * @return FormatterInterface
+     */
     public function getFormatter() -> <FormatterInterface>
     {
-        string className;
-
         if typeof this->formatter !== "object" {
-            let className = "Phalcon\\Logger\\Formatter\\" . this->defaultFormatter;
-
-            let this->formatter = create_instance(className);
+            let this->formatter = create_instance(this->defaultFormatter);
         }
 
         return this->formatter;
     }
 
     /**
-     * Returns the whether the logger is currently in an active transaction or not
+     * Returns the whether the logger is currently in an active transaction or
+     * not
      */
     public function inTransaction() -> bool
     {
@@ -128,37 +156,70 @@ abstract class AbstractAdapter implements AdapterInterface
     }
 
     /**
-      * Processes the message in the adapter
-      */
+     * Processes the message in the adapter
+     *
+     * @param Item $item
+     */
     abstract public function process(<Item> item) -> void;
 
     /**
      * Rollbacks the internal transaction
+     *
+     * @return AdapterInterface
+     * @throws Exception
      */
     public function rollback() -> <AdapterInterface>
     {
-        var inTransaction;
-
-        let inTransaction = this->inTransaction;
-
-        if !inTransaction {
-            throw new Exception("There is no active transaction");
-        }
-
-        let this->queue         = [],
-            inTransaction       = false,
-            this->inTransaction = inTransaction;
+        this->checkTransaction();
+        this->resetTransaction();
 
         return this;
     }
 
     /**
      * Sets the message formatter
+     *
+     * @param FormatterInterface $formatter
+     *
+     * @return AdapterInterface
      */
     public function setFormatter(<FormatterInterface> formatter) -> <AdapterInterface>
     {
         let this->formatter = formatter;
 
         return this;
+    }
+
+    /**
+     * Returns the formatted item
+     */
+    protected function getFormattedItem(<Item> item) -> string
+    {
+        var formatter;
+
+        let formatter = this->getFormatter();
+
+        return formatter->format(item) . PHP_EOL;
+    }
+
+    /**
+     * Checks if the transaction is active
+     *
+     * @throws Exception
+     */
+    private function checkTransaction() -> void
+    {
+        if (true !== this->inTransaction) {
+            throw new Exception("There is no active transaction");
+        }
+    }
+
+    /**
+     * Resets the transaction flag and queue array
+     */
+    private function resetTransaction() -> void
+    {
+        let this->queue         = [],
+            this->inTransaction = false;
     }
 }

@@ -69,6 +69,8 @@ create index co_customers_cst_name_first_index
 
 
 
+
+
 drop table if exists co_invoices;
             
 create table co_invoices
@@ -134,6 +136,18 @@ create table co_products
     constraint prd_pk
       primary key,
       prd_name varchar(70)
+);
+            
+
+
+drop table if exists co_setters;
+            
+create table co_setters
+(
+    id      SERIAL PRIMARY KEY,
+    column1 varchar(100) not null,
+    column2 varchar(100) not null,
+    column3 varchar(100) not null
 );
             
 

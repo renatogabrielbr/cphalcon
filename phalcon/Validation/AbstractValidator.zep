@@ -10,7 +10,7 @@
 
 namespace Phalcon\Validation;
 
-use Phalcon\Helper\Arr;
+use Phalcon\Support\Helper\Arr\Whitelist;
 use Phalcon\Messages\Message;
 use Phalcon\Validation;
 
@@ -24,7 +24,7 @@ abstract class AbstractValidator implements ValidatorInterface
     *
     * @var string|null
     */
-    protected template;
+    protected template = null;
 
     /**
     * Message templates
@@ -33,16 +33,20 @@ abstract class AbstractValidator implements ValidatorInterface
     */
     protected templates = [];
 
-    protected options;
+    /**
+     * @var array
+     */
+    protected options = [];
 
     /**
      * Phalcon\Validation\Validator constructor
      */
     public function __construct(array! options = [])
     {
-        var template;
+        var template, whitelist;
 
-        let template = current(Arr::whiteList(options, ["template", "message", 0]));
+        let whitelist = new Whitelist(),
+            template  = current(whitelist->__invoke(options, ["template", "message", 0]));
 
         if typeof template == "array" {
             this->setTemplates(template);
@@ -62,11 +66,11 @@ abstract class AbstractValidator implements ValidatorInterface
     }
 
     /**
-    * Get the template message
-    *
-    * @return string
-    * @throw InvalidArgumentException When the field does not exists
-    */
+     * Get the template message
+     *
+     * @return string
+     * @throw InvalidArgumentException When the field does not exists
+     */
     public function getTemplate(string! field = null) -> string
     {
         // there is a template in field
@@ -84,10 +88,10 @@ abstract class AbstractValidator implements ValidatorInterface
     }
 
     /**
-    * Get templates collection object
-    *
-    * @return array
-    */
+     * Get templates collection object
+     *
+     * @return array
+     */
     public function getTemplates() -> array
     {
         return this->templates;
@@ -208,12 +212,33 @@ abstract class AbstractValidator implements ValidatorInterface
     }
 
     /**
-    * Create a default message by factory
-    *
-    * @return Message
-    *
-    * @throw Exception
-    */
+     * Checks if field can be empty.
+     *
+     * @param mixed field
+     * @param mixed value
+     *
+     * @return bool
+     */
+    protected function allowEmpty(var field, var value) -> bool
+    {
+        var allowEmpty;
+
+        let allowEmpty = this->getOption("allowEmpty", false);
+
+        if typeof allowEmpty === "array" {
+            let allowEmpty = isset allowEmpty[field] ? allowEmpty[field] : false;
+        }
+
+        return allowEmpty && empty value;
+    }
+
+    /**
+     * Create a default message by factory
+     *
+     * @return Message
+     *
+     * @throw Exception
+     */
     public function messageFactory(<Validation> validation, var field, array! replacements = []) -> <Message>
     {
         var singleField;

@@ -47,9 +47,9 @@
  * @property \Phalcon\Events\Manager|\Phalcon\Events\ManagerInterface $eventsManager
  * @property \Phalcon\Db\Adapter\AdapterInterface $db
  * @property \Phalcon\Security $security
- * @property \Phalcon\Crypt|\Phalcon\CryptInterface $crypt
+ * @property \Phalcon\Crypt\Crypt|\Phalcon\Crypt\CryptInterface $crypt
  * @property \Phalcon\Tag $tag
- * @property \Phalcon\Escaper|\Phalcon\Escaper\EscaperInterface $escaper
+ * @property \Phalcon\Html\Escaper|\Phalcon\Html\Escaper\EscaperInterface $escaper
  * @property \Phalcon\Annotations\Adapter\Memory|\Phalcon\Annotations\Adapter $annotations
  * @property \Phalcon\Mvc\Model\Manager|\Phalcon\Mvc\Model\ManagerInterface $modelsManager
  * @property \Phalcon\Mvc\Model\MetaData\Memory|\Phalcon\Mvc\Model\MetadataInterface $modelsMetadata
@@ -59,27 +59,25 @@
  * @property \Phalcon\Session\Bag|\Phalcon\Session\BagInterface $persistent
  * @property \Phalcon\Mvc\View|\Phalcon\Mvc\ViewInterface $view
  */
-ZEPHIR_INIT_CLASS(Phalcon_Di_Injectable) {
-
+ZEPHIR_INIT_CLASS(Phalcon_Di_Injectable)
+{
 	ZEPHIR_REGISTER_CLASS(Phalcon\\Di, Injectable, phalcon, di_injectable, phalcon_di_injectable_method_entry, ZEND_ACC_EXPLICIT_ABSTRACT_CLASS);
 
 	/**
 	 * Dependency Injector
 	 *
-	 * @var DiInterface
+	 * @var DiInterface|null
 	 */
 	zend_declare_property_null(phalcon_di_injectable_ce, SL("container"), ZEND_ACC_PROTECTED);
-
 	zend_class_implements(phalcon_di_injectable_ce, 1, phalcon_di_injectionawareinterface_ce);
 	return SUCCESS;
-
 }
 
 /**
  * Magic method __get
  */
-PHP_METHOD(Phalcon_Di_Injectable, __get) {
-
+PHP_METHOD(Phalcon_Di_Injectable, __get)
+{
 	zval _2$$4;
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zend_long ZEPHIR_LAST_CALL_STATUS;
@@ -101,13 +99,11 @@ PHP_METHOD(Phalcon_Di_Injectable, __get) {
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_STR(propertyName)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 1, 0, &propertyName_param);
-
 	if (UNEXPECTED(Z_TYPE_P(propertyName_param) != IS_STRING && Z_TYPE_P(propertyName_param) != IS_NULL)) {
 		zephir_throw_exception_string(spl_ce_InvalidArgumentException, SL("Parameter 'propertyName' must be of the type string"));
 		RETURN_MM_NULL();
@@ -116,7 +112,6 @@ PHP_METHOD(Phalcon_Di_Injectable, __get) {
 		zephir_get_strval(&propertyName, propertyName_param);
 	} else {
 		ZEPHIR_INIT_VAR(&propertyName);
-		ZVAL_EMPTY_STRING(&propertyName);
 	}
 
 
@@ -129,10 +124,11 @@ PHP_METHOD(Phalcon_Di_Injectable, __get) {
 	}
 	if (ZEPHIR_IS_STRING(&propertyName, "persistent")) {
 		ZEPHIR_INIT_VAR(&_2$$4);
-		zephir_create_array(&_2$$4, 1, 0);
+		zephir_create_array(&_2$$4, 2, 0);
 		ZEPHIR_INIT_VAR(&_3$$4);
 		zephir_get_class(&_3$$4, this_ptr, 0);
 		zephir_array_fast_append(&_2$$4, &_3$$4);
+		zephir_array_fast_append(&_2$$4, &container);
 		ZEPHIR_INIT_NVAR(&_3$$4);
 		ZVAL_STRING(&_3$$4, "sessionBag");
 		ZEPHIR_CALL_METHOD(&_1$$4, &container, "get", NULL, 0, &_3$$4, &_2$$4);
@@ -155,14 +151,13 @@ PHP_METHOD(Phalcon_Di_Injectable, __get) {
 	ZEPHIR_CALL_FUNCTION(NULL, "trigger_error", NULL, 7, &_5);
 	zephir_check_call_status();
 	RETURN_MM_NULL();
-
 }
 
 /**
  * Magic method __isset
  */
-PHP_METHOD(Phalcon_Di_Injectable, __isset) {
-
+PHP_METHOD(Phalcon_Di_Injectable, __isset)
+{
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zend_long ZEPHIR_LAST_CALL_STATUS;
 	zval *name_param = NULL, _0;
@@ -176,13 +171,11 @@ PHP_METHOD(Phalcon_Di_Injectable, __isset) {
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_STR(name)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 1, 0, &name_param);
-
 	if (UNEXPECTED(Z_TYPE_P(name_param) != IS_STRING && Z_TYPE_P(name_param) != IS_NULL)) {
 		zephir_throw_exception_string(spl_ce_InvalidArgumentException, SL("Parameter 'name' must be of the type string"));
 		RETURN_MM_NULL();
@@ -191,7 +184,6 @@ PHP_METHOD(Phalcon_Di_Injectable, __isset) {
 		zephir_get_strval(&name, name_param);
 	} else {
 		ZEPHIR_INIT_VAR(&name);
-		ZVAL_EMPTY_STRING(&name);
 	}
 
 
@@ -200,14 +192,13 @@ PHP_METHOD(Phalcon_Di_Injectable, __isset) {
 	ZEPHIR_RETURN_CALL_METHOD(&_0, "has", NULL, 0, &name);
 	zephir_check_call_status();
 	RETURN_MM();
-
 }
 
 /**
  * Returns the internal dependency injector
  */
-PHP_METHOD(Phalcon_Di_Injectable, getDI) {
-
+PHP_METHOD(Phalcon_Di_Injectable, getDI)
+{
 	zval container, _0, _2$$4, _3$$4, _5$$4;
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zend_long ZEPHIR_LAST_CALL_STATUS;
@@ -237,20 +228,21 @@ PHP_METHOD(Phalcon_Di_Injectable, getDI) {
 			zephir_check_call_status();
 			ZEPHIR_CALL_METHOD(NULL, &_2$$4, "__construct", NULL, 8, &_3$$4);
 			zephir_check_call_status();
-			zephir_throw_exception_debug(&_2$$4, "phalcon/Di/Injectable.zep", 124);
+			zephir_throw_exception_debug(&_2$$4, "phalcon/Di/Injectable.zep", 125);
 			ZEPHIR_MM_RESTORE();
 			return;
 		}
+		ZEPHIR_CALL_METHOD(NULL, this_ptr, "setdi", NULL, 0, &container);
+		zephir_check_call_status();
 	}
 	RETURN_CCTOR(&container);
-
 }
 
 /**
  * Sets the dependency injector
  */
-PHP_METHOD(Phalcon_Di_Injectable, setDI) {
-
+PHP_METHOD(Phalcon_Di_Injectable, setDI)
+{
 	zval *container, container_sub;
 	zval *this_ptr = getThis();
 
@@ -260,15 +252,12 @@ PHP_METHOD(Phalcon_Di_Injectable, setDI) {
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_OBJECT_OF_CLASS(container, phalcon_di_diinterface_ce)
 	ZEND_PARSE_PARAMETERS_END();
-
 #endif
 
 
 	zephir_fetch_params_without_memory_grow(1, 0, &container);
 
 
-
 	zephir_update_property_zval(this_ptr, ZEND_STRL("container"), container);
-
 }
 

@@ -11,26 +11,32 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Unit\Translate\InterpolatorFactory;
+namespace Phalcon\Tests\Unit\Translate\InterpolatorFactory;
 
 use Codeception\Example;
-use Phalcon\Factory\Exception;
+use Phalcon\Translate\Exception;
 use Phalcon\Translate\Interpolator\AssociativeArray;
 use Phalcon\Translate\Interpolator\IndexedArray;
 use Phalcon\Translate\InterpolatorFactory;
 use UnitTester;
 
+/**
+ * Class NewInstanceCest
+ *
+ * @package Phalcon\Tests\Unit\Translate\InterpolatorFactory
+ */
 class NewInstanceCest
 {
     /**
      * Tests Phalcon\Translate\InterpolatorFactory :: newInstance()
      *
-     * @param        UnitTester $I
-     * @param        Example $example
+     * @param UnitTester $I
+     * @param Example    $example
+     *
      * @dataProvider getExamples
      *
      * @author       Phalcon Team <team@phalcon.io>
-     * @since        2019-05-18
+     * @since        2020-09-09
      */
     public function translateInterpolatorFactoryNewInstance(UnitTester $I, Example $example)
     {
@@ -46,11 +52,12 @@ class NewInstanceCest
     /**
      * Tests Phalcon\Translate\InterpolatorFactory :: newInstance() - exception
      *
-     * @param        UnitTester $I
+     * @param UnitTester $I
+     *
      * @dataProvider getExamples
      *
      * @author       Phalcon Team <team@phalcon.io>
-     * @since        2019-05-18
+     * @since        2020-09-09
      */
     public function translateInterpolatorFactoryNewInstanceException(UnitTester $I)
     {
@@ -65,6 +72,9 @@ class NewInstanceCest
         );
     }
 
+    /**
+     * @return string[][]
+     */
     private function getExamples(): array
     {
         return [

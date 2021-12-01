@@ -11,15 +11,15 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Cli\Cli\Task;
+namespace Phalcon\Tests\Cli\Cli\Task;
 
 use CliTester;
 use Phalcon\Cli\Task;
 use Phalcon\Di\FactoryDefault\Cli as DiFactoryDefault;
 use Phalcon\Registry;
-use Phalcon\Test\Fixtures\Tasks\EchoTask;
-use Phalcon\Test\Fixtures\Tasks\MainTask;
-use Phalcon\Test\Fixtures\Tasks\OnConstructTask;
+use Phalcon\Tests\Fixtures\Tasks\EchoTask;
+use Phalcon\Tests\Fixtures\Tasks\MainTask;
+use Phalcon\Tests\Fixtures\Tasks\OnConstructTask;
 
 class ConstructCest
 {
@@ -36,9 +36,7 @@ class ConstructCest
         $I->assertInstanceOf(Task::class, $task);
 
         $task = new OnConstructTask();
-        $I->assertTrue(
-            $task->onConstructExecuted
-        );
+        $I->assertTrue($task->onConstructExecuted);
     }
 
     public function extendTask(CliTester $I)
@@ -53,23 +51,11 @@ class ConstructCest
         };
 
         $task = new MainTask();
-
         $task->setDI($di);
 
-        $I->assertEquals(
-            'data',
-            $task->requestRegistryAction()
-        );
-
-        $I->assertEquals(
-            'Hello !',
-            $task->helloAction()
-        );
-
-        $I->assertEquals(
-            'Hello World!',
-            $task->helloAction('World')
-        );
+        $I->assertEquals('data', $task->requestRegistryAction());
+        $I->assertEquals('Hello !', $task->helloAction());
+        $I->assertEquals('Hello World!', $task->helloAction('World'));
     }
 
     public function echoTask(CliTester $I)
@@ -77,13 +63,8 @@ class ConstructCest
         $task = new EchoTask();
         $di   = new DiFactoryDefault();
 
-        $task->setDI(
-            $di
-        );
+        $task->setDI($di);
 
-        $I->assertEquals(
-            'echoMainAction',
-            $task->mainAction()
-        );
+        $I->assertEquals('echoMainAction', $task->mainAction());
     }
 }

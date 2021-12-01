@@ -11,20 +11,28 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Unit\Logger\Formatter\Json;
+namespace Phalcon\Testss\Unit\Logger\Formatter\Json;
 
-use Phalcon\Logger;
+use DateTimeImmutable;
+use DateTimeZone;
+use Exception;
 use Phalcon\Logger\Formatter\Json;
 use Phalcon\Logger\Item;
+use Phalcon\Logger\Logger;
 use UnitTester;
+
+use function date_default_timezone_get;
 
 class FormatCest
 {
     /**
      * Tests Phalcon\Logger\Formatter\Json :: format()
      *
+     * @param UnitTester $I
+     *
+     * @throws Exception
+     * @since  2020-09-09
      * @author Phalcon Team <team@phalcon.io>
-     * @since  2018-11-13
      */
     public function loggerFormatterJsonFormat(UnitTester $I)
     {
@@ -32,18 +40,18 @@ class FormatCest
 
         $formatter = new Json();
 
-        $time = time();
-
-        $item = new Item(
+        $timezone = date_default_timezone_get();
+        $datetime = new DateTimeImmutable('now', new DateTimeZone($timezone));
+        $item     = new Item(
             'log message',
             'debug',
             Logger::DEBUG,
-            $time
+            $datetime
         );
 
         $expected = sprintf(
-            '{"type":"debug","message":"log message","timestamp":"%s"}',
-            date('c', $time)
+            '{"level":"debug","message":"log message","timestamp":"%s"}',
+            $datetime->format('c')
         );
 
         $I->assertEquals(
@@ -55,8 +63,11 @@ class FormatCest
     /**
      * Tests Phalcon\Logger\Formatter\Json :: format() -custom
      *
+     * @param UnitTester $I
+     *
+     * @throws Exception
+     * @since  2020-09-09
      * @author Phalcon Team <team@phalcon.io>
-     * @since  2018-11-13
      */
     public function loggerFormatterJsonFormatCustom(UnitTester $I)
     {
@@ -64,18 +75,18 @@ class FormatCest
 
         $formatter = new Json('YmdHis');
 
-        $time = time();
-
-        $item = new Item(
+        $timezone = date_default_timezone_get();
+        $datetime = new DateTimeImmutable('now', new DateTimeZone($timezone));
+        $item     = new Item(
             'log message',
             'debug',
             Logger::DEBUG,
-            $time
+            $datetime
         );
 
         $expected = sprintf(
-            '{"type":"debug","message":"log message","timestamp":"%s"}',
-            date('YmdHis', $time)
+            '{"level":"debug","message":"log message","timestamp":"%s"}',
+            $datetime->format('YmdHis')
         );
 
         $I->assertEquals(

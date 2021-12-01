@@ -57,7 +57,7 @@ interface AdapterInterface
      * Closes active connection returning success. Phalcon automatically closes
      * and destroys active connections within Phalcon\Db\Pool
      */
-    public function close() -> bool;
+    public function close() -> void;
 
     /**
      * Commits the active transaction in the connection
@@ -68,7 +68,7 @@ interface AdapterInterface
      * This method is automatically called in \Phalcon\Db\Adapter\Pdo
      * constructor. Call it when you need to restore a database connection
      */
-    public function connect(array descriptor = null) -> bool;
+    public function connect(array! descriptor = []) -> void;
 
     /**
      * Creates a new savepoint
@@ -87,8 +87,15 @@ interface AdapterInterface
 
     /**
      * Deletes data from a table using custom RDBMS SQL syntax
+     *
+     * @param array|string table
+     * @param string|null whereCondition
+     * @param array placeholders
+     * @param array dataTypes
+     *
+     * @return bool
      */
-    public function delete(var table, whereCondition = null, placeholders = null, dataTypes = null) -> bool;
+    public function delete(var table, string whereCondition = null, array placeholders = [], array dataTypes = []) -> bool;
 
     /**
      * Returns an array of Phalcon\Db\Column objects describing a table
@@ -246,7 +253,7 @@ interface AdapterInterface
     /**
      * Return internal PDO handler
      */
-    public function getInternalHandler() -> <\PDO>;
+    public function getInternalHandler() -> var;
 
     /**
      * Returns the savepoint name to use for nested transactions
@@ -315,8 +322,10 @@ interface AdapterInterface
     /**
      * Returns insert id for the auto_increment column inserted in the last SQL
      * statement
+     *
+     * @param string|null $name Name of the sequence object from which the ID should be returned.
      */
-    public function lastInsertId(sequenceName = null);
+    public function lastInsertId(string! name = null) -> string|bool;
 
     /**
      * Appends a LIMIT clause to sqlQuery argument

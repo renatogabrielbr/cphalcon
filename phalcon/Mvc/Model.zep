@@ -20,7 +20,6 @@ use Phalcon\Di\AbstractInjectionAware;
 use Phalcon\Di;
 use Phalcon\Di\DiInterface;
 use Phalcon\Events\ManagerInterface as EventsManagerInterface;
-use Phalcon\Helper\Arr;
 use Phalcon\Messages\Message;
 use Phalcon\Messages\MessageInterface;
 use Phalcon\Mvc\Model\BehaviorInterface;
@@ -92,6 +91,9 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
     const OP_UPDATE = 2;
     const TRANSACTION_INDEX = "transaction";
 
+    /**
+     * @var int
+     */
     protected dirtyState = 1;
 
     /**
@@ -104,15 +106,24 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
      */
     protected errorMessages = [];
 
-    protected modelsManager;
+    /**
+     * @var ManagerInterface|null
+     */
+    protected modelsManager = null;
 
-    protected modelsMetaData;
+    /**
+     * @var MetaDataInterface|null
+     */
+    protected modelsMetaData = null;
 
     /**
      * @var array
      */
     protected related = [];
 
+    /**
+     * @var int
+     */
     protected operationMade = 0;
 
     /**
@@ -120,17 +131,36 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
      */
     protected oldSnapshot = [];
 
-    protected skipped;
+    /**
+     * @var bool
+     */
+    protected skipped = false;
 
-    protected snapshot;
+    /**
+     * @var array
+     */
+    protected snapshot = [];
 
-    protected transaction { get };
+    /**
+     * @var TransactionInterface|null
+     */
+    protected transaction = null { get };
 
-    protected uniqueKey;
+    /**
+     * @var string|null
+     */
+    protected uniqueKey = null;
 
-    protected uniqueParams;
+    /**
+     * @var array
+     */
+    protected uniqueParams = [];
 
-    protected uniqueTypes;
+    /**
+     * @var array|null
+     * TODO: Make it always array in code
+     */
+    protected uniqueTypes = null;
 
     /**
      * Phalcon\Mvc\Model constructor
@@ -591,8 +621,11 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
      * );
      * ```
      *
-     * @param array dataColumnMap array to transform keys of data to another
-     * @param array whiteList
+     * @param array data
+     * @param mixed whiteList
+     * @param mixed dataColumnMap Array to transform keys of data to another
+     *
+     * @return ModelInterface
      */
     public function assign(array! data, var whiteList = null, var dataColumnMap = null) -> <ModelInterface>
     {
@@ -777,8 +810,12 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
      * );
      *```
      *
-     * @param \Phalcon\Mvc\ModelInterface|\Phalcon\Mvc\Model\Row base
-     * @param array columnMap
+     * @param ModelInterface|\Phalcon\Mvc\Model\Row base
+     * @param mixed columnMap
+     * @param int dirtyState
+     * @param bool keepSnapshots
+     *
+     * @return ModelInterface
      */
     public static function cloneResultMap(var base, array! data, var columnMap, int dirtyState = 0, bool keepSnapshots = null) -> <ModelInterface>
     {
@@ -838,7 +875,6 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
 
             if value != "" && value !== null {
                 switch attribute[1] {
-                    case Column::TYPE_BIGINTEGER:
                     case Column::TYPE_INTEGER:
                     case Column::TYPE_MEDIUMINTEGER:
                     case Column::TYPE_SMALLINTEGER:
@@ -907,7 +943,10 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
     /**
      * Returns an hydrated result based on the data and the column map
      *
-     * @param array columnMap
+     * @param array data
+     * @param mixed columnMap
+     * @param int hydrationMode
+     *
      * @return mixed
      */
     public static function cloneResultMapHydrate(array! data, var columnMap, int hydrationMode)
@@ -970,7 +1009,7 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
         }
 
         if hydrationMode != Resultset::HYDRATE_ARRAYS {
-            return Arr::toObject(hydrateArray);
+            return (object) hydrateArray;
         }
 
         return hydrateArray;
@@ -1031,7 +1070,7 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
      * echo "There are ", $number, " mechanical robots\n";
      * ```
      *
-     * @param array parameters
+     * @param array|string|null parameters
      */
     public static function count(var parameters = null) -> int | <ResultsetInterface>
     {
@@ -1886,7 +1925,7 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
      * Returns related records based on defined relations
      *
      * @param array arguments
-     * @return \Phalcon\Mvc\Model\Resultset\Simple|Phalcon\Mvc\Model\Resultset\Simple|false
+     * @return \Phalcon\Mvc\Model\Resultset\Simple|false
      */
     public function getRelated(string alias, arguments = null)
     {
@@ -1914,23 +1953,36 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
          * If there are any arguments, Manager with handle the caching of the records
          */
         if arguments === null {
+//            /**
+//             * If the related records are already in cache and the relation is reusable,
+//             * we return the cached records.
+//             */
+//            if relation->isReusable() && this->isRelationshipLoaded(lowerAlias) {
+//                let result = this->related[lowerAlias];
+//            } else {
+//                /**
+//                 * Call the 'getRelationRecords' in the models manager.
+//                 */
+//                let result = manager->getRelationRecords(relation, this, arguments);
+//
+//                /**
+//                 * We store relationship objects in the related cache if there were no arguments.
+//                 */
+//                let this->related[lowerAlias] = result;
+//            }
             /**
-             * If the related records are already in cache and the relation is reusable,
-             * we return the cached records.
+             * We do not need conditionals here. The models manager stores
+             * reusable related records so we utilize that and remove complexity
+             * from here. There is a very small decrease in performance since
+             * the models manager needs to calculate the unique key from
+             * the passed arguments and then check its internal cache
              */
-            if relation->isReusable() && this->isRelationshipLoaded(lowerAlias) {
-                let result = this->related[lowerAlias];
-            } else {
-                /**
-                 * Call the 'getRelationRecords' in the models manager.
-                 */
-                let result = manager->getRelationRecords(relation, this, arguments);
+            let result = manager->getRelationRecords(relation, this, arguments);
 
-                /**
-                 * We store relationship objects in the related cache if there were no arguments.
-                 */
-                let this->related[lowerAlias] = result;
-            }
+            /**
+             * We store relationship objects in the related cache if there were no arguments.
+             */
+            let this->related[lowerAlias] = result;
         } else {
             /**
              * Individually queried related records are handled by Manager.
@@ -1970,7 +2022,7 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
     /**
      * Returns schema name where the mapped table is located
      */
-    final public function getSchema() -> string
+    final public function getSchema() -> string | null
     {
         return (<ManagerInterface> this->modelsManager)->getModelSchema(this);
     }
@@ -2130,7 +2182,7 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
      */
     public function hasSnapshotData() -> bool
     {
-        return typeof this->snapshot == "array";
+        return !empty this->snapshot;
     }
 
     /**
@@ -2582,28 +2634,23 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
         /**
          * Use the standard serialize function to serialize the array data
          */
-        var attributes, snapshot, manager;
+        var attributes, manager, dirtyState, snapshot = null;
 
         let attributes = this->toArray(),
+            dirtyState = this->dirtyState,
             manager = <ManagerInterface> this->getModelsManager();
 
-        if manager->isKeepingSnapshots(this) {
+        if manager->isKeepingSnapshots(this) && this->snapshot != null && attributes != this->snapshot {
             let snapshot = this->snapshot;
-
-            /**
-             * If attributes is not the same as snapshot then save snapshot too
-             */
-            if snapshot != null && attributes != snapshot {
-                return serialize(
-                    [
-                        "_attributes": attributes,
-                        "snapshot":    snapshot
-                    ]
-                );
-            }
         }
 
-        return serialize(attributes);
+        return serialize(
+            [
+                "attributes":  attributes,
+                "snapshot":    snapshot,
+                "dirtyState":  dirtyState
+            ]
+        );
     }
 
     /**
@@ -2611,11 +2658,17 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
      */
     public function unserialize(var data)
     {
-        var attributes, container, manager, key, value, snapshot;
+        var attributes, container, manager, key, value, snapshot, properties, dirtyState;
 
         let attributes = unserialize(data);
 
         if typeof attributes == "array" {
+            if !isset attributes["attributes"] {
+                let attributes = [
+                    "attributes": attributes
+                ];
+            }
+
             /**
              * Obtain the default DI
              */
@@ -2655,20 +2708,36 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
              */
             manager->initialize(this);
 
-            if manager->isKeepingSnapshots(this) {
-                if fetch snapshot, attributes["snapshot"] {
-                    let this->snapshot = snapshot;
-                    let attributes = attributes["_attributes"];
-                } else {
-                    let this->snapshot = attributes;
+            /**
+             * Fetch serialized props
+             */
+            if fetch properties, attributes["attributes"] {
+                /**
+                 * Update the objects properties
+                 */
+                for key, value in properties {
+                    let this->{key} = value;
                 }
+            } else {
+                let properties = [];
             }
 
             /**
-             * Update the objects attributes
+             * Fetch serialized dirtyState
              */
-            for key, value in attributes {
-                let this->{key} = value;
+            if fetch dirtyState, attributes["dirtyState"] {
+                let this->dirtyState = dirtyState;
+            }
+
+            /**
+             * Fetch serialized snapshot when option is active
+             */
+            if manager->isKeepingSnapshots(this) {
+                if fetch snapshot, attributes["snapshot"] {
+                    let this->snapshot = snapshot;
+                } else {
+                    let this->snapshot = properties;
+                }
             }
         }
     }
@@ -3847,6 +3916,16 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
                                         );
                                     }
 
+                                    /**
+                                     * Get actual values before comparison
+                                     */
+                                    if is_object(snapshotValue) && snapshotValue instanceof RawValue {
+                                        let snapshotValue = snapshotValue->getValue();
+                                    }
+                                    if is_object(value) && value instanceof RawValue {
+                                        let value = value->getValue();
+                                    }
+
                                     switch dataType {
 
                                         case Column::TYPE_BOOLEAN:
@@ -4223,10 +4302,13 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
     /**
      * Generate a PHQL SELECT statement for an aggregate
      *
-     * @param array parameters
+     * @param string functionName
+     * @param string alias
+     * @param array|string|null parameters
+     *
      * @return ResultsetInterface
      */
-    protected static function groupResult(string! functionName, string! alias, var parameters) -> <ResultsetInterface>
+    protected static function groupResult(string! functionName, string! alias, var parameters = null) -> <ResultsetInterface>
     {
         var params, distinctColumn, groupColumn, columns,
             resultset, cache, firstRow, groupColumns, builder, query, container,
@@ -4236,7 +4318,7 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
         let container = Di::getDefault();
         let manager = <ManagerInterface> container->getShared("modelsManager");
 
-        if typeof parameters != "array" {
+        if typeof parameters !== "array" {
             let params = [];
 
             if parameters !== null {
@@ -4269,10 +4351,7 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
         let builder = <BuilderInterface> manager->createBuilder(params);
 
         builder->columns(columns);
-
-        builder->from(
-            get_called_class()
-        );
+        builder->from(get_called_class());
 
         let query = <QueryInterface> builder->getQuery();
 
@@ -4323,7 +4402,7 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
     /**
      * Try to check if the query must invoke a finder
      *
-     * @return \Phalcon\Mvc\ModelInterface[]|\Phalcon\Mvc\ModelInterface|bool
+     * @return ModelInterface[]|ModelInterface|bool
      */
     protected final static function invokeFinder(string method, array arguments)
     {
@@ -4721,7 +4800,7 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
     /**
      * Saves related records that must be stored prior to save the master record
      *
-     * @param \Phalcon\Mvc\ModelInterface[] related
+     * @param ModelInterface[] related
      * @return bool
      */
     protected function preSaveRelatedRecords(<AdapterInterface> connection, related) -> bool
@@ -4844,7 +4923,7 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
     /**
      * Save the related records assigned in the has-one/has-many relations
      *
-     * @param Phalcon\Mvc\ModelInterface[] related
+     * @param ModelInterface[] related
      * @return bool
      */
     protected function postSaveRelatedRecords(<AdapterInterface> connection, related) -> bool
@@ -5178,7 +5257,7 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
     /**
      * shared prepare query logic for find and findFirst method
      */
-    private static function getPreparedQuery(var params, var limit = null) -> <Query>
+    private static function getPreparedQuery(var params, var limit = null) -> <QueryInterface>
     {
         var builder, bindParams, bindTypes, transaction, cache, manager, query,
             container;
@@ -5309,13 +5388,13 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
      * }
      *```
      *
-     * @param    string|array fields
-     * @param    string|array intermediateFields
-     * @param    string|array intermediateReferencedFields
-     * @param    string|array referencedFields
-     * @param    array options
-     *
-     * @param array|null options = [
+     * @param string|array fields
+     * @param string intermediateModel
+     * @param string|array intermediateFields
+     * @param string|array intermediateReferencedFields
+     * @param string referenceModel
+     * @param string|array referencedFields
+     * @param array options = [
      *     'reusable' => false,
      *     'alias' => 'someAlias',
      *     'foreignKey' => [
@@ -5342,8 +5421,15 @@ abstract class Model extends AbstractInjectionAware implements EntityInterface, 
      *     ]
      * ]
      */
-    protected function hasManyToMany(var fields, string! intermediateModel, var intermediateFields, var intermediateReferencedFields,
-        string! referenceModel, var referencedFields, options = null) -> <Relation>
+    protected function hasManyToMany(
+        var fields,
+        string! intermediateModel,
+        var intermediateFields,
+        var intermediateReferencedFields,
+        string! referenceModel,
+        var referencedFields,
+        options = []
+    ) -> <Relation>
     {
         return (<ManagerInterface> this->modelsManager)->addHasManyToMany(
             this,

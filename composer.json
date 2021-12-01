@@ -46,7 +46,7 @@
         "ext-mbstring": "*",
         "ext-msgpack": "*",
         "ext-pdo": "*",
-        "ext-psr": "^0.7|^1.0",
+        "ext-psr": "^1.0",
         "ext-redis": "*",
         "ext-sqlite3": "*",
         "ext-xml": "*",
@@ -65,6 +65,7 @@
         "predis/predis": "^1.1",
         "squizlabs/php_codesniffer": "^3.4",
         "twig/twig": "~1.36",
+        "vimeo/psalm": "^4.7",
         "vlucas/phpdotenv": "^2.5"
     },
     "config": {
@@ -75,15 +76,15 @@
     "autoload-dev": {
         "psr-4": {
             "Zephir\\Optimizers\\FunctionCall\\": "optimizers/",
-            "Phalcon\\Test\\Unit\\": "tests/unit/",
-            "Phalcon\\Test\\Integration\\": "tests/integration/",
-            "Phalcon\\Test\\Database\\": "tests/database/",
-            "Phalcon\\Test\\Controllers\\": "tests/_data/fixtures/controllers/",
-            "Phalcon\\Test\\Fixtures\\": "tests/_data/fixtures/",
-            "Phalcon\\Test\\Models\\": "tests/_data/fixtures/models/",
-            "Phalcon\\Test\\Module\\": "tests/_support/Module/",
-            "Phalcon\\Test\\Listener\\": "tests/_data/listener/",
-            "Phalcon\\Test\\Db\\": "tests/_data/db/"
+            "Phalcon\\Tests\\Unit\\": "tests/unit/",
+            "Phalcon\\Tests\\Integration\\": "tests/integration/",
+            "Phalcon\\Tests\\Database\\": "tests/database/",
+            "Phalcon\\Tests\\Controllers\\": "tests/_data/fixtures/controllers/",
+            "Phalcon\\Tests\\Fixtures\\": "tests/_data/fixtures/",
+            "Phalcon\\Tests\\Models\\": "tests/_data/fixtures/models/",
+            "Phalcon\\Tests\\Module\\": "tests/_support/Module/",
+            "Phalcon\\Tests\\Listener\\": "tests/_data/listener/",
+            "Phalcon\\Tests\\Db\\": "tests/_data/db/"
         }
     },
     "support": {

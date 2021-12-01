@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Unit\Logger\Adapter\Syslog;
+namespace Phalcon\Tests\Unit\Logger\Adapter\Syslog;
 
 use Phalcon\Logger\Adapter\Syslog;
 use UnitTester;
@@ -21,8 +21,10 @@ class BeginCest
     /**
      * Tests Phalcon\Logger\Adapter\Syslog :: begin()
      *
+     * @param UnitTester $I
+     *
      * @author Phalcon Team <team@phalcon.io>
-     * @since  2018-11-13
+     * @since  2020-09-09
      */
     public function loggerAdapterSyslogBegin(UnitTester $I)
     {
@@ -34,8 +36,10 @@ class BeginCest
 
         $adapter->begin();
 
-        $I->assertTrue(
-            $adapter->inTransaction()
-        );
+        $actual = $adapter->inTransaction();
+        $I->assertTrue($actual);
+
+        $adapter->rollback();
+        $adapter->close();
     }
 }

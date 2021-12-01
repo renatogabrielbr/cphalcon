@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Unit\Image\ImageFactory;
+namespace Phalcon\Tests\Unit\Image\ImageFactory;
 
 use Phalcon\Image\Adapter\Imagick;
 use Phalcon\Image\ImageFactory;
@@ -29,6 +29,7 @@ class NewInstanceCest
      */
     public function imageImageFactoryNewInstance(UnitTester $I)
     {
+        $I->checkExtensionIsLoaded('imagick');
         $I->wantToTest('Image\ImageFactory - newInstance()');
 
         $factory = new ImageFactory();

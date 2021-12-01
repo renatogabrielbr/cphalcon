@@ -14,8 +14,8 @@
 
 namespace Phalcon\Http\Message;
 
-use Phalcon\Collection;
-use Phalcon\Collection\CollectionInterface;
+use Phalcon\Support\Collection;
+use Phalcon\Support\Collection\CollectionInterface;
 use Phalcon\Http\Message\Exception\InvalidArgumentException;
 use Phalcon\Http\Message\Stream\Input;
 use Psr\Http\Message\ServerRequestInterface;
@@ -114,7 +114,7 @@ final class ServerRequest extends AbstractRequest implements ServerRequestInterf
      * @param string                   $protocol
      */
     public function __construct(
-        string method = "GET",
+        string method = self::METHOD_GET,
         var uri = null,
         array serverParams = [],
         var body = "php://input",

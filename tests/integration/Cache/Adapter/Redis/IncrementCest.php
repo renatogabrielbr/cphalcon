@@ -11,14 +11,17 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Test\Integration\Cache\Adapter\Redis;
+namespace Phalcon\Tests\Integration\Cache\Adapter\Redis;
 
-use Phalcon\Cache\Adapter\Redis;
-use Phalcon\Storage\SerializerFactory;
-use Phalcon\Test\Fixtures\Traits\RedisTrait;
 use IntegrationTester;
+use Phalcon\Cache\Adapter\Redis;
+use Phalcon\Cache\Exception as CacheException;
+use Phalcon\Storage\SerializerFactory;
+use Phalcon\Support\Exception as HelperException;
+use Phalcon\Tests\Fixtures\Traits\RedisTrait;
 
 use function getOptionsRedis;
+use function uniqid;
 
 class IncrementCest
 {
@@ -27,20 +30,25 @@ class IncrementCest
     /**
      * Tests Phalcon\Cache\Adapter\Redis :: increment()
      *
+     * @param IntegrationTester $I
+     *
+     * @throws HelperException
+     * @throws CacheException
+     *
      * @author Phalcon Team <team@phalcon.io>
-     * @since  2019-03-31
+     * @since  2020-09-09
      */
-    public function cacheAdapterRedisIncrement(IntegrationTester $I)
+    public function storageAdapterRedisIncrement(IntegrationTester $I)
     {
         $I->wantToTest('Cache\Adapter\Redis - increment()');
-        $I->skipTest('Check this');
 
         $serializer = new SerializerFactory();
         $adapter    = new Redis($serializer, getOptionsRedis());
 
-        $key    = 'cache-data';
-        $result = $adapter->set($key, 1);
-        $I->assertTrue($result);
+        $key      = uniqid();
+        $expected = 1;
+        $actual   = $adapter->increment($key, 1);
+        $I->assertEquals($expected, $actual);
 
         $expected = 2;
         $actual   = $adapter->increment($key);
@@ -59,8 +67,9 @@ class IncrementCest
         /**
          * unknown key
          */
-        $key    = 'unknown';
-        $result = $adapter->increment($key);
-        $I->assertFalse($result);
+        $key      = uniqid();
+        $expected = 1;
+        $actual   = $adapter->increment($key);
+        $I->assertEquals($expected, $actual);
     }
 }
