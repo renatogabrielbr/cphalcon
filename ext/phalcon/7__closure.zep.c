@@ -12,7 +12,6 @@
 #include <Zend/zend_interfaces.h>
 
 #include "kernel/main.h"
-#include "kernel/string.h"
 #include "kernel/memory.h"
 #include "kernel/object.h"
 
@@ -26,27 +25,21 @@ ZEPHIR_INIT_CLASS(phalcon_7__closure)
 
 PHP_METHOD(phalcon_7__closure, __invoke)
 {
-	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
-	zval *action, action_sub, _0;
+	zval *file, file_sub;
 	zval *this_ptr = getThis();
 
-	ZVAL_UNDEF(&action_sub);
-	ZVAL_UNDEF(&_0);
+	ZVAL_UNDEF(&file_sub);
 #if PHP_VERSION_ID >= 80000
 	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 1)
-		Z_PARAM_ZVAL(action)
+		Z_PARAM_ZVAL(file)
 	ZEND_PARSE_PARAMETERS_END();
 #endif
 
 
-	ZEPHIR_MM_GROW();
-	zephir_fetch_params(1, 1, 0, &action);
+	zephir_fetch_params_without_memory_grow(1, 0, &file);
 
 
-	ZEPHIR_INIT_VAR(&_0);
-	ZVAL_STRING(&_0, "-");
-	zephir_uncamelize(return_value, action, &_0 );
-	RETURN_MM();
+	RETURN_BOOL(1);
 }
 

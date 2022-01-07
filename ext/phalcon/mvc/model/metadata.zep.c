@@ -467,17 +467,12 @@ PHP_METHOD(Phalcon_Mvc_Model_MetaData, getDataTypesNumeric)
  */
 PHP_METHOD(Phalcon_Mvc_Model_MetaData, getDI)
 {
-	zval container, _0, _1$$3, _2$$3, _4$$3;
+	zval container, _0;
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
-	zend_long ZEPHIR_LAST_CALL_STATUS;
-	zephir_fcall_cache_entry *_3 = NULL;
 	zval *this_ptr = getThis();
 
 	ZVAL_UNDEF(&container);
 	ZVAL_UNDEF(&_0);
-	ZVAL_UNDEF(&_1$$3);
-	ZVAL_UNDEF(&_2$$3);
-	ZVAL_UNDEF(&_4$$3);
 
 
 	ZEPHIR_MM_GROW();
@@ -485,16 +480,7 @@ PHP_METHOD(Phalcon_Mvc_Model_MetaData, getDI)
 	zephir_read_property(&_0, this_ptr, ZEND_STRL("container"), PH_NOISY_CC | PH_READONLY);
 	ZEPHIR_CPY_WRT(&container, &_0);
 	if (Z_TYPE_P(&container) != IS_OBJECT) {
-		ZEPHIR_INIT_VAR(&_1$$3);
-		object_init_ex(&_1$$3, phalcon_mvc_model_exception_ce);
-		ZEPHIR_INIT_VAR(&_4$$3);
-		ZVAL_STRING(&_4$$3, "internal services");
-		ZEPHIR_CALL_CE_STATIC(&_2$$3, phalcon_mvc_model_exception_ce, "containerservicenotfound", &_3, 0, &_4$$3);
-		zephir_check_call_status();
-		ZEPHIR_CALL_METHOD(NULL, &_1$$3, "__construct", NULL, 8, &_2$$3);
-		zephir_check_call_status();
-		zephir_throw_exception_debug(&_1$$3, "phalcon/Mvc/Model/MetaData.zep", 300);
-		ZEPHIR_MM_RESTORE();
+		ZEPHIR_THROW_EXCEPTION_DEBUG_STR(phalcon_mvc_model_exception_ce, "A dependency injection container is required to access internal services", "phalcon/Mvc/Model/MetaData.zep", 300);
 		return;
 	}
 	RETURN_CCTOR(&container);
@@ -1565,7 +1551,7 @@ PHP_METHOD(Phalcon_Mvc_Model_MetaData, initialize)
 						object_init_ex(&_2$$8, phalcon_mvc_model_exception_ce);
 						ZEPHIR_INIT_VAR(&_3$$8);
 						ZEPHIR_CONCAT_SV(&_3$$8, "Invalid meta-data for model ", &className);
-						ZEPHIR_CALL_METHOD(NULL, &_2$$8, "__construct", NULL, 8, &_3$$8);
+						ZEPHIR_CALL_METHOD(NULL, &_2$$8, "__construct", NULL, 31, &_3$$8);
 						zephir_check_call_status();
 						zephir_throw_exception_debug(&_2$$8, "phalcon/Mvc/Model/MetaData.zep", 817);
 						ZEPHIR_MM_RESTORE();
@@ -1648,7 +1634,7 @@ PHP_METHOD(Phalcon_Mvc_Model_MetaData, throwWriteException)
 	if (zephir_is_true(option)) {
 		ZEPHIR_INIT_VAR(&_0$$3);
 		object_init_ex(&_0$$3, phalcon_mvc_model_exception_ce);
-		ZEPHIR_CALL_METHOD(NULL, &_0$$3, "__construct", NULL, 8, &message);
+		ZEPHIR_CALL_METHOD(NULL, &_0$$3, "__construct", NULL, 31, &message);
 		zephir_check_call_status();
 		zephir_throw_exception_debug(&_0$$3, "phalcon/Mvc/Model/MetaData.zep", 901);
 		ZEPHIR_MM_RESTORE();

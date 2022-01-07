@@ -121,7 +121,7 @@ class Asset implements AssetInterface
 
         let key = this->getType() . ":" . this->getPath();
 
-        return sha1(key);
+        return hash("sha256", key);
     }
 
     /**
@@ -324,7 +324,7 @@ class Asset implements AssetInterface
      *
      * @return AssetInterface
      */
-    public function setLocal(bool flag) -> <AssetInterface>
+    public function setIsLocal(bool flag) -> <AssetInterface>
     {
         let this->isLocal = flag;
 
