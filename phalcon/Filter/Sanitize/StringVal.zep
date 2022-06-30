@@ -11,19 +11,17 @@
 namespace Phalcon\Filter\Sanitize;
 
 /**
- * Phalcon\Filter\Sanitize\String
- *
  * Sanitizes a value to string
  */
 class StringVal
 {
     /**
-     * @param mixed $input The text to sanitize
+     * @param string $input The text to sanitize
      *
      * @return string
      */
-    public function __invoke(var input)
+    public function __invoke(string input) -> string
     {
-        return filter_var(input, FILTER_SANITIZE_STRING);
+        return htmlspecialchars(input);
     }
 }

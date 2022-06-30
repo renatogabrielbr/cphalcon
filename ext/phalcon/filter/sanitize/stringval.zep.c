@@ -13,6 +13,7 @@
 
 #include "kernel/main.h"
 #include "kernel/fcall.h"
+#include "kernel/operators.h"
 #include "kernel/memory.h"
 #include "kernel/object.h"
 
@@ -26,8 +27,6 @@
  * file that was distributed with this source code.
  */
 /**
- * Phalcon\Filter\Sanitize\String
- *
  * Sanitizes a value to string
  */
 ZEPHIR_INIT_CLASS(Phalcon_Filter_Sanitize_StringVal)
@@ -38,7 +37,7 @@ ZEPHIR_INIT_CLASS(Phalcon_Filter_Sanitize_StringVal)
 }
 
 /**
- * @param mixed $input The text to sanitize
+ * @param string $input The text to sanitize
  *
  * @return string
  */
@@ -46,25 +45,25 @@ PHP_METHOD(Phalcon_Filter_Sanitize_StringVal, __invoke)
 {
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
 	zend_long ZEPHIR_LAST_CALL_STATUS;
-	zval *input, input_sub, _0;
+	zval *input_param = NULL;
+	zval input;
 	zval *this_ptr = getThis();
 
-	ZVAL_UNDEF(&input_sub);
-	ZVAL_UNDEF(&_0);
+	ZVAL_UNDEF(&input);
 #if PHP_VERSION_ID >= 80000
 	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 1)
-		Z_PARAM_ZVAL(input)
+		Z_PARAM_STR(input)
 	ZEND_PARSE_PARAMETERS_END();
 #endif
 
 
 	ZEPHIR_MM_GROW();
-	zephir_fetch_params(1, 1, 0, &input);
+	zephir_fetch_params(1, 1, 0, &input_param);
+	zephir_get_strval(&input, input_param);
 
 
-	ZVAL_LONG(&_0, 513);
-	ZEPHIR_RETURN_CALL_FUNCTION("filter_var", NULL, 298, input, &_0);
+	ZEPHIR_RETURN_CALL_FUNCTION("htmlspecialchars", NULL, 283, &input);
 	zephir_check_call_status();
 	RETURN_MM();
 }
