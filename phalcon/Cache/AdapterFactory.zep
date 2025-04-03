@@ -17,8 +17,6 @@ use Phalcon\Storage\SerializerFactory;
 
 /**
  * Factory to create Cache adapters
- *
- * @property SerializerFactory $serializerFactory
  */
 class AdapterFactory extends AbstractFactory
 {
@@ -103,7 +101,8 @@ class AdapterFactory extends AbstractFactory
             "libmemcached" : "Phalcon\\Cache\\Adapter\\Libmemcached",
             "memory"       : "Phalcon\\Cache\\Adapter\\Memory",
             "redis"        : "Phalcon\\Cache\\Adapter\\Redis",
-            "stream"       : "Phalcon\\Cache\\Adapter\\Stream"
+            "stream"       : "Phalcon\\Cache\\Adapter\\Stream",
+            "weak"         : "Phalcon\\Cache\\Adapter\\Weak"
         ];
     }
 }

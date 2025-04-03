@@ -88,7 +88,7 @@ class JsonSerializeCest
 
         $messages = new Messages(
             [
-                $fixture
+                $fixture,
             ]
         );
 
@@ -96,6 +96,6 @@ class JsonSerializeCest
 
         $actual   = $messages->jsonSerialize();
         $expected = [$fixture];
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
     }
 }

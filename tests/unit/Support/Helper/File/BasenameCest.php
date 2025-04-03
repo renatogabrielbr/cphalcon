@@ -47,11 +47,12 @@ class BasenameCest
 
         $expected = basename($path, $suffix);
         $actual   = $object($path, $suffix);
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
     }
 
     /**
-     * Tests Phalcon\Support\Helper\File :: basename() with non-ASCII $uri support
+     * Tests Phalcon\Support\Helper\File :: basename() with non-ASCII $uri
+     * support
      *
      * @dataProvider getNonAsciiExamples
      *
@@ -73,7 +74,7 @@ class BasenameCest
         $path     = $example[0];
         $expected = $example[1];
         $actual   = $object($path);
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
     }
 
     /**

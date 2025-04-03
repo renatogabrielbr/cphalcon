@@ -11,12 +11,34 @@
 namespace Phalcon\Encryption\Security\JWT\Token;
 
 use InvalidArgumentException;
+use Phalcon\Support\Helper\Json\Decode;
 
 /**
- * Class Parser
+ * Token Parser class.
+ *
+ * It parses a token by validating if it is formed properly and splits it into
+ * three parts. The headers are decoded, then the claims and finally the
+ * signature. It returns a token object populated with the decoded information.
  */
 class Parser
 {
+    /**
+     * @var Decode
+     */
+    private decode;
+
+    public function __construct(<Decode> decode = null)
+    {
+        var service;
+
+        let service = decode;
+        if (null === service) {
+            let service = new Decode();
+        }
+
+        let this->decode = service;
+    }
+
     /**
      * Parse a token and return it
      *
@@ -51,7 +73,7 @@ class Parser
     {
         var decoded;
 
-        let decoded = this->decode(this->decodeUrl(claims), true);
+        let decoded = this->decode->__invoke(this->decodeUrl(claims), true);
 
         if typeof decoded !== "array" {
             throw new InvalidArgumentException(
@@ -80,7 +102,7 @@ class Parser
     {
         var decoded;
 
-        let decoded = this->decode(this->decodeUrl(headers), true);
+        let decoded = this->decode->__invoke(this->decodeUrl(headers), true);
 
         if typeof decoded !== "array" {
             throw new InvalidArgumentException(
@@ -141,29 +163,6 @@ class Parser
         }
 
         return parts;
-    }
-
-    /**
-     * @todo This will be removed when traits are introduced
-     */
-    private function decode(
-        string! data,
-        bool associative = false,
-        int depth = 512,
-        int options = 0
-    ) -> var
-    {
-        var decoded;
-
-        let decoded = json_decode(data, associative, depth, options);
-
-        if unlikely JSON_ERROR_NONE !== json_last_error() {
-            throw new InvalidArgumentException(
-                "json_decode error: " . json_last_error_msg()
-            );
-        }
-
-        return decoded;
     }
 
     /**

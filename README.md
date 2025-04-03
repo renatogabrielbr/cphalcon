@@ -4,7 +4,7 @@
 [![Codecov master][codecov-master-badge]](https://codecov.io/gh/phalcon/cphalcon)
 [![Codecov 5.0x][codecov-5x-badge]](https://codecov.io/gh/phalcon/cphalcon)
 
-[![Discord][discord-badge]](http://phalcon.io/discord)
+[![Discord][discord-badge]](https://phalcon.io/discord)
 [![Contributors][contributors-badge]](https://github.com/phalcon/cphalcon/graphs/contributors)
 [![Phalcon Backers][backers-badge]](https://github.com/phalcon/cphalcon/blob/master/BACKERS.md)
 [![OpenCollective][oc-backers-badge]](#backers)
@@ -26,7 +26,7 @@ You can either download a binary package for the system of your choice or build 
 
 ## Installation
 
-For detailed installation instructions you can check our [installation](https://docs.phalcon.io/4.0/en/installation) page in the docs.
+For detailed installation instructions you can check our [installation](https://docs.phalcon.io/latest/installation/) page in the docs.
 
 ## Generating API Documentation
 
@@ -36,7 +36,7 @@ Steps:
 - Checkout the tag you would like to generate docs for.
 - Run `php tests/__config/generate-api-docs.php`
 - The files *.md files in nikos/api/ will contain the documentation
-- For publishing to the Phalcon website this [repo](https://github.com/phalcon/docs/tree/4.0/en/api) is used.
+- For publishing to the Phalcon website this [repo](https://github.com/phalcon/docs/tree/5.0/api) is used.
 
 ## Links
 

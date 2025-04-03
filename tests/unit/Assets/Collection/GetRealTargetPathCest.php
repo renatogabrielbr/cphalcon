@@ -46,11 +46,12 @@ class GetRealTargetPathCest
         $collection->setTargetPath($targetPath);
         $realBasePath = $collection->getRealTargetPath($basePath);
 
-        $I->assertEquals($constructRealPath, $realBasePath);
+        $I->assertSame($constructRealPath, $realBasePath);
     }
 
     /**
-     * Tests Phalcon\Assets\Collection :: getRealTargetPath() - file does not exist
+     * Tests Phalcon\Assets\Collection :: getRealTargetPath() - file does not
+     * exist
      *
      * @param UnitTester $I
      *
@@ -78,6 +79,6 @@ class GetRealTargetPathCest
         $collection->setTargetPath($targetPath);
         $realBasePath = $collection->getRealTargetPath($basePath);
 
-        $I->assertEquals($constructRealPath, $realBasePath);
+        $I->assertSame($constructRealPath, $realBasePath);
     }
 }

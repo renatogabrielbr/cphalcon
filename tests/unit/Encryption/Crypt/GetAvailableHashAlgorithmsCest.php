@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Phalcon\Tests\Unit\Encryption\Crypt;
 
-use Codeception\Util\Stub;
+use Codeception\Stub;
 use Phalcon\Encryption\Crypt;
 use UnitTester;
 
@@ -35,16 +35,16 @@ class GetAvailableHashAlgorithmsCest
      * @author Phalcon Team <team@phalcon.io>
      * @since  2021-10-18
      */
-    public function cryptGetAvailableHashAlgorithms(UnitTester $I)
+    public function encryptionCryptGetAvailableHashAlgorithms(UnitTester $I)
     {
-        $I->wantToTest('Crypt - getAvailableHashAlgorithms()');
+        $I->wantToTest('Encryption\Crypt - getAvailableHashAlgorithms()');
 
         if (true === function_exists("hash_hmac_algos")) {
             $crypt = new Crypt();
 
             $expected = hash_hmac_algos();
             $actual   = $crypt->getAvailableHashAlgorithms();
-            $I->assertEquals($expected, $actual);
+            $I->assertSame($expected, $actual);
         }
 
         $crypt = Stub::make(
@@ -56,6 +56,6 @@ class GetAvailableHashAlgorithmsCest
 
         $expected = hash_algos();
         $actual   = $crypt->getAvailableHashAlgorithms();
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
     }
 }

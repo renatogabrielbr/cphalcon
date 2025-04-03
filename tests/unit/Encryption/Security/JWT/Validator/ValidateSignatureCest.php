@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace Phalcon\Tests\Unit\Encryption\Security\JWT\Validator;
 
 use Phalcon\Encryption\Security\JWT\Builder;
-use Phalcon\Encryption\Security\JWT\Exceptions\ValidatorException;
 use Phalcon\Encryption\Security\JWT\Signer\Hmac;
 use Phalcon\Encryption\Security\JWT\Validator;
 use Phalcon\Tests\Fixtures\Traits\JWTTrait;
@@ -28,16 +27,17 @@ class ValidateSignatureCest
     use JWTTrait;
 
     /**
-     * Unit Tests Phalcon\Encryption\Security\JWT\Validator :: validateSignature()
+     * Unit Tests Phalcon\Encryption\Security\JWT\Validator ::
+     * validateSignature()
      *
      * @param UnitTester $I
      *
      * @author Phalcon Team <team@phalcon.io>
      * @since  2020-09-09
      */
-    public function httpJWTValidatorValidateNotBefore(UnitTester $I)
+    public function encryptionSecurityJWTValidatorValidateNotBefore(UnitTester $I)
     {
-        $I->wantToTest('Http\JWT\Validator - validateSignature()');
+        $I->wantToTest('Encryption\Security\JWT\Validator - validateSignature()');
 
         $signer     = new Hmac();
         $builder    = new Builder($signer);
@@ -55,7 +55,8 @@ class ValidateSignatureCest
             ->setNotBefore($notBefore)
             ->setSubject('Mary had a little lamb')
             ->setPassphrase($passphrase)
-            ->getToken();
+            ->getToken()
+        ;
 
         $validator = new Validator($token);
         $I->assertInstanceOf(Validator::class, $validator);
@@ -67,33 +68,31 @@ class ValidateSignatureCest
     }
 
     /**
-     * Unit Tests Phalcon\Encryption\Security\JWT\Validator :: validateSignature() - exception
+     * Unit Tests Phalcon\Encryption\Security\JWT\Validator ::
+     * validateSignature() - exception
      *
      * @param UnitTester $I
      *
      * @author Phalcon Team <team@phalcon.io>
      * @since  2020-09-09
      */
-    public function httpJWTValidatorValidateNotBeforeException(UnitTester $I)
+    public function encryptionSecurityJWTValidatorValidateNotBeforeException(UnitTester $I)
     {
-        $I->wantToTest('Http\JWT\Validator - validateSignature()');
+        $I->wantToTest('Encryption\Security\JWT\Validator - validateSignature()');
 
-        $token = $this->newToken();
-        $I->expectThrowable(
-            new ValidatorException(
-                "Validation: the signature does not match"
-            ),
-            function () use ($token, $I) {
-                $signer     = new Hmac();
-                $passphrase = '123456';
-                $validator  = new Validator($token);
-                $I->assertInstanceOf(Validator::class, $validator);
+        $token      = $this->newToken();
+        $signer     = new Hmac();
+        $passphrase = '123456';
+        $validator  = new Validator($token);
+        $I->assertInstanceOf(Validator::class, $validator);
 
-                $I->assertInstanceOf(
-                    Validator::class,
-                    $validator->validateSignature($signer, $passphrase)
-                );
-            }
+        $I->assertInstanceOf(
+            Validator::class,
+            $validator->validateSignature($signer, $passphrase)
         );
+
+        $expected = ["Validation: the signature does not match"];
+        $actual   = $validator->getErrors();
+        $I->assertSame($expected, $actual);
     }
 }

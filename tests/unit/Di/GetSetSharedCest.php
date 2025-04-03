@@ -15,6 +15,7 @@ namespace Phalcon\Tests\Unit\Di;
 
 use Phalcon\Di\Di;
 use Phalcon\Html\Escaper;
+use Phalcon\Html\Escaper\EscaperInterface;
 use UnitTester;
 
 use function spl_object_hash;
@@ -47,11 +48,11 @@ class GetSetSharedCest
 
         $expected = spl_object_hash($class);
         $actual   = spl_object_hash($object);
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
 
         $objectTwo = $container->getShared('escaper');
         $actual    = spl_object_hash($objectTwo);
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
     }
 
     /**
@@ -75,10 +76,56 @@ class GetSetSharedCest
 
         $expected = spl_object_hash($class);
         $actual   = spl_object_hash($object);
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
 
         $objectTwo = $container->getShared('escaper');
         $actual    = spl_object_hash($objectTwo);
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
+    }
+
+    /**
+     * Tests Phalcon\Di\Di :: getShared()/setShared() - class name
+     *
+     * @param UnitTester $I
+     *
+     * @issue  15032
+     * @author Phalcon Team <team@phalcon.io>
+     * @since  2022-12-12
+     */
+    public function diGetSetSharedClassName(UnitTester $I)
+    {
+        $I->wantToTest('Di - getShared() - set');
+
+        $container   = new Di();
+        $serviceName = 'escaper';
+
+        /**
+         * String name
+         */
+        $container->setShared($serviceName, Escaper::class);
+        $actual = $container->getShared($serviceName);
+
+        $class = Escaper::class;
+        $I->assertInstanceOf($class, $actual);
+
+        /**
+         * Interface class string
+         */
+        $serviceName = EscaperInterface::class;
+        $container->setShared($serviceName, Escaper::class);
+        $actual = $container->getShared($serviceName);
+
+        $class = Escaper::class;
+        $I->assertInstanceOf($class, $actual);
+
+        /**
+         * Class string
+         */
+        $serviceName = Escaper::class;
+        $container->setShared($serviceName, Escaper::class);
+        $actual = $container->getShared($serviceName);
+
+        $class = Escaper::class;
+        $I->assertInstanceOf($class, $actual);
     }
 }

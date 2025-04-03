@@ -21,7 +21,7 @@ class GetSetContentCest
     /**
      * Tests Phalcon\Http\Response :: getContent() / setContent()
      *
-     * @param  UnitTester $I
+     * @param UnitTester $I
      *
      * @author Jeremy PASTOURET <https://github.com/jenovateurs>
      * @since  2019-12-08
@@ -33,7 +33,7 @@ class GetSetContentCest
         $sData = '<h1>Phalcon book 2020</h1>';
 
         $oResponse = new Response();
-        $I->assertEquals('', $oResponse->getContent());
+        $I->assertSame('', $oResponse->getContent());
 
         $oResponse->setContent($sData);
         $I->assertSame(

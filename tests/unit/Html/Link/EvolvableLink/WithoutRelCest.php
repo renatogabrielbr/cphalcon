@@ -38,11 +38,12 @@ class WithoutRelCest
         $href = 'https://dev.phalcon.ld';
         $link = new EvolvableLink('payment', $href);
 
-        $I->assertEquals(['payment'], $link->getRels());
+        $I->assertSame(['payment'], $link->getRels());
 
         $newInstance = $link
             ->withRel('citation')
-            ->withRel('canonical');
+            ->withRel('canonical')
+        ;
 
         $I->assertNotSame($link, $newInstance);
 
@@ -51,7 +52,7 @@ class WithoutRelCest
             'citation',
             'canonical',
         ];
-        $I->assertEquals($rels, $newInstance->getRels());
+        $I->assertSame($rels, $newInstance->getRels());
 
         $newInstance = $newInstance->withoutRel('citation');
 
@@ -59,6 +60,6 @@ class WithoutRelCest
             'payment',
             'canonical',
         ];
-        $I->assertEquals($rels, $newInstance->getRels());
+        $I->assertSame($rels, $newInstance->getRels());
     }
 }

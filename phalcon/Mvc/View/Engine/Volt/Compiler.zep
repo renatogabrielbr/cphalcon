@@ -240,7 +240,8 @@ class Compiler implements InjectionAwareInterface
                 }
             }
         } else {
-            let leftCode = this->expression(left), leftType = left["type"];
+            let leftCode = this->expression(left),
+                leftType = left["type"];
 
             if leftType != PHVOLT_T_DOT && leftType != PHVOLT_T_FCALL {
                 let exprCode .= leftCode;
@@ -621,8 +622,11 @@ class Compiler implements InjectionAwareInterface
         let exprCode = this->expression(expr);
 
         if expr["type"] == PHVOLT_T_FCALL  {
-            let name = expr["name"];
+            if this->isTagFactory(expr) === true {
+                let exprCode = this->expression(expr, true);
+            }
 
+            let name = expr["name"];
             if name["type"] == PHVOLT_T_IDENTIFIER {
                 /**
                  * super() is a function however the return of this function
@@ -764,9 +768,7 @@ class Compiler implements InjectionAwareInterface
             forElse = null;
 
         let this->foreachLevel++;
-
         let prefix = this->getUniquePrefix();
-
         let level = this->foreachLevel;
 
         /**
@@ -778,14 +780,12 @@ class Compiler implements InjectionAwareInterface
          * Evaluate common expressions
          */
         let expr = statement["expr"];
-
         let exprCode = this->expression(expr);
 
         /**
          * Process the block statements
          */
         let blockStatements = statement["block_statements"];
-
         let forElse = false;
 
         if typeof blockStatements == "array" {
@@ -811,7 +811,6 @@ class Compiler implements InjectionAwareInterface
          * Process statements block
          */
         let code = this->statementList(blockStatements, extendsMode);
-
         let loopContext = this->loopPointers;
 
         /**
@@ -1068,9 +1067,7 @@ class Compiler implements InjectionAwareInterface
          * Register the macro
          */
         let this->macros[name] = name;
-
         let macroName = "$this->macros['" . name . "']";
-
         let code = "<?php ";
 
         if !fetch parameters, statement["parameters"] {
@@ -1147,9 +1144,60 @@ class Compiler implements InjectionAwareInterface
     }
 
     /**
-     * Compiles a "set" statement returning PHP code
+     * Compiles a "set" statement returning PHP code. The method accepts an
+     * array produced by the Volt parser and creates the `set` statement in PHP.
+     * This method is not particularly useful in development, since it requires
+     * advanced knowledge of the Volt parser.
      *
-     * @param array statement
+     * ```php
+     * <?php
+     *
+     * use Phalcon\Mvc\View\Engine\Volt\Compiler;
+     *
+     * $compiler = new Compiler();
+     *
+     * // {% set a = ['first': 1] %}
+
+     * $source = [
+     *     "type" => 306,
+     *     "assignments" => [
+     *         [
+     *             "variable" => [
+     *                 "type" => 265,
+     *                 "value" => "a",
+     *                 "file" => "eval code",
+     *                 "line" => 1
+     *             ],
+     *             "op" => 61,
+     *             "expr" => [
+     *                 "type" => 360,
+     *                 "left" => [
+     *                     [
+     *                         "expr" => [
+     *                             "type" => 258,
+     *                             "value" => "1",
+     *                             "file" => "eval code",
+     *                             "line" => 1
+     *                         ],
+     *                         "name" => "first",
+     *                         "file" => "eval code",
+     *                         "line" => 1
+     *                     ]
+     *                 ],
+     *                 "file" => "eval code",
+     *                 "line" => 1
+     *             ],
+     *             "file" => "eval code",
+     *             "line" => 1
+     *         ]
+     *     ]
+     * ];
+     *
+     * echo $compiler->compileSet($source);
+     * // <?php $a = ['first' => 1]; ?>";
+     * ```
+     *
+     * @param array $statement
      *
      * @throws \Phalcon\Mvc\View\Engine\Volt\Exception
      * @return string
@@ -1273,7 +1321,7 @@ class Compiler implements InjectionAwareInterface
              * responsibility of the user. However, we can clear empty lines and
              * whitespace here to reduce the number of errors.
              *
-             * http://php.net/control-structures.alternative-syntax
+             * https://php.net/control-structures.alternative-syntax
              */
              if strlen(lines) !== 0 {
                 /**
@@ -1303,14 +1351,15 @@ class Compiler implements InjectionAwareInterface
     /**
      * Resolves an expression node in an AST volt tree
      *
-     * @param array expr
+     * @param array $expr
+     * @param bool  $doubleQuotes
      *
      * @return string
      */
-    final public function expression(array! expr) -> string
+    final public function expression(array! expr, bool doubleQuotes = false) -> string
     {
-        var exprCode, extensions, items, singleExpr, singleExprCode, name, left,
-            leftCode, right, rightCode, type, startCode, endCode, start, end;
+        var end, endCode, exprCode, extensions, items, left, leftCode, name,
+            right, rightCode, singleExpr, singleExprCode, start, startCode, type;
 
         let exprCode = null, this->exprLevel++;
 
@@ -1321,7 +1370,7 @@ class Compiler implements InjectionAwareInterface
         let extensions = this->extensions;
 
         loop {
-            if typeof extensions == "array" {
+            if typeof extensions === "array" {
                 /**
                  * Notify the extensions about being resolving an expression
                  */
@@ -1330,7 +1379,7 @@ class Compiler implements InjectionAwareInterface
                     [expr]
                 );
 
-                if typeof exprCode == "string" {
+                if typeof exprCode === "string" {
                     break;
                 }
             }
@@ -1340,7 +1389,8 @@ class Compiler implements InjectionAwareInterface
 
                 for singleExpr in expr {
                     let singleExprCode = this->expression(
-                        singleExpr["expr"]
+                        singleExpr["expr"],
+                        doubleQuotes
                     );
 
                     if fetch name, singleExpr["name"] {
@@ -1368,7 +1418,7 @@ class Compiler implements InjectionAwareInterface
              * Left part of expression is always resolved
              */
             if fetch left, expr["left"] {
-                let leftCode = this->expression(left);
+                let leftCode = this->expression(left, doubleQuotes);
             }
 
             /**
@@ -1399,7 +1449,7 @@ class Compiler implements InjectionAwareInterface
              * From here, right part of expression is always resolved
              */
             if fetch right, expr["right"] {
-                let rightCode = this->expression(right);
+                let rightCode = this->expression(right, doubleQuotes);
             }
 
             let exprCode = null;
@@ -1467,7 +1517,11 @@ class Compiler implements InjectionAwareInterface
                     break;
 
                 case PHVOLT_T_STRING:
-                    let exprCode = "'" . str_replace("'", "\\'", expr["value"]) . "'";
+                    if likely doubleQuotes === false {
+                        let exprCode = "'" . str_replace("'", "\\'", expr["value"]) . "'";
+                    } else {
+                        let exprCode = "\"" . expr["value"] . "\"";
+                    }
                     break;
 
                 case PHVOLT_T_NULL:
@@ -1523,7 +1577,7 @@ class Compiler implements InjectionAwareInterface
                     break;
 
                 case PHVOLT_T_FCALL:
-                    let exprCode = this->functionCall(expr);
+                    let exprCode = this->functionCall(expr, doubleQuotes);
                     break;
 
                 case PHVOLT_T_ENCLOSED:
@@ -1540,7 +1594,7 @@ class Compiler implements InjectionAwareInterface
                      * Evaluate the start part of the slice
                      */
                     if fetch start, expr["start"] {
-                        let startCode = this->expression(start);
+                        let startCode = this->expression(start, doubleQuotes);
                     } else {
                         let startCode = "null";
                     }
@@ -1549,7 +1603,7 @@ class Compiler implements InjectionAwareInterface
                      * Evaluate the end part of the slice
                      */
                     if fetch end, expr["end"] {
-                        let endCode = this->expression(end);
+                        let endCode = this->expression(end, doubleQuotes);
                     } else {
                         let endCode = "null";
                     }
@@ -1622,7 +1676,7 @@ class Compiler implements InjectionAwareInterface
                     break;
 
                 case PHVOLT_T_TERNARY:
-                    let exprCode = "(" . this->expression(expr["ternary"]) . " ? " . leftCode . " : " . rightCode . ")";
+                    let exprCode = "(" . this->expression(expr["ternary"], doubleQuotes) . " ? " . leftCode . " : " . rightCode . ")";
                     break;
 
                 case PHVOLT_T_MINUS:
@@ -1693,29 +1747,33 @@ class Compiler implements InjectionAwareInterface
     /**
      * Resolves function intermediate code into PHP function calls
      *
-     * @param array expr
+     * @param array $expr
+     * @param bool  $doubleQuotes
      *
      * @throws \Phalcon\Mvc\View\Engine\Volt\Exception
      * @return string
      */
-    public function functionCall(array! expr) -> string
+    public function functionCall(array! expr, bool doubleQuotes = false) -> string
     {
-        var code, funcArguments, arguments, nameExpr, nameType, name,
-            extensions, functions, definition, extendedBlocks, block,
-            currentBlock, exprLevel, escapedCode, method, arrayHelpers, tagService;
+        var arguments, arrayHelpers, block, code, currentBlock, definition,
+            escapedCode, exprLevel, extendedBlocks, extensions, funcArguments,
+            functions, method, name, nameExpr, nameType, tagService;
 
-        let code = null;
+        let code          = null,
+            funcArguments = null,
+            nameExpr      = expr["name"],
+            nameType      = nameExpr["type"];
 
-        let funcArguments = null;
-
+        /**
+         * The TagFactory helpers sometimes receive line endings
+         * as parameters. Using single quotes is not going to make
+         * that work. As such we need to recalculate the arguments
+         */
         if fetch funcArguments, expr["arguments"] {
-            let arguments = this->expression(funcArguments);
+            let arguments = this->expression(funcArguments, doubleQuotes);
         } else {
             let arguments = "";
         }
-
-        let nameExpr = expr["name"],
-            nameType = nameExpr["type"];
 
         /**
          * Check if it's a single function
@@ -1832,14 +1890,23 @@ class Compiler implements InjectionAwareInterface
                 return "''";
             }
 
-            let method = lcfirst(
-                camelize(name)
-            );
+            /**
+             * Check if it's a method in Phalcon\Tag
+             * @todo This needs a lot of refactoring and will break a lot of applications if removed
+             */
+            if name === "preload" {
+                return "$this->preload(" . arguments . ")";
+            }
 
+            /**
+             * Check if it's a method in Phalcon\Tag
+             * @todo This needs a lot of refactoring and will break a lot of applications if removed
+             */
+            let method = lcfirst(camelize(name));
             let arrayHelpers = [
                 "link_to":        true,
                 "image":          true,
-                "form":           true,
+                "form_legacy":    true,
                 "submit_button":  true,
                 "radio_field":    true,
                 "check_field":    true,
@@ -1855,18 +1922,6 @@ class Compiler implements InjectionAwareInterface
                 "image_input":    true
             ];
 
-            /**
-             * Check if it's a method in Phalcon\Tag
-             * @todo This needs a lot of refactoring and will break a lot of applications if removed
-             */
-            if name === "preload" {
-                return "$this->preload(" . arguments . ")";
-            }
-
-            /**
-             * Check if it's a method in Phalcon\Tag
-             * @todo This needs a lot of refactoring and will break a lot of applications if removed
-             */
             if method_exists("Phalcon\\Tag", method) {
                 if isset arrayHelpers[name] {
                     return "\Phalcon\Tag::" . method . "([" . arguments . "])";
@@ -1881,6 +1936,17 @@ class Compiler implements InjectionAwareInterface
             if this->container !== null && true === this->container->has("tag") {
                 let tagService = this->container->get("tag");
                 if true === tagService->has(name) {
+                    /**
+                     * recalculate the arguments because we need them double
+                     * quoted
+                     */
+                    let funcArguments = null;
+                    if fetch funcArguments, expr["arguments"] {
+                        let arguments = this->expression(funcArguments, true);
+                    } else {
+                        let arguments = "";
+                    }
+
                     return "$this->tag->" . name . "(" . arguments . ")";
                 }
             }
@@ -1936,7 +2002,7 @@ class Compiler implements InjectionAwareInterface
             return "$this->callMacro('" . name . "', [" . arguments . "])";
         }
 
-        return this->expression(nameExpr) . "(" . arguments . ")";
+        return this->expression(nameExpr, doubleQuotes) . "(" . arguments . ")";
     }
 
     /**
@@ -2100,46 +2166,19 @@ class Compiler implements InjectionAwareInterface
         if type == PHVOLT_T_IDENTIFIER {
             let name = test["value"];
 
-            /**
-             * Empty uses the PHP's empty operator
-             */
-            if name == "empty" {
-                return "empty(" . left . ")";
-            }
-
-            /**
-             * Check if a value is even
-             */
-            if name == "even" {
-                return "(((" . left . ") % 2) == 0)";
-            }
-
-            /**
-             * Check if a value is odd
-             */
-            if name == "odd" {
-                return "(((" . left . ") % 2) != 0)";
-            }
-
-            /**
-             * Check if a value is numeric
-             */
-            if name == "numeric" {
-                return "is_numeric(" . left . ")";
-            }
-
-            /**
-             * Check if a value is scalar
-             */
-            if name == "scalar" {
-                return "is_scalar(" . left . ")";
-            }
-
-            /**
-             * Check if a value is iterable
-             */
-            if name == "iterable" {
-                return "(is_array(" . left . ") || (" . left . ") instanceof Traversable)";
+            switch (name) {
+                case "empty":
+                    return "empty(" . left . ")";
+                case "even":
+                    return "(((" . left . ") % 2) == 0)";
+                case "odd":
+                    return "(((" . left . ") % 2) != 0)";
+                case "numeric":
+                    return "is_numeric(" . left . ")";
+                case "scalar":
+                    return "is_scalar(" . left . ")";
+                case "iterable":
+                    return "(is_array(" . left . ") || (" . left . ") instanceof Traversable)";
             }
 
         }
@@ -2151,22 +2190,13 @@ class Compiler implements InjectionAwareInterface
             let testName = test["name"];
 
             if fetch name, testName["value"] {
-                if name == "divisibleby" {
-                    return "(((" . left . ") % (" . this->expression(test["arguments"]) . ")) == 0)";
-                }
-
-                /**
-                 * Checks if a value is equals to other
-                 */
-                if name == "sameas" {
-                    return "(" . left . ") === (" . this->expression(test["arguments"]) . ")";
-                }
-
-                /**
-                 * Checks if a variable match a type
-                 */
-                if name == "type" {
-                    return "gettype(" . left . ") === (" . this->expression(test["arguments"]) . ")";
+                switch (name) {
+                    case "divisibleby":
+                        return "(((" . left . ") % (" . this->expression(test["arguments"]) . ")) == 0)";
+                    case "sameas":
+                        return "(" . left . ") === (" . this->expression(test["arguments"]) . ")";
+                    case "type":
+                        return "gettype(" . left . ") === (" . this->expression(test["arguments"]) . ")";
                 }
             }
         }
@@ -2216,7 +2246,7 @@ class Compiler implements InjectionAwareInterface
     /**
      * Compiles a Volt source code returning a PHP plain version
      */
-    protected function compileSource(string! viewCode, bool extendsMode = false) -> string
+    protected function compileSource(string! viewCode, bool extendsMode = false) -> array | string
     {
         var currentPath, intermediate, extended, finalCompilation, blocks,
             extendedBlocks, name, block, blockCompilation, localBlock,
@@ -2483,197 +2513,78 @@ class Compiler implements InjectionAwareInterface
             );
         }
 
-        /**
-         * "length" uses the length method implemented in the Volt adapter
-         */
-        if name == "length" {
-            return "$this->length(" . arguments . ")";
+        switch (name) {
+            case "abs":
+                return "abs(" . arguments . ")";
+            case "capitalize":
+                return "ucwords(" . arguments . ")";
+            case "convert_encoding":
+                return "$this->convertEncoding(" . arguments . ")";
+            case "default":
+                return "(empty(" . left . ") ? ("
+                    . arguments . ") : ("
+                    . left . "))";
+            case "e":
+            case "escape":
+                return "$this->escaper->html(" . arguments . ")";
+            case "escape_attr":
+                return "$this->escaper->attributes(" . arguments . ")";
+            case "escape_css":
+                return "$this->escaper->css(" . arguments . ")";
+            case "escape_js":
+                return "$this->escaper->js(" . arguments . ")";
+            case "format":
+                return "sprintf(" . arguments . ")";
+            case "join":
+                return "join('" . funcArguments[1]["expr"]["value"]
+                    . "', " . funcArguments[0]["expr"]["value"] . ")";
+            case "json_encode":
+                return "json_encode(" . arguments . ")";
+            case "json_decode":
+                return "json_decode(" . arguments . ")";
+            case "keys":
+                return "array_keys(" . arguments . ")";
+            case "left_trim":
+                return "ltrim(" . arguments . ")";
+            case "length":
+                return "$this->length(" . arguments . ")";
+            case "lower":
+            case "lowercase":
+                if this->container !== null && true === this->container->has("helper") {
+                    return "$this->helper->lower(" . arguments . ")";
+                } else {
+                    return "strtolower(" . arguments . ")";
+                }
+            case "right_trim":
+                return "rtrim(" . arguments . ")";
+            case "nl2br":
+                return "nl2br(" . arguments . ")";
+            case "slashes":
+                return "addslashes(" . arguments . ")";
+            case "slice":
+                return "$this->slice(" . arguments . ")";
+            case "sort":
+                return "$this->sort(" . arguments . ")";
+            case "stripslashes":
+                return "stripslashes(" . arguments . ")";
+            case "striptags":
+                return "strip_tags(" . arguments . ")";
+            case "trim":
+                return "trim(" . arguments . ")";
+            case "upper":
+            case "uppercase":
+                if this->container !== null && true === this->container->has("helper") {
+                    return "$this->helper->upper(" . arguments . ")";
+                } else {
+                    return "strtoupper(" . arguments . ")";
+                }
+            case "url_encode":
+                return "urlencode(" . arguments . ")";
         }
 
-        /**
-         * "e"/"escape" filter uses the escaper component
-         */
-        if name == "e" || name == "escape" {
-            return "$this->escaper->html(" . arguments . ")";
-        }
-
-        /**
-         * "escape_css" filter uses the escaper component to filter CSS
-         */
-        if name == "escape_css" {
-            return "$this->escaper->css(" . arguments . ")";
-        }
-
-        /**
-         * "escape_js" filter uses the escaper component to escape JavaScript
-         */
-        if name == "escape_js" {
-            return "$this->escaper->js(" . arguments . ")";
-        }
-
-        /**
-         * "escape_attr" filter uses the escaper component to escape HTML
-         * attributes
-         */
-        if name == "escape_attr" {
-            return "$this->escaper->attributes(" . arguments . ")";
-        }
-
-        /**
-         * "trim" calls the "trim" function in the PHP userland
-         */
-        if name == "trim" {
-            return "trim(" . arguments . ")";
-        }
-
-        /**
-         * "left_trim" calls the "ltrim" function in the PHP userland
-         */
-        if name == "left_trim" {
-            return "ltrim(" . arguments . ")";
-        }
-
-        /**
-         * "right_trim" calls the "rtrim" function in the PHP userland
-         */
-        if name == "right_trim" {
-            return "rtrim(" . arguments . ")";
-        }
-
-        /**
-         * "striptags" calls the "strip_tags" function in the PHP userland
-         */
-        if name == "striptags" {
-            return "strip_tags(" . arguments . ")";
-        }
-
-        /**
-         * "url_encode" calls the "urlencode" function in the PHP userland
-         */
-        if name == "url_encode" {
-            return "urlencode(" . arguments . ")";
-        }
-
-        /**
-         * "slashes" calls the "addslashes" function in the PHP userland
-         */
-        if name == "slashes" {
-            return "addslashes(" . arguments . ")";
-        }
-
-        /**
-         * "stripslashes" calls the "stripslashes" function in the PHP userland
-         */
-        if name == "stripslashes" {
-            return "stripslashes(" . arguments . ")";
-        }
-
-        /**
-         * "nl2br" calls the "nl2br" function in the PHP userland
-         */
-        if name == "nl2br" {
-            return "nl2br(" . arguments . ")";
-        }
-
-        /**
-         * "keys" uses calls the "array_keys" function in the PHP userland
-         */
-        if name == "keys" {
-            return "array_keys(" . arguments . ")";
-        }
-
-        /**
-         * "join" uses calls the "join" function in the PHP userland
-         */
-        if name == "join" {
-            return "join('" . funcArguments[1]["expr"]["value"] . "', " . funcArguments[0]["expr"]["value"] . ")";
-        }
-
-        /**
-         * "lower"/"lowercase" calls the "strtolower" function or
-         * "mb_strtolower" if the mbstring extension is loaded
-         */
-        if name == "lower" || name == "lowercase" {
-            return "strtolower(" . arguments . ")";
-        }
-
-        /**
-         * "upper"/"uppercase" calls the "strtoupper" function or
-         * "mb_strtoupper" if the mbstring extension is loaded
-         */
-        if name == "upper" || name == "uppercase" {
-            return "strtoupper(" . arguments . ")";
-        }
-
-        /**
-         * "capitalize" filter calls "ucwords"
-         */
-        if name == "capitalize" {
-            return "ucwords(" . arguments . ")";
-        }
-
-        /**
-         * "sort" calls "sort" method in the engine adapter
-         */
-        if name == "sort" {
-            return "$this->sort(" . arguments . ")";
-        }
-
-        /**
-         * "json_encode" calls the "json_encode" function in the PHP userland
-         */
-        if name == "json_encode" {
-            return "json_encode(" . arguments . ")";
-        }
-
-        /**
-         * "json_decode" calls the "json_decode" function in the PHP userland
-         */
-        if name == "json_decode" {
-            return "json_decode(" . arguments . ")";
-        }
-
-        /**
-         * "format" calls the "sprintf" function in the PHP userland
-         */
-        if name == "format" {
-            return "sprintf(" . arguments . ")";
-        }
-
-        /**
-         * "abs" calls the "abs" function in the PHP userland
-         */
-        if name == "abs" {
-            return "abs(" . arguments . ")";
-        }
-
-        /**
-         * "slice" slices string/arrays/traversable objects
-         */
-        if name == "slice" {
-            return "$this->slice(" . arguments . ")";
-        }
-
-        /**
-         * "default" checks if a variable is empty
-         */
-        if name == "default" {
-            return "(empty(" . left . ") ? (" . arguments . ") : (" . left . "))";
-        }
-
-        /**
-         * This function uses mbstring or iconv to convert strings from one
-         * charset to another
-         */
-        if name == "convert_encoding" {
-            return "$this->convertEncoding(" . arguments . ")";
-        }
-
-        /**
-         * Unknown filter throw an exception
-         */
         throw new Exception(
-            "Unknown filter \"" . name . "\" in " . filter["file"] . " on line " . filter["line"]
+            "Unknown filter \"" . name . "\" in "
+                . filter["file"] . " on line " . filter["line"]
         );
     }
 
@@ -2802,7 +2713,6 @@ class Compiler implements InjectionAwareInterface
                     break;
 
                 case PHVOLT_T_BLOCK:
-
                     /**
                      * Block statement
                      */
@@ -2843,7 +2753,6 @@ class Compiler implements InjectionAwareInterface
                     break;
 
                 case PHVOLT_T_EXTENDS:
-
                     /**
                      * Extends statement
                      */
@@ -3024,5 +2933,37 @@ class Compiler implements InjectionAwareInterface
          * Is an array but not a statement list?
          */
         return statements;
+    }
+
+    private function isTagFactory(array expression) -> bool
+    {
+        var left, leftValue, name;
+
+        /**
+         * This will check recursively:
+         * - If we have a "name" array.
+         * - If the "name" has a "left" sub-array
+         * - If the "left" sub-array has a "value" of "tag"
+         * - If the "left" has another sub-array then recurse
+         */
+        if fetch name, expression["name"] {
+            if fetch left, name["left"] {
+                /**
+                 * There is a value, get it and check it
+                 */
+                if fetch leftValue, left["value"] {
+                    return (leftValue === "tag");
+                } else {
+                    /**
+                     * There is a "name" so that is nested, recursion
+                     */
+                    if isset left["name"] && typeof left["name"] === "array" {
+                        return this->isTagFactory(left);
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }

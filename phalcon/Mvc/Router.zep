@@ -96,12 +96,12 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
     /**
      * @var array
      */
-    protected keyRouteNames = [] { get, set };
+    protected keyRouteNames = [];
 
     /**
      * @var array
      */
-    protected keyRouteIds = [] { get, set };
+    protected keyRouteIds = [];
 
     /**
      * @var RouteInterface|null
@@ -162,7 +162,6 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
              * Two routes are added by default to match /:controller/:action and
              * /:controller/:action/:params
              */
-
             let routes[] = new Route(
                 "#^/([\\w0-9\\_\\-]+)[/]{0,1}$#u",
                 [
@@ -217,8 +216,12 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
      *
      * @return RouteInterface
      */
-    public function add(string! pattern, var paths = null, var httpMethods = null, int position = Router::POSITION_LAST) -> <RouteInterface>
-    {
+    public function add(
+        string! pattern,
+        var paths = null,
+        var httpMethods = null,
+        int position = Router::POSITION_LAST
+    ) -> <RouteInterface> {
         var route;
 
         /**
@@ -245,8 +248,11 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
      *
      * @return RouteInterface
      */
-    public function addConnect(string! pattern, var paths = null, int position = Router::POSITION_LAST) -> <RouteInterface>
-    {
+    public function addConnect(
+        string! pattern,
+        var paths = null,
+        int position = Router::POSITION_LAST
+    ) -> <RouteInterface> {
         return this->add(pattern, paths, "CONNECT", position);
     }
 
@@ -264,8 +270,11 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
      *
      * @return RouteInterface
      */
-    public function addDelete(string! pattern, var paths = null, int position = Router::POSITION_LAST) -> <RouteInterface>
-    {
+    public function addDelete(
+        string! pattern,
+        var paths = null,
+        int position = Router::POSITION_LAST
+    ) -> <RouteInterface> {
         return this->add(pattern, paths, "DELETE", position);
     }
 
@@ -283,8 +292,11 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
      *
      * @return RouteInterface
      */
-    public function addGet(string! pattern, var paths = null, int position = Router::POSITION_LAST) -> <RouteInterface>
-    {
+    public function addGet(
+        string! pattern,
+        var paths = null,
+        int position = Router::POSITION_LAST
+    ) -> <RouteInterface> {
         return this->add(pattern, paths, "GET", position);
     }
 
@@ -302,8 +314,11 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
      *
      * @return RouteInterface
      */
-    public function addHead(string! pattern, var paths = null, int position = Router::POSITION_LAST) -> <RouteInterface>
-    {
+    public function addHead(
+        string! pattern,
+        var paths = null,
+        int position = Router::POSITION_LAST
+    ) -> <RouteInterface> {
         return this->add(pattern, paths, "HEAD", position);
     }
 
@@ -321,8 +336,11 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
      *
      * @return RouteInterface
      */
-    public function addOptions(string! pattern, var paths = null, int position = Router::POSITION_LAST) -> <RouteInterface>
-    {
+    public function addOptions(
+        string! pattern,
+        var paths = null,
+        int position = Router::POSITION_LAST
+    ) -> <RouteInterface> {
         return this->add(pattern, paths, "OPTIONS", position);
     }
 
@@ -340,8 +358,11 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
      *
      * @return RouteInterface
      */
-    public function addPatch(string! pattern, var paths = null, int position = Router::POSITION_LAST) -> <RouteInterface>
-    {
+    public function addPatch(
+        string! pattern,
+        var paths = null,
+        int position = Router::POSITION_LAST
+    ) -> <RouteInterface> {
         return this->add(pattern, paths, "PATCH", position);
     }
 
@@ -359,8 +380,11 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
      *
      * @return RouteInterface
      */
-    public function addPost(string! pattern, var paths = null, int position = Router::POSITION_LAST) -> <RouteInterface>
-    {
+    public function addPost(
+        string! pattern,
+        var paths = null,
+        int position = Router::POSITION_LAST
+    ) -> <RouteInterface> {
         return this->add(pattern, paths, "POST", position);
     }
 
@@ -379,8 +403,11 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
      *
      * @return RouteInterface
      */
-    public function addPurge(string! pattern, var paths = null, int position = Router::POSITION_LAST) -> <RouteInterface>
-    {
+    public function addPurge(
+        string! pattern,
+        var paths = null,
+        int position = Router::POSITION_LAST
+    ) -> <RouteInterface> {
         return this->add(pattern, paths, "PURGE", position);
     }
 
@@ -398,8 +425,11 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
      *
      * @return RouteInterface
      */
-    public function addPut(string! pattern, var paths = null, int position = Router::POSITION_LAST) -> <RouteInterface>
-    {
+    public function addPut(
+        string! pattern,
+        var paths = null,
+        int position = Router::POSITION_LAST
+    ) -> <RouteInterface> {
         return this->add(pattern, paths, "PUT", position);
     }
 
@@ -417,8 +447,11 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
      *
      * @return RouteInterface
      */
-    public function addTrace(string! pattern, var paths = null, int position = Router::POSITION_LAST) -> <RouteInterface>
-    {
+    public function addTrace(
+        string! pattern,
+        var paths = null,
+        int position = Router::POSITION_LAST
+    ) -> <RouteInterface> {
         return this->add(pattern, paths, "TRACE", position);
     }
 
@@ -446,8 +479,10 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
      *
      * @return RouterInterface
      */
-    public function attach(<RouteInterface> route, int position = Router::POSITION_LAST) -> <RouterInterface>
-    {
+    public function attach(
+        <RouteInterface> route,
+        int position = Router::POSITION_LAST
+    ) -> <RouterInterface> {
         switch position {
             case self::POSITION_LAST:
                 let this->routes[] = route;
@@ -495,9 +530,39 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
     }
 
     /**
+     * Returns an array of default parameters
+     */
+    public function getDefaults() -> array
+    {
+        return [
+            "namespace":  this->defaultNamespace,
+            "module":     this->defaultModule,
+            "controller": this->defaultController,
+            "action":     this->defaultAction,
+            "params":     this->defaultParams
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getKeyRouteNames() -> array
+    {
+        return this->keyRouteNames;
+    }
+
+    /**
+     * @return array
+     */
+    public function getKeyRouteIds() -> array
+    {
+        return this->keyRouteIds;
+    }
+
+    /**
      * Returns the route that matches the handled URI
      */
-    public function getMatchedRoute() -> <RouteInterface>
+    public function getMatchedRoute() -> <RouteInterface> | null
     {
         return this->matchedRoute;
     }
@@ -626,7 +691,7 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
         /**
          * Remove extra slashes in the route
          */
-        if this->removeExtraSlashes && uri != "/" {
+        if this->removeExtraSlashes && uri !== "/" {
             let handledUri = rtrim(uri, "/");
         } else {
             let handledUri = uri;
@@ -636,8 +701,7 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
             let handledUri = "/";
         }
 
-        let request = null,
-            currentHostName = null,
+        let currentHostName = null,
             routeFound = false,
             parts = [],
             params = [],
@@ -646,10 +710,21 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
             this->matchedRoute = null;
 
         let eventsManager = this->eventsManager;
-
-        if typeof eventsManager == "object" {
+        if eventsManager !== null {
             eventsManager->fire("router:beforeCheckRoutes", this);
         }
+
+        /**
+         * Retrieve the request service from the container
+         */
+        let container = <DiInterface> this->container;
+        if container === null {
+            throw new Exception(
+                "A dependency injection container is required to access the 'request' service"
+            );
+        }
+
+        let request = <RequestInterface> container->get("request");
 
         /**
          * Routes are traversed in reversed order
@@ -662,23 +737,7 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
              * Look for HTTP method constraints
              */
             let methods = route->getHttpMethods();
-
             if methods !== null {
-                /**
-                 * Retrieve the request service from the container
-                 */
-                if request === null {
-                    let container = <DiInterface> this->container;
-
-                    if unlikely typeof container != "object" {
-                        throw new Exception(
-                            "A dependency injection container is required to access the 'request' service"
-                        );
-                    }
-
-                    let request = <RequestInterface> container->getShared("request");
-                }
-
                 /**
                  * Check if the current method is allowed by the route
                  */
@@ -691,23 +750,7 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
              * Look for hostname constraints
              */
             let hostname = route->getHostName();
-
             if hostname !== null {
-                /**
-                 * Retrieve the request service from the container
-                 */
-                if request === null {
-                    let container = <DiInterface> this->container;
-
-                    if unlikely typeof container != "object" {
-                        throw new Exception(
-                            "A dependency injection container is required to access the 'request' service"
-                        );
-                    }
-
-                    let request = <RequestInterface> container->getShared("request");
-                }
-
                 /**
                  * Check if the current hostname is the same as the route
                  */
@@ -773,7 +816,6 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
                 }
 
                 let beforeMatch = route->getBeforeMatch();
-
                 if beforeMatch !== null {
                     /**
                      * Check first if the callback is callable
@@ -971,7 +1013,7 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
             }
         }
 
-        if typeof eventsManager == "object" {
+        if typeof eventsManager === "object" {
             eventsManager->fire("router:afterCheckRoutes", this);
         }
     }
@@ -1046,7 +1088,7 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
      */
     public function notFound(var paths) -> <RouterInterface>
     {
-        if unlikely (typeof paths != "array" && typeof paths != "string") {
+        if unlikely (typeof paths !== "array" && typeof paths !== "string") {
             throw new Exception(
                 "The not-found paths must be an array or string"
             );
@@ -1178,20 +1220,6 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
     }
 
     /**
-     * Returns an array of default parameters
-     */
-    public function getDefaults() -> array
-    {
-        return [
-            "namespace":  this->defaultNamespace,
-            "module":     this->defaultModule,
-            "controller": this->defaultController,
-            "action":     this->defaultAction,
-            "params":     this->defaultParams
-        ];
-    }
-
-    /**
      * Sets the events manager
      *
      * @param ManagerInterface eventsManager
@@ -1201,6 +1229,30 @@ class Router extends AbstractInjectionAware implements RouterInterface, EventsAw
     public function setEventsManager(<ManagerInterface> eventsManager) -> void
     {
         let this->eventsManager = eventsManager;
+    }
+
+    /**
+     * @param array $routeNames
+     *
+     * @return Router
+     */
+    public function setKeyRouteNames(array routeNames) -> <Router>
+    {
+        let this->keyRouteNames = routeNames;
+
+        return this;
+    }
+
+    /**
+     * @param array $routeIds
+     *
+     * @return Router
+     */
+    public function setKeyRouteIds(array routeIds) -> <Router>
+    {
+        let this->keyRouteIds = routeIds;
+
+        return this;
     }
 
     /**

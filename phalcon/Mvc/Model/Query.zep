@@ -201,7 +201,7 @@ class Query implements QueryInterface, InjectionAwareInterface
      *
      * @var TransactionInterface|null
      */
-    protected transaction { get };
+    protected transaction = null;
 
     /**
      * @var array|null
@@ -262,9 +262,9 @@ class Query implements QueryInterface, InjectionAwareInterface
      */
     public function execute(array bindParams = [], array bindTypes = [])
     {
-        var uniqueRow, cacheOptions, key, cacheService, cache, result,
-            preparedResult, defaultBindParams, mergedParams, defaultBindTypes,
-            mergedTypes, type, lifetime, intermediate;
+        var adapter, cache, cacheLifetime, cacheOptions, cacheService,
+            defaultBindParams, defaultBindTypes, intermediate, key, lifetime,
+            mergedParams, mergedTypes, preparedResult, result, type, uniqueRow;
 
         let uniqueRow    = this->uniqueRow,
             cacheOptions = this->cacheOptions;
@@ -301,6 +301,16 @@ class Query implements QueryInterface, InjectionAwareInterface
                     "Cache service must be an object implementing " .
                     "Phalcon\Cache\CacheInterface"
                 );
+            }
+
+            /**
+             * If the lifetime is different than the cache lifetime, assign
+             * the cache lifetime to the current cache setting
+             */
+            let adapter       = cache->getAdapter();
+            let cacheLifetime = adapter->getLifetime();
+            if (lifetime !== cacheLifetime) {
+                let lifetime = cacheLifetime;
             }
 
             let result = cache->get(key);
@@ -516,6 +526,8 @@ class Query implements QueryInterface, InjectionAwareInterface
 
     /**
      * Gets the type of PHQL statement executed
+     *
+     * @return int
      */
     public function getType() -> int
     {
@@ -525,10 +537,20 @@ class Query implements QueryInterface, InjectionAwareInterface
     /**
      * Check if the query is programmed to get only the first row in the
      * resultset
+     *
+     * @return bool
      */
     public function getUniqueRow() -> bool
     {
         return this->uniqueRow;
+    }
+
+    /**
+     * @return TransactionInterface|null
+     */
+    public function getTransaction() -> <TransactionInterface> | null
+    {
+        return this->transaction;
     }
 
     /**
@@ -740,7 +762,7 @@ class Query implements QueryInterface, InjectionAwareInterface
      */
     final protected function executeDelete(array intermediate, array bindParams, array bindTypes) -> <StatusInterface>
     {
-        var models, modelName, model, records, connection, record;
+        var models, modelName, model, records, connection, record, exception;
 
         let models = intermediate["models"];
 
@@ -790,21 +812,27 @@ class Query implements QueryInterface, InjectionAwareInterface
         records->rewind();
 
         while records->valid() {
-            let record = records->current();
+            try {
+                let record = records->current();
 
-            /**
-             * We delete every record found
-             */
-            if !record->delete() {
                 /**
-                 * Rollback the transaction
+                 * We delete every record found
                  */
+                if !record->delete() {
+                    /**
+                     * Rollback the transaction
+                     */
+                    connection->rollback();
+
+                    return new Status(false, record);
+                }
+
+                records->next();
+            } catch \PDOException, exception {
                 connection->rollback();
 
-                return new Status(false, record);
+                throw exception;
             }
-
-            records->next();
         }
 
         /**
@@ -1344,7 +1372,8 @@ class Query implements QueryInterface, InjectionAwareInterface
     {
         var models, modelName, model, connection, dialect, fields, values,
             updateValues, fieldName, value, selectBindParams, selectBindTypes,
-            number, field, records, exprValue, updateValue, wildcard, record;
+            number, field, records, exprValue, updateValue, wildcard, record,
+            exception;
 
         let models = intermediate["models"];
 
@@ -1474,25 +1503,30 @@ class Query implements QueryInterface, InjectionAwareInterface
 
         records->rewind();
 
-        //for record in iterator(records) {
         while records->valid() {
-            let record = records->current();
+            try {
+                let record = records->current();
 
-            record->assign(updateValues);
+                record->assign(updateValues);
 
-            /**
-             * We apply the executed values to every record found
-             */
-            if !record->update() {
                 /**
-                 * Rollback the transaction on failure
+                 * We apply the executed values to every record found
                  */
+                if !record->update() {
+                    /**
+                     * Rollback the transaction on failure
+                     */
+                    connection->rollback();
+
+                    return new Status(false, record);
+                }
+
+                records->next();
+            } catch \PDOException, exception {
                 connection->rollback();
 
-                return new Status(false, record);
+                throw exception;
             }
-
-            records->next();
         }
 
         /**

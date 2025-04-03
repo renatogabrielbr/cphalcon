@@ -18,6 +18,7 @@ use Phalcon\Http\Message\RequestMethodInterface;
 use Phalcon\Http\Request\File;
 use Phalcon\Http\Request\FileInterface;
 use Phalcon\Http\Request\Exception;
+use Phalcon\Support\Helper\Json\Decode;
 use UnexpectedValueException;
 use stdClass;
 
@@ -57,12 +58,17 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
     /**
      * @var bool
      */
-    private httpMethodParameterOverride = false { get, set };
+    private httpMethodParameterOverride = false;
 
     /**
      * @var array
      */
     private queryFilters = [];
+
+    /**
+     * @var array|null
+     */
+    private patchCache = null;
 
     /**
      * @var array|null
@@ -123,7 +129,7 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
      */
     public function getBasicAuth() -> array | null
     {
-        if !this->hasServer("PHP_AUTH_USER") || !this->hasServer("PHP_AUTH_PW") {
+        if !this->hasServer("PHP_AUTH_USER") {
             return null;
         }
 
@@ -158,6 +164,16 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
     public function getBestLanguage() -> string
     {
         return this->getBestQuality(this->getLanguages(), "language");
+    }
+
+    /**
+     * Return the HTTP method parameter override flag
+     *
+     * @return bool
+     */
+    public function getHttpMethodParameterOverride() -> bool
+    {
+        return this->httpMethodParameterOverride;
     }
 
     /**
@@ -282,20 +298,34 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
      * Retrieves a query/get value always sanitized with the preset filters
      */
     public function getFilteredQuery(
-        string! name = null,
+        string name = null,
         var defaultValue = null,
         bool notAllowEmpty = false,
         bool noRecursive = false
     ) -> var {
-        var filters;
-
-        if !fetch filters, this->queryFilters[self::METHOD_GET][name] {
-            let filters = [];
-        }
-
-        return this->getQuery(
+        return this->getFilteredData(
+            self::METHOD_GET,
+            "getQuery",
             name,
-            filters,
+            defaultValue,
+            notAllowEmpty,
+            noRecursive
+        );
+    }
+
+    /**
+     * Retrieves a patch value always sanitized with the preset filters
+     */
+    public function getFilteredPatch(
+        string name = null,
+        var defaultValue = null,
+        bool notAllowEmpty = false,
+        bool noRecursive = false
+    ) -> var {
+        return this->getFilteredData(
+            self::METHOD_PATCH,
+            "getPatch",
+            name,
             defaultValue,
             notAllowEmpty,
             noRecursive
@@ -306,20 +336,15 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
      * Retrieves a post value always sanitized with the preset filters
      */
     public function getFilteredPost(
-        string! name = null,
+        string name = null,
         var defaultValue = null,
         bool notAllowEmpty = false,
         bool noRecursive = false
     ) -> var {
-        var filters;
-
-        if !fetch filters, this->queryFilters[self::METHOD_POST][name] {
-            let filters = [];
-        }
-
-        return this->getPost(
+        return this->getFilteredData(
+            self::METHOD_POST,
+            "getPost",
             name,
-            filters,
             defaultValue,
             notAllowEmpty,
             noRecursive
@@ -330,20 +355,15 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
      * Retrieves a put value always sanitized with the preset filters
      */
     public function getFilteredPut(
-        string! name = null,
+        string name = null,
         var defaultValue = null,
         bool notAllowEmpty = false,
         bool noRecursive = false
     ) -> var {
-        var filters;
-
-        if !fetch filters, this->queryFilters[self::METHOD_PUT][name] {
-            let filters = [];
-        }
-
-        return this->getPut(
+        return this->getFilteredData(
+            self::METHOD_PUT,
+            "getPut",
             name,
-            filters,
             defaultValue,
             notAllowEmpty,
             noRecursive
@@ -560,7 +580,11 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
             return false;
         }
 
-        return json_decode(rawBody, associative);
+        if rawBody == "" {
+            let rawBody = "{}";
+        }
+
+        return (new Decode())->__invoke(rawBody, associative);
     }
 
     /**
@@ -613,6 +637,34 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
         }
 
         return returnMethod;
+    }
+
+    /**
+     * Gets a variable from put request
+     *
+     *```php
+     * // Returns value from $_PATCH["user_email"] without sanitizing
+     * $userEmail = $request->getPatch("user_email");
+     *
+     * // Returns value from $_PATCH["user_email"] with sanitizing
+     * $userEmail = $request->getPatch("user_email", "email");
+     *```
+     */
+    public function getPatch(
+        string! name = null,
+        var filters = null,
+        var defaultValue = null,
+        bool notAllowEmpty = false,
+        bool noRecursive = false
+    ) -> var {
+        return this->getPatchPut(
+            "patchCache",
+            name,
+            filters,
+            defaultValue,
+            notAllowEmpty,
+            noRecursive
+        );
     }
 
     /**
@@ -672,13 +724,13 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
     }
 
     /**
-     * Gets a variable from put request
+     * Gets a variable from the PUT request
      *
      *```php
-     * // Returns value from $_PUT["user_email"] without sanitizing
+     * // Returns value from PUT stream without sanitizing
      * $userEmail = $request->getPut("user_email");
      *
-     * // Returns value from $_PUT["user_email"] with sanitizing
+     * // Returns value from PUT stream with sanitizing
      * $userEmail = $request->getPut("user_email", "email");
      *```
      */
@@ -689,30 +741,8 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
         bool notAllowEmpty = false,
         bool noRecursive = false
     ) -> var {
-        var put, contentType;
-
-        let put = this->putCache;
-
-        if null === put {
-            let contentType = this->getContentType();
-
-            if typeof contentType == "string" && stripos(contentType, "json") != false {
-                let put = this->getJsonRawBody(true);
-
-                if typeof put != "array" {
-                    let put = [];
-                }
-            } else {
-                let put = [];
-
-                parse_str(this->getRawBody(), put);
-            }
-
-            let this->putCache = put;
-        }
-
-        return this->getHelper(
-            put,
+        return this->getPatchPut(
+            "putCache",
             name,
             filters,
             defaultValue,
@@ -973,6 +1003,18 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
         let name = strtoupper(strtr(header, "-", "_"));
 
         return this->hasServer(name) || this->hasServer("HTTP_" . name);
+    }
+
+    /**
+     * Checks whether the PATCH data has certain index
+     */
+    public function hasPatch(string! name) -> bool
+    {
+        var patch;
+
+        let patch = this->getPatch();
+
+        return isset patch[name];
     }
 
     /**
@@ -1243,6 +1285,20 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
     }
 
     /**
+     * Set the HTTP method parameter override flag
+     *
+     * @param bool $override
+     *
+     * @return Request
+     */
+    public function setHttpMethodParameterOverride(bool override) -> <Request>
+    {
+        let this->httpMethodParameterOverride = override;
+
+        return this;
+    }
+
+    /**
      * Sets automatic sanitizers/filters for a particular field and for
      * particular methods
      */
@@ -1272,6 +1328,7 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
         if count(scope) < 1 {
             let localScope = [
                 self::METHOD_GET,
+                self::METHOD_PATCH,
                 self::METHOD_POST,
                 self::METHOD_PUT
             ];
@@ -1379,18 +1436,18 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
         var value;
         int numberFiles = 0;
 
-        if typeof data != "array" {
+        if typeof data !== "array" {
             return 1;
         }
 
         for value in data {
-            if typeof value != "array" {
+            if typeof value !== "array" {
                 if !value || !onlySuccessful {
                     let numberFiles++;
                 }
             }
 
-            if typeof value == "array" {
+            if typeof value === "array" {
                 let numberFiles += this->hasFileHelper(value, onlySuccessful);
             }
         }
@@ -1455,8 +1512,8 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
             server    = this->getServerArray();
 
         // TODO: Make Request implements EventsAwareInterface for v4.0.0
-        if typeof container === "object" {
-            let hasEventsManager = (bool) container->has("eventsManager");
+        if container !== null {
+            let hasEventsManager = container->has("eventsManager");
 
             if hasEventsManager {
                 let eventsManager = <ManagerInterface> container->getShared("eventsManager");
@@ -1548,7 +1605,7 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
         for idx, name in names {
             let p = prefix . "." . idx;
 
-            if typeof name == "string" {
+            if typeof name === "string" {
                 let files[] = [
                     "name":     name,
                     "type":     types[idx],
@@ -1559,7 +1616,7 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
                 ];
             }
 
-            if typeof name == "array" {
+            if typeof name === "array" {
                 let parentFiles = this->smoothFiles(
                     names[idx],
                     types[idx],
@@ -1590,7 +1647,7 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
         if typeof filterService != "object" {
             let container = <DiInterface> this->container;
 
-            if unlikely typeof container != "object" {
+            if container === null {
                 throw new Exception(
                     "A dependency injection container is required to access the 'filter' service"
                 );
@@ -1607,8 +1664,171 @@ class Request extends AbstractInjectionAware implements RequestInterface, Reques
     {
         if _SERVER {
             return _SERVER;
-        } else {
-            return [];
         }
+
+        return [];
+    }
+
+    /**
+     * Gets filtered data
+     */
+    public function getFilteredData(
+        string methodKey,
+        string method,
+        string name = null,
+        var defaultValue = null,
+        bool notAllowEmpty = false,
+        bool noRecursive = false
+    ) -> var {
+        var filters;
+
+        if !fetch filters, this->queryFilters[methodKey][name] {
+            let filters = [];
+        }
+
+        return this->{method}(
+            name,
+            filters,
+            defaultValue,
+            notAllowEmpty,
+            noRecursive
+        );
+    }
+
+    /**
+     * Gets a variable from put request
+     *
+     *```php
+     * // Returns value from $_PATCH["user_email"] without sanitizing
+     * $userEmail = $request->getPatch("user_email");
+     *
+     * // Returns value from $_PATCH["user_email"] with sanitizing
+     * $userEmail = $request->getPatch("user_email", "email");
+     *```
+     */
+    private function getPatchPut(
+        string collection,
+        string name = null,
+        var filters = null,
+        var defaultValue = null,
+        bool notAllowEmpty = false,
+        bool noRecursive = false
+    ) -> var {
+        var cached, contentType;
+
+        let cached = this->{collection};
+
+        if null === cached {
+            let contentType = this->getContentType();
+
+            if (
+                typeof contentType == "string" &&
+                (
+                    stripos(contentType, "json") != false ||
+                    stripos(contentType, "multipart/form-data") !== false
+                )
+            ) {
+                if (stripos(contentType, "json") != false) {
+                    let cached = this->getJsonRawBody(true);
+                }
+
+                if (stripos(contentType, "multipart/form-data") !== false) {
+                    let cached = this->getFormData();
+                }
+
+                if typeof cached != "array" {
+                    let cached = [];
+                }
+
+            } else {
+                let cached = [];
+
+                parse_str(this->getRawBody(), cached);
+            }
+
+            let this->{collection} = cached;
+        }
+
+        return this->getHelper(
+            cached,
+            name,
+            filters,
+            defaultValue,
+            notAllowEmpty,
+            noRecursive
+        );
+    }
+
+    /**
+     * parse multipart/form-data from raw data
+     */
+    private function getFormData() -> array
+    {
+        var boundary, matches;
+
+        preg_match("/boundary=(.*)$/is", this->getContentType(), matches);
+
+        let boundary = matches[1];
+
+        var bodyParts;
+
+        let bodyParts = preg_split("/\\R?-+" . preg_quote(boundary, "/") . "/s", this->getRawBody());
+
+        array_pop(bodyParts);
+
+        array dataset = [];
+        var bodyPart;
+
+        for bodyPart in bodyParts {
+            if empty(bodyPart) {
+                continue;
+            }
+
+            var splited;
+            let splited = preg_split("/\\R\\R/", bodyPart, 2);
+
+            array headers = [];
+            var headerParts, headerPart;
+
+            let headerParts = preg_split("/\\R/s", splited[0], -1, PREG_SPLIT_NO_EMPTY);
+
+            for headerPart in headerParts {
+                if (strpos(headerPart, ":") === false) {
+                    continue;
+                }
+
+                var exploded, headerName, headerValue;
+
+                let exploded = explode(":", headerPart, 2),
+                    headerName = strtolower(trim(exploded[0])),
+                    headerValue = trim(exploded[1]);
+
+                if strpos(headerValue, ";") !== false {
+                    var explodedHeader, part;
+                    let explodedHeader = explode(";", headerValue);
+
+                    for part in explodedHeader  {
+                        let part = preg_replace("/\"/", "", trim(part));
+
+                        if strpos(part, "=") !== false {
+                             var explodedPart, namePart, valuePart;
+                             let explodedPart = explode("=", part, 2),
+                                 namePart = strtolower(trim(explodedPart[0])),
+                                 valuePart =  trim(trim(explodedPart[1]), '"'),
+                                 headers[headerName][namePart] = valuePart;
+
+                        } else {
+                            let headers[headerName][] = part;
+                        }
+                    }
+                } else {
+                    let headers[headerName] = headerValue;
+                }
+            }
+
+            let dataset[headers["content-disposition"]["name"]] = splited[1];
+        }
+
+        return dataset;
     }
 }

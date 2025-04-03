@@ -36,9 +36,8 @@ abstract class AbstractSeries extends AbstractHelper
         string indent = "    ",
         string delimiter = null
     ) -> <AbstractSeries> {
-        let this->delimiter = empty(delimiter) ? PHP_EOL : delimiter,
-            this->indent    = indent,
-            this->store     = [];
+        let this->delimiter = null === delimiter ? PHP_EOL : delimiter,
+            this->indent    = indent;
 
         return this;
     }
@@ -54,6 +53,16 @@ abstract class AbstractSeries extends AbstractHelper
             this->store,
             this->delimiter
         );
+    }
+
+    /**
+     * Resets the internal store.
+     */
+    public function reset() -> <AbstractSeries>
+    {
+        let this->store = [];
+
+        return this;
     }
 
     /**

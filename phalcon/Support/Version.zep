@@ -77,7 +77,7 @@ class Version
      */
     protected function getVersion() -> array
     {
-        return [5, 0, 0, 3, 2];
+        return [5, 9, 1, 4, 0];
     }
 
     /**
@@ -85,7 +85,7 @@ class Version
      */
     protected final function getSpecial(int special) -> string
     {
-        string suffix = "";
+        var suffix;
 
         switch special {
             case 1:
@@ -96,6 +96,9 @@ class Version
                 break;
             case 3:
                 let suffix = "RC";
+                break;
+            default:
+                let suffix = "";
                 break;
         }
 
@@ -186,7 +189,7 @@ class Version
             case self::VERSION_MEDIUM:
             case self::VERSION_MINOR:
             case self::VERSION_SPECIAL_NUMBER:
-                return version[part];
+                return (string) version[part];
 
             case self::VERSION_SPECIAL:
                 return this->getSpecial(version[self::VERSION_SPECIAL]);

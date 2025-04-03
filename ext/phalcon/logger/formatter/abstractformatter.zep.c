@@ -28,8 +28,6 @@
  */
 /**
  * Class AbstractFormatter
- *
- * @property string $dateFormat
  */
 ZEPHIR_INIT_CLASS(Phalcon_Logger_Formatter_AbstractFormatter)
 {
@@ -41,48 +39,47 @@ ZEPHIR_INIT_CLASS(Phalcon_Logger_Formatter_AbstractFormatter)
 	 * @var string
 	 */
 	zend_declare_property_string(phalcon_logger_formatter_abstractformatter_ce, SL("dateFormat"), "c", ZEND_ACC_PROTECTED);
+	/**
+	 * @var string
+	 */
+	zend_declare_property_string(phalcon_logger_formatter_abstractformatter_ce, SL("interpolatorLeft"), "%", ZEND_ACC_PROTECTED);
+	/**
+	 * @var string
+	 */
+	zend_declare_property_string(phalcon_logger_formatter_abstractformatter_ce, SL("interpolatorRight"), "%", ZEND_ACC_PROTECTED);
 	zend_class_implements(phalcon_logger_formatter_abstractformatter_ce, 1, phalcon_logger_formatter_formatterinterface_ce);
 	return SUCCESS;
 }
 
 /**
- * Default date format
+ * @return string
  */
 PHP_METHOD(Phalcon_Logger_Formatter_AbstractFormatter, getDateFormat)
 {
-	zval *this_ptr = getThis();
-
-
 
 	RETURN_MEMBER(getThis(), "dateFormat");
 }
 
 /**
- * Default date format
+ * @param string $format
  */
 PHP_METHOD(Phalcon_Logger_Formatter_AbstractFormatter, setDateFormat)
 {
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
-	zval *dateFormat_param = NULL;
-	zval dateFormat;
+	zval *format_param = NULL;
+	zval format;
 	zval *this_ptr = getThis();
 
-	ZVAL_UNDEF(&dateFormat);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
+	ZVAL_UNDEF(&format);
 	ZEND_PARSE_PARAMETERS_START(1, 1)
-		Z_PARAM_STR(dateFormat)
+		Z_PARAM_STR(format)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
-	zephir_fetch_params(1, 1, 0, &dateFormat_param);
-	zephir_get_strval(&dateFormat, dateFormat_param);
-
-
-	zephir_update_property_zval(this_ptr, ZEND_STRL("dateFormat"), &dateFormat);
-	RETURN_THIS();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
+	zephir_fetch_params(1, 1, 0, &format_param);
+	zephir_get_strval(&format, format_param);
+	zephir_update_property_zval(this_ptr, ZEND_STRL("dateFormat"), &format);
+	ZEPHIR_MM_RESTORE();
 }
 
 /**
@@ -102,22 +99,52 @@ PHP_METHOD(Phalcon_Logger_Formatter_AbstractFormatter, getFormattedDate)
 	ZVAL_UNDEF(&item_sub);
 	ZVAL_UNDEF(&_0);
 	ZVAL_UNDEF(&_1);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_OBJECT_OF_CLASS(item, phalcon_logger_item_ce)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 1, 0, &item);
-
-
 	ZEPHIR_CALL_METHOD(&_0, item, "getdatetime", NULL, 0);
 	zephir_check_call_status();
 	zephir_read_property(&_1, this_ptr, ZEND_STRL("dateFormat"), PH_NOISY_CC | PH_READONLY);
 	ZEPHIR_RETURN_CALL_METHOD(&_0, "format", NULL, 0, &_1);
+	zephir_check_call_status();
+	RETURN_MM();
+}
+
+/**
+ * @param Item   $item
+ * @param string $message
+ *
+ * @return string
+ */
+PHP_METHOD(Phalcon_Logger_Formatter_AbstractFormatter, getInterpolatedMessage)
+{
+	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
+	zend_long ZEPHIR_LAST_CALL_STATUS;
+	zval message;
+	zval *item, item_sub, *message_param = NULL, _0, _1, _2;
+	zval *this_ptr = getThis();
+
+	ZVAL_UNDEF(&item_sub);
+	ZVAL_UNDEF(&_0);
+	ZVAL_UNDEF(&_1);
+	ZVAL_UNDEF(&_2);
+	ZVAL_UNDEF(&message);
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJECT_OF_CLASS(item, phalcon_logger_item_ce)
+		Z_PARAM_STR(message)
+	ZEND_PARSE_PARAMETERS_END();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
+	zephir_fetch_params(1, 2, 0, &item, &message_param);
+	zephir_get_strval(&message, message_param);
+	ZEPHIR_CALL_METHOD(&_0, item, "getcontext", NULL, 0);
+	zephir_check_call_status();
+	zephir_read_property(&_1, this_ptr, ZEND_STRL("interpolatorLeft"), PH_NOISY_CC | PH_READONLY);
+	zephir_read_property(&_2, this_ptr, ZEND_STRL("interpolatorRight"), PH_NOISY_CC | PH_READONLY);
+	ZEPHIR_RETURN_CALL_METHOD(this_ptr, "tointerpolate", NULL, 0, &message, &_0, &_1, &_2);
 	zephir_check_call_status();
 	RETURN_MM();
 }

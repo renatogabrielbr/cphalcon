@@ -12,8 +12,8 @@
 #include <Zend/zend_interfaces.h>
 
 #include "kernel/main.h"
-#include "kernel/object.h"
 #include "kernel/operators.h"
+#include "kernel/object.h"
 #include "kernel/memory.h"
 
 
@@ -53,30 +53,6 @@ ZEPHIR_INIT_CLASS(Phalcon_Db_RawValue)
 }
 
 /**
- * Raw value without quoting or formatting
- */
-PHP_METHOD(Phalcon_Db_RawValue, getValue)
-{
-	zval *this_ptr = getThis();
-
-
-
-	RETURN_MEMBER(getThis(), "value");
-}
-
-/**
- * Raw value without quoting or formatting
- */
-PHP_METHOD(Phalcon_Db_RawValue, __toString)
-{
-	zval *this_ptr = getThis();
-
-
-
-	RETURN_MEMBER(getThis(), "value");
-}
-
-/**
  * Phalcon\Db\RawValue constructor
  */
 PHP_METHOD(Phalcon_Db_RawValue, __construct)
@@ -90,18 +66,12 @@ PHP_METHOD(Phalcon_Db_RawValue, __construct)
 	ZVAL_UNDEF(&_0$$3);
 	ZVAL_UNDEF(&_1$$4);
 	ZVAL_UNDEF(&_2$$5);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_ZVAL(value)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 1, 0, &value);
-
-
 	if (ZEPHIR_IS_STRING_IDENTICAL(value, "")) {
 		ZEPHIR_INIT_VAR(&_0$$3);
 		ZEPHIR_INIT_NVAR(&_0$$3);
@@ -117,5 +87,17 @@ PHP_METHOD(Phalcon_Db_RawValue, __construct)
 		zephir_update_property_zval(this_ptr, ZEND_STRL("value"), &_2$$5);
 	}
 	ZEPHIR_MM_RESTORE();
+}
+
+PHP_METHOD(Phalcon_Db_RawValue, __toString)
+{
+
+	RETURN_MEMBER(getThis(), "value");
+}
+
+PHP_METHOD(Phalcon_Db_RawValue, getValue)
+{
+
+	RETURN_MEMBER(getThis(), "value");
 }
 

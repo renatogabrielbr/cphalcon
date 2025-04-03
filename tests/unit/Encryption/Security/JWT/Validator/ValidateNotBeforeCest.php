@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace Phalcon\Tests\Unit\Encryption\Security\JWT\Validator;
 
-use Phalcon\Encryption\Security\JWT\Exceptions\ValidatorException;
 use Phalcon\Encryption\Security\JWT\Validator;
 use Phalcon\Tests\Fixtures\Traits\JWTTrait;
 use UnitTester;
@@ -26,28 +25,27 @@ class ValidateNotBeforeCest
     use JWTTrait;
 
     /**
-     * Unit Tests Phalcon\Encryption\Security\JWT\Validator :: validateNotBefore()
+     * Unit Tests Phalcon\Encryption\Security\JWT\Validator ::
+     * validateNotBefore()
      *
      * @param UnitTester $I
      *
      * @author Phalcon Team <team@phalcon.io>
      * @since  2020-09-09
      */
-    public function httpJWTValidatorValidateNotBefore(UnitTester $I)
+    public function encryptionSecurityJWTValidatorValidateNotBefore(UnitTester $I)
     {
-        $I->wantToTest('Http\JWT\Validator - validateNotBefore()');
+        $I->wantToTest('Encryption\Security\JWT\Validator - validateNotBefore()');
 
-        $token = $this->newToken();
-        $I->expectThrowable(
-            new ValidatorException(
-                "Validation: the token cannot be used yet (not before)"
-            ),
-            function () use ($token, $I) {
-                $timestamp = strtotime(("-2 days"));
-                $validator = new Validator($token);
-                $I->assertInstanceOf(Validator::class, $validator);
-                $validator->validateNotBefore($timestamp);
-            }
-        );
+        $token     = $this->newToken();
+        $timestamp = strtotime(("-2 days"));
+        $validator = new Validator($token);
+        $I->assertInstanceOf(Validator::class, $validator);
+
+        $validator->validateNotBefore($timestamp);
+
+        $expected = ["Validation: the token cannot be used yet (not before)"];
+        $actual   = $validator->getErrors();
+        $I->assertSame($expected, $actual);
     }
 }

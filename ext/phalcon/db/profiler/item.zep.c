@@ -13,8 +13,9 @@
 
 #include "kernel/main.h"
 #include "kernel/object.h"
-#include "kernel/memory.h"
 #include "kernel/operators.h"
+#include "kernel/memory.h"
+#include "kernel/fcall.h"
 
 
 /**
@@ -66,7 +67,106 @@ ZEPHIR_INIT_CLASS(Phalcon_Db_Profiler_Item)
 }
 
 /**
- * Timestamp when the profile ended
+ * Return the timestamp when the profile ended
+ */
+PHP_METHOD(Phalcon_Db_Profiler_Item, getFinalTime)
+{
+
+	RETURN_MEMBER(getThis(), "finalTime");
+}
+
+/**
+ * Return the timestamp when the profile started
+ */
+PHP_METHOD(Phalcon_Db_Profiler_Item, getInitialTime)
+{
+
+	RETURN_MEMBER(getThis(), "initialTime");
+}
+
+/**
+ * Return the SQL bind types related to the profile
+ */
+PHP_METHOD(Phalcon_Db_Profiler_Item, getSqlBindTypes)
+{
+
+	RETURN_MEMBER(getThis(), "sqlBindTypes");
+}
+
+/**
+ * Return the SQL statement related to the profile
+ */
+PHP_METHOD(Phalcon_Db_Profiler_Item, getSqlStatement)
+{
+
+	RETURN_MEMBER(getThis(), "sqlStatement");
+}
+
+/**
+ * Return the SQL variables related to the profile
+ */
+PHP_METHOD(Phalcon_Db_Profiler_Item, getSqlVariables)
+{
+
+	RETURN_MEMBER(getThis(), "sqlVariables");
+}
+
+/**
+ * Returns the total time in nanoseconds spent by the profile
+ */
+PHP_METHOD(Phalcon_Db_Profiler_Item, getTotalElapsedNanoseconds)
+{
+	zval _0, _1;
+	zval *this_ptr = getThis();
+
+	ZVAL_UNDEF(&_0);
+	ZVAL_UNDEF(&_1);
+	zephir_read_property(&_0, this_ptr, ZEND_STRL("finalTime"), PH_NOISY_CC | PH_READONLY);
+	zephir_read_property(&_1, this_ptr, ZEND_STRL("initialTime"), PH_NOISY_CC | PH_READONLY);
+	zephir_sub_function(return_value, &_0, &_1);
+	return;
+}
+
+/**
+ * Returns the total time in milliseconds spent by the profile
+ */
+PHP_METHOD(Phalcon_Db_Profiler_Item, getTotalElapsedMilliseconds)
+{
+	zval _0;
+	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
+	zend_long ZEPHIR_LAST_CALL_STATUS;
+	zval *this_ptr = getThis();
+
+	ZVAL_UNDEF(&_0);
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
+
+	ZEPHIR_CALL_METHOD(&_0, this_ptr, "gettotalelapsednanoseconds", NULL, 0);
+	zephir_check_call_status();
+	RETURN_MM_DOUBLE(zephir_safe_div_zval_long(&_0, 1000000));
+}
+
+/**
+ * Returns the total time in seconds spent by the profile
+ */
+PHP_METHOD(Phalcon_Db_Profiler_Item, getTotalElapsedSeconds)
+{
+	zval _0;
+	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
+	zend_long ZEPHIR_LAST_CALL_STATUS;
+	zval *this_ptr = getThis();
+
+	ZVAL_UNDEF(&_0);
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
+
+	ZEPHIR_CALL_METHOD(&_0, this_ptr, "gettotalelapsedmilliseconds", NULL, 0);
+	zephir_check_call_status();
+	RETURN_MM_DOUBLE(zephir_safe_div_zval_long(&_0, 1000));
+}
+
+/**
+ * Return the timestamp when the profile ended
  */
 PHP_METHOD(Phalcon_Db_Profiler_Item, setFinalTime)
 {
@@ -75,38 +175,19 @@ PHP_METHOD(Phalcon_Db_Profiler_Item, setFinalTime)
 	zval *this_ptr = getThis();
 
 	ZVAL_UNDEF(&_0);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_ZVAL(finalTime)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
 	zephir_fetch_params_without_memory_grow(1, 0, &finalTime_param);
 	finalTime = zephir_get_doubleval(finalTime_param);
-
-
-	ZEPHIR_INIT_ZVAL_NREF(_0);
+	ZVAL_UNDEF(&_0);
 	ZVAL_DOUBLE(&_0, finalTime);
 	zephir_update_property_zval(this_ptr, ZEND_STRL("finalTime"), &_0);
 	RETURN_THISW();
 }
 
 /**
- * Timestamp when the profile ended
- */
-PHP_METHOD(Phalcon_Db_Profiler_Item, getFinalTime)
-{
-	zval *this_ptr = getThis();
-
-
-
-	RETURN_MEMBER(getThis(), "finalTime");
-}
-
-/**
- * Timestamp when the profile started
+ * Return the timestamp when the profile started
  */
 PHP_METHOD(Phalcon_Db_Profiler_Item, setInitialTime)
 {
@@ -115,38 +196,19 @@ PHP_METHOD(Phalcon_Db_Profiler_Item, setInitialTime)
 	zval *this_ptr = getThis();
 
 	ZVAL_UNDEF(&_0);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_ZVAL(initialTime)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
 	zephir_fetch_params_without_memory_grow(1, 0, &initialTime_param);
 	initialTime = zephir_get_doubleval(initialTime_param);
-
-
-	ZEPHIR_INIT_ZVAL_NREF(_0);
+	ZVAL_UNDEF(&_0);
 	ZVAL_DOUBLE(&_0, initialTime);
 	zephir_update_property_zval(this_ptr, ZEND_STRL("initialTime"), &_0);
 	RETURN_THISW();
 }
 
 /**
- * Timestamp when the profile started
- */
-PHP_METHOD(Phalcon_Db_Profiler_Item, getInitialTime)
-{
-	zval *this_ptr = getThis();
-
-
-
-	RETURN_MEMBER(getThis(), "initialTime");
-}
-
-/**
- * SQL bind types related to the profile
+ * Return the SQL bind types related to the profile
  */
 PHP_METHOD(Phalcon_Db_Profiler_Item, setSqlBindTypes)
 {
@@ -156,37 +218,19 @@ PHP_METHOD(Phalcon_Db_Profiler_Item, setSqlBindTypes)
 	zval *this_ptr = getThis();
 
 	ZVAL_UNDEF(&sqlBindTypes);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_ARRAY(sqlBindTypes)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 1, 0, &sqlBindTypes_param);
 	zephir_get_arrval(&sqlBindTypes, sqlBindTypes_param);
-
-
 	zephir_update_property_zval(this_ptr, ZEND_STRL("sqlBindTypes"), &sqlBindTypes);
 	RETURN_THIS();
 }
 
 /**
- * SQL bind types related to the profile
- */
-PHP_METHOD(Phalcon_Db_Profiler_Item, getSqlBindTypes)
-{
-	zval *this_ptr = getThis();
-
-
-
-	RETURN_MEMBER(getThis(), "sqlBindTypes");
-}
-
-/**
- * SQL statement related to the profile
+ * Return the SQL statement related to the profile
  */
 PHP_METHOD(Phalcon_Db_Profiler_Item, setSqlStatement)
 {
@@ -196,37 +240,19 @@ PHP_METHOD(Phalcon_Db_Profiler_Item, setSqlStatement)
 	zval *this_ptr = getThis();
 
 	ZVAL_UNDEF(&sqlStatement);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_STR(sqlStatement)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 1, 0, &sqlStatement_param);
 	zephir_get_strval(&sqlStatement, sqlStatement_param);
-
-
 	zephir_update_property_zval(this_ptr, ZEND_STRL("sqlStatement"), &sqlStatement);
 	RETURN_THIS();
 }
 
 /**
- * SQL statement related to the profile
- */
-PHP_METHOD(Phalcon_Db_Profiler_Item, getSqlStatement)
-{
-	zval *this_ptr = getThis();
-
-
-
-	RETURN_MEMBER(getThis(), "sqlStatement");
-}
-
-/**
- * SQL variables related to the profile
+ * Return the SQL variables related to the profile
  */
 PHP_METHOD(Phalcon_Db_Profiler_Item, setSqlVariables)
 {
@@ -236,51 +262,14 @@ PHP_METHOD(Phalcon_Db_Profiler_Item, setSqlVariables)
 	zval *this_ptr = getThis();
 
 	ZVAL_UNDEF(&sqlVariables);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_ARRAY(sqlVariables)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 1, 0, &sqlVariables_param);
 	zephir_get_arrval(&sqlVariables, sqlVariables_param);
-
-
 	zephir_update_property_zval(this_ptr, ZEND_STRL("sqlVariables"), &sqlVariables);
 	RETURN_THIS();
-}
-
-/**
- * SQL variables related to the profile
- */
-PHP_METHOD(Phalcon_Db_Profiler_Item, getSqlVariables)
-{
-	zval *this_ptr = getThis();
-
-
-
-	RETURN_MEMBER(getThis(), "sqlVariables");
-}
-
-/**
- * Returns the total time in seconds spent by the profile
- */
-PHP_METHOD(Phalcon_Db_Profiler_Item, getTotalElapsedSeconds)
-{
-	zval _0, _1;
-	zval *this_ptr = getThis();
-
-	ZVAL_UNDEF(&_0);
-	ZVAL_UNDEF(&_1);
-
-
-
-	zephir_read_property(&_0, this_ptr, ZEND_STRL("finalTime"), PH_NOISY_CC | PH_READONLY);
-	zephir_read_property(&_1, this_ptr, ZEND_STRL("initialTime"), PH_NOISY_CC | PH_READONLY);
-	zephir_sub_function(return_value, &_0, &_1);
-	return;
 }
 

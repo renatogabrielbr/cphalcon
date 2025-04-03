@@ -23,16 +23,17 @@ use UnitTester;
 class GetSetSubjectCest
 {
     /**
-     * Unit Tests Phalcon\Encryption\Security\JWT\Builder :: getSubject()/setSubject()
+     * Unit Tests Phalcon\Encryption\Security\JWT\Builder ::
+     * getSubject()/setSubject()
      *
      * @param UnitTester $I
      *
      * @author Phalcon Team <team@phalcon.io>
      * @since  2020-09-09
      */
-    public function httpJWTBuilderGetSetSubject(UnitTester $I)
+    public function encryptionSecurityJWTBuilderGetSetSubject(UnitTester $I)
     {
-        $I->wantToTest('Http\JWT\Builder - getSubject()/setSubject()');
+        $I->wantToTest('Encryption\Security\JWT\Builder - getSubject()/setSubject()');
 
         $signer  = new Hmac();
         $builder = new Builder($signer);
@@ -42,6 +43,6 @@ class GetSetSubjectCest
         $return = $builder->setSubject('subject');
         $I->assertInstanceOf(Builder::class, $return);
 
-        $I->assertEquals('subject', $builder->getSubject());
+        $I->assertSame('subject', $builder->getSubject());
     }
 }

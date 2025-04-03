@@ -31,14 +31,14 @@ class SetEtagCest
         $response = new Response();
 
         $etag = md5(
-            (string) time()
+            (string)time()
         );
 
         $response->setEtag($etag);
 
         $headers = $response->getHeaders();
 
-        $I->assertEquals(
+        $I->assertSame(
             $etag,
             $headers->get('Etag')
         );

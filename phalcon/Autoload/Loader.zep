@@ -16,18 +16,6 @@ use Phalcon\Events\AbstractEventsAware;
  * The Phalcon Autoloader provides an easy way to automatically load classes
  * (namespaced or not) as well as files. It also features extension loading,
  * allowing the user to autoload files with different extensions than .php.
- *
- * @property string|null          $checkedPath
- * @property array                $classes
- * @property array                $debug
- * @property array                $directories
- * @property array                $extensions
- * @property string|callable|null $fileCheckingCallback
- * @property array                $files
- * @property string|null          $foundPath
- * @property bool                 $isDebug
- * @property bool                 $isRegistered
- * @property array                $namespaces
  */
 class Loader extends AbstractEventsAware
 {
@@ -521,6 +509,16 @@ class Loader extends AbstractEventsAware
 
         return this;
     }
+
+    /**
+     * returns isRegister
+     *
+     * @return bool
+     */
+     public function isRegistered() -> bool
+     {
+        return this->isRegistered;
+     }
 
     /**
      * If the file exists, require it and return true; false otherwise

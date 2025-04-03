@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace Phalcon\Tests\Unit\Encryption\Security\JWT\Validator;
 
-use Phalcon\Encryption\Security\JWT\Exceptions\ValidatorException;
 use Phalcon\Encryption\Security\JWT\Validator;
 use Phalcon\Tests\Fixtures\Traits\JWTTrait;
 use UnitTester;
@@ -26,27 +25,25 @@ class ValidateAudienceCest
     use JWTTrait;
 
     /**
-     * Unit Tests Phalcon\Encryption\Security\JWT\Validator :: validateAudience()
+     * Unit Tests Phalcon\Encryption\Security\JWT\Validator ::
+     * validateAudience()
      *
      * @param UnitTester $I
      *
      * @author Phalcon Team <team@phalcon.io>
      * @since  2020-09-09
      */
-    public function httpJWTValidatorValidateAudience(UnitTester $I)
+    public function encryptionSecurityJWTValidatorValidateAudience(UnitTester $I)
     {
-        $I->wantToTest('Http\JWT\Validator - validateAudience()');
+        $I->wantToTest('Encryption\Security\JWT\Validator - validateAudience()');
 
-        $token = $this->newToken();
-        $I->expectThrowable(
-            new ValidatorException(
-                "Validation: audience not allowed"
-            ),
-            function () use ($token, $I) {
-                $validator = new Validator($token);
-                $I->assertInstanceOf(Validator::class, $validator);
-                $validator->validateAudience("unknown");
-            }
-        );
+        $token     = $this->newToken();
+        $validator = new Validator($token);
+
+        $validator->validateAudience('unknown');
+
+        $expected = ["Validation: audience not allowed"];
+        $actual   = $validator->getErrors();
+        $I->assertSame($expected, $actual);
     }
 }

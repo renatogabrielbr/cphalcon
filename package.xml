@@ -17,33 +17,36 @@
     <active>yes</active>
   </lead>
   <lead>
-    <name>Ruud Boon</name>
-    <user>ruudboon</user>
-    <email>ruud@ruudboon.io</email>
+    <name>Nikolaos Dimopoulos</name>
+    <user>niden</user>
+    <email>nikos@phalcon.io</email>
     <active>yes</active>
   </lead>
-  <date>2022-05-31</date>
+  <date>2025-03-31</date>
   <time>17:00:00</time>
   <version>
-    <release>5.0.0RC2</release>
-    <api>5.0.0RC2</api>
+    <release>5.9.1</release>
+    <api>5.9.1</api>
   </version>
   <stability>
-    <release>beta</release>
-    <api>beta</api>
+    <release>stable</release>
+    <api>stable</api>
   </stability>
   <license uri="https://license.phalcon.io">BSD 3-Clause License</license>
   <notes>
     Full changelog can be found at: https://github.com/phalcon/cphalcon/blob/master/CHANGELOG-5.0.md
 
-    ## Changed
-    - Changed the `StringVal` filter to now use `htmlspecialchars()` [#15978](https://github.com/phalcon/cphalcon/issues/15978)
+    ### Changed
 
-    ## Fixed
-    - Fixed `Phalcon\Http\Response::getQualityHeader()` to check if the server variable is `null` before performing `preg_split` [#15984](https://github.com/phalcon/cphalcon/issues/15984)
+    - Changed `Phalcon\Storage\Adapter\AbstractAdapter` and dropped `has()` check before receiving the value. [#16705](https://github.com/phalcon/cphalcon/issues/16705)
 
-    ## Added
-    - Added `StringValLegacy` filter using `filter_var()` for PHP less than 8.1 [#15978](https://github.com/phalcon/cphalcon/issues/15978)
+    ### Added
+
+    - Added `Phalcon\Html\Helper\Breadcrumbs` component to replace the old `Phalcon\Html\Breadcrumbs` component. [#16727](https://github.com/phalcon/cphalcon/issues/16727)
+
+    ### Fixed
+
+    - Fixed `Phalcon\Mvc\Micro\LazyLoader::callMethod` to prevent `Unknown named parameter` error [#16724](https://github.com/phalcon/cphalcon/issues/16724)
 
   </notes>
   <contents>
@@ -62,8 +65,8 @@
   <dependencies>
     <required>
       <php>
-        <min>7.4.1</min>
-        <max>8.1.99</max>
+        <min>8.0.0</min>
+        <max>8.4.99</max>
       </php>
       <pearinstaller>
         <min>1.10</min>

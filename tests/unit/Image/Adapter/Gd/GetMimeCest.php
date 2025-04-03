@@ -13,9 +13,12 @@ declare(strict_types=1);
 
 namespace Phalcon\Tests\Unit\Image\Adapter\Gd;
 
+use Codeception\Example;
 use Phalcon\Image\Adapter\Gd;
 use Phalcon\Tests\Fixtures\Traits\GdTrait;
 use UnitTester;
+
+use function dataDir;
 
 class GetMimeCest
 {
@@ -24,38 +27,67 @@ class GetMimeCest
     /**
      * Tests Phalcon\Image\Adapter\Gd :: getMime()
      *
-     * @author Phalcon Team <team@phalcon.io>
-     * @since  2018-11-13
+     * @dataProvider getExamples
+     *
+     * @param UnitTester $I
+     * @param Example    $example
+     *
+     * @return void
+     *
+     * @author       Phalcon Team <team@phalcon.io>
+     * @since        2018-11-13
      */
-    public function imageAdapterGdGetMimeImageJpeg(UnitTester $I)
+    public function imageAdapterGdGetMime(UnitTester $I, Example $example)
     {
-        $I->wantToTest('Image\Adapter\Gd - getMime() - image/jpg');
+        $I->wantToTest('Image\Adapter\Gd - getMime() - ' . $example['label']);
 
         $this->checkJpegSupport($I);
 
-        $gd = new Gd(dataDir('assets/images/phalconphp.jpg'));
+        $source   = $example['source'];
+        $expected = $example['expected'];
 
-        $I->assertSame(
-            'image/jpeg',
-            $gd->getMime()
-        );
+        $gd = new Gd($source);
+
+        $actual = $gd->getMime();
+        $I->assertSame($expected, $actual);
     }
 
     /**
-     * Tests Phalcon\Image\Adapter\Gd :: getMime()
-     *
-     * @author Phalcon Team <team@phalcon.io>
-     * @since  2018-11-13
+     * @return array[]
      */
-    public function imageAdapterGdGetMimeImagePng(UnitTester $I)
+    private function getExamples(): array
     {
-        $I->wantToTest('Image\Adapter\Gd - getMime() - image/png');
-
-        $gd = new Gd(dataDir('assets/images/logo.png'));
-
-        $I->assertSame(
-            'image/png',
-            $gd->getMime()
-        );
+        return [
+            [
+                'label'    => 'GIF',
+                'source'   => dataDir('assets/images/example-gif.gif'),
+                'expected' => 'image/gif',
+            ],
+            [
+                'label'    => 'JPEG',
+                'source'   => dataDir('assets/images/example-jpg.jpg'),
+                'expected' => 'image/jpeg',
+            ],
+            [
+                'label'    => 'PNG',
+                'source'   => dataDir('assets/images/example-png.png'),
+                'expected' => 'image/png',
+            ],
+            [
+                'label'    => 'WBMP',
+                'source'   => dataDir('assets/images/example-wbmp.wbmp'),
+                'expected' => 'image/vnd.wap.wbmp',
+            ],
+            [
+                'label'    => 'WEBP',
+                'source'   => dataDir('assets/images/example-webp.webp'),
+                'expected' => 'image/webp',
+            ],
+            [
+                'label'    => 'XBM',
+                'source'   => dataDir('assets/images/example-xbm.xbm'),
+                'expected' => 'image/xbm',
+            ],
+        ];
     }
 }

@@ -66,7 +66,7 @@ class OrderCest
             ],
         ];
         $actual   = $object($collection, 'id');
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
 
         $expected = [
             [
@@ -83,33 +83,33 @@ class OrderCest
             ],
         ];
         $actual   = $object($collection, 'id', $object::ORDER_DESC);
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
 
         $collection = [
-            (object) [
+            (object)[
                 'id'   => 2,
                 'name' => 'Paul',
             ],
-            (object) [
+            (object)[
                 'id'   => 3,
                 'name' => 'Peter',
             ],
-            (object) [
+            (object)[
                 'id'   => 1,
                 'name' => 'John',
             ],
         ];
 
         $expected = [
-            (object) [
+            (object)[
                 'id'   => 1,
                 'name' => 'John',
             ],
-            (object) [
+            (object)[
                 'id'   => 2,
                 'name' => 'Paul',
             ],
-            (object) [
+            (object)[
                 'id'   => 3,
                 'name' => 'Peter',
             ],

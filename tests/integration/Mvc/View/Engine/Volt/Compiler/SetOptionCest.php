@@ -41,13 +41,13 @@ class SetOptionCest
 
         $volt->setOption('autoescape', true);
 
-        $I->assertEquals(
-            $expected,
-            $volt->compileString($param)
-        );
+        $actual = $volt->compileString($param);
+        $I->assertSame($expected, $actual);
     }
 
-
+    /**
+     * @return \string[][]
+     */
     private function getVoltSetOptionAutoescape(): array
     {
         return [

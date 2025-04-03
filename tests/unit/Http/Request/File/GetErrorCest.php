@@ -34,12 +34,12 @@ class GetErrorCest
             [
                 'name'     => 'test',
                 'type'     => 'text/plain',
-                'tmp_name' => dataDir('/assets/images/phalconphp.jpg'),
+                'tmp_name' => dataDir('/assets/images/example-jpg.jpg'),
                 'size'     => 1,
                 'error'    => 0,
             ]
         );
 
-        $I->assertEquals(0, $file->getError());
+        $I->assertSame(0, $file->getError());
     }
 }

@@ -86,7 +86,7 @@ class Max extends AbstractValidator
      */
     public function validate(<Validation> validation, var field) -> bool
     {
-        var value, length, maximum, replacePairs, included, result;
+        var failed, included, length, maximum, replacePairs, value;
 
         let value = validation->getValue(field);
         if this->allowEmpty(field, value) {
@@ -95,9 +95,9 @@ class Max extends AbstractValidator
 
         // Check if mbstring is available to calculate the correct length
         if function_exists("mb_strlen") {
-            let length = mb_strlen(value);
+            let length = mb_strlen((string) value);
         } else {
-            let length = strlen(value);
+            let length = strlen((string) value);
         }
 
         let maximum = this->getOption("max");
@@ -115,12 +115,12 @@ class Max extends AbstractValidator
         }
 
         if included {
-            let result = length >= maximum;
+            let failed = length > maximum;
         } else {
-            let result = length > maximum;
+            let failed = length >= maximum;
         }
 
-        if result {
+        if failed {
             let replacePairs = [
                 ":max" : maximum
             ];

@@ -25,7 +25,15 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_phalcon_dispatcher_dispatcherinterface_getparam, 
 	ZEND_ARG_INFO(0, filters)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_phalcon_dispatcher_dispatcherinterface_getparameter, 0, 0, 1)
+	ZEND_ARG_INFO(0, param)
+	ZEND_ARG_INFO(0, filters)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_dispatcher_dispatcherinterface_getparams, 0, 0, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_dispatcher_dispatcherinterface_getparameters, 0, 0, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_phalcon_dispatcher_dispatcherinterface_getreturnedvalue, 0, 0, 0)
@@ -63,9 +71,9 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_dispatcher_dispatcherint
 	ZEND_ARG_TYPE_INFO(0, handlerSuffix, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_dispatcher_dispatcherinterface_setmodulename, 0, 1, IS_VOID, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_dispatcher_dispatcherinterface_setmodulename, 0, 0, IS_VOID, 0)
 
-	ZEND_ARG_TYPE_INFO(0, moduleName, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, moduleName, IS_STRING, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_dispatcher_dispatcherinterface_setnamespacename, 0, 1, IS_VOID, 0)
@@ -91,7 +99,9 @@ ZEPHIR_INIT_FUNCS(phalcon_dispatcher_dispatcherinterface_method_entry) {
 	PHP_ABSTRACT_ME(Phalcon_Dispatcher_DispatcherInterface, getActionSuffix, arginfo_phalcon_dispatcher_dispatcherinterface_getactionsuffix)
 	PHP_ABSTRACT_ME(Phalcon_Dispatcher_DispatcherInterface, getHandlerSuffix, arginfo_phalcon_dispatcher_dispatcherinterface_gethandlersuffix)
 	PHP_ABSTRACT_ME(Phalcon_Dispatcher_DispatcherInterface, getParam, arginfo_phalcon_dispatcher_dispatcherinterface_getparam)
+	PHP_ABSTRACT_ME(Phalcon_Dispatcher_DispatcherInterface, getParameter, arginfo_phalcon_dispatcher_dispatcherinterface_getparameter)
 	PHP_ABSTRACT_ME(Phalcon_Dispatcher_DispatcherInterface, getParams, arginfo_phalcon_dispatcher_dispatcherinterface_getparams)
+	PHP_ABSTRACT_ME(Phalcon_Dispatcher_DispatcherInterface, getParameters, arginfo_phalcon_dispatcher_dispatcherinterface_getparameters)
 	PHP_ABSTRACT_ME(Phalcon_Dispatcher_DispatcherInterface, getReturnedValue, arginfo_phalcon_dispatcher_dispatcherinterface_getreturnedvalue)
 	PHP_ABSTRACT_ME(Phalcon_Dispatcher_DispatcherInterface, hasParam, arginfo_phalcon_dispatcher_dispatcherinterface_hasparam)
 	PHP_ABSTRACT_ME(Phalcon_Dispatcher_DispatcherInterface, isFinished, arginfo_phalcon_dispatcher_dispatcherinterface_isfinished)

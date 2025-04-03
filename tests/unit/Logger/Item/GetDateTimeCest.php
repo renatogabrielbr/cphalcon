@@ -15,8 +15,8 @@ namespace Phalcon\Tests\Unit\Logger\Item;
 
 use DateTimeImmutable;
 use DateTimeZone;
+use Phalcon\Logger\Enum;
 use Phalcon\Logger\Item;
-use Phalcon\Logger\Logger;
 use UnitTester;
 
 use function date_default_timezone_get;
@@ -40,14 +40,14 @@ class GetDateTimeCest
         $item     = new Item(
             'log message',
             'debug',
-            Logger::DEBUG,
+            Enum::DEBUG,
             $datetime
         );
 
         $expected = $datetime;
         $actual   = $item->getDateTime();
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
         $actual = $item->getDateTime();
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
     }
 }

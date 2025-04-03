@@ -10,7 +10,6 @@
 
 namespace Phalcon\Db\Result;
 
-use Pdo;
 use Phalcon\Db\Enum;
 use Phalcon\Db\ResultInterface;
 use Phalcon\Db\Adapter\AdapterInterface;
@@ -132,10 +131,10 @@ class PdoResult implements ResultInterface
          * PDO doesn't support scrollable cursors, so we need to re-execute the
          * statement
          */
-        if typeof bindParams == "array" {
+        if typeof bindParams === "array" {
             let statement = pdo->prepare(sqlStatement);
 
-            if typeof statement == "object" {
+            if typeof statement === "object" {
                 let statement = connection->executePrepared(
                     statement,
                     bindParams,
@@ -185,8 +184,11 @@ class PdoResult implements ResultInterface
      * }
      *```
      */
-    public function $fetch(int fetchStyle = null, int cursorOrientation = Pdo::FETCH_ORI_NEXT, int cursorOffset = 0)
-    {
+    public function $fetch(
+        int fetchStyle = null,
+        int cursorOrientation = Enum::FETCH_ORI_NEXT,
+        int cursorOffset = 0
+    ) {
         var mode;
 
         let mode = typeof fetchStyle === "int" ? fetchStyle : this->fetchMode;
@@ -210,23 +212,25 @@ class PdoResult implements ResultInterface
      *
      * $robots = $result->fetchAll();
      *```
+     *
+     * @param int                      $mode
+     * @param int|string|callable|null $fetchArgument
+     * @param array|null               $constructorArgs
      */
-    public function fetchAll(int fetchStyle = null, int fetchArgument = Pdo::FETCH_ORI_NEXT, int ctorArgs = 0) -> array
-    {
-        var pdoStatement, mode;
-
-        let pdoStatement = this->pdoStatement;
-        let mode = typeof fetchStyle === "int" ? fetchStyle : this->fetchMode;
-
-        if fetchStyle == Enum::FETCH_CLASS {
-            return pdoStatement->fetchAll(mode, fetchArgument, ctorArgs);
+    public function fetchAll(
+        int mode = Enum::FETCH_DEFAULT,
+        var fetchArgument = Enum::FETCH_ORI_NEXT,
+        var constructorArgs = null
+    ) -> array {
+        if mode == Enum::FETCH_CLASS {
+            return this->pdoStatement->fetchAll(mode, fetchArgument, constructorArgs);
         }
 
-        if fetchStyle == Enum::FETCH_COLUMN || fetchStyle == Enum::FETCH_FUNC {
-            return pdoStatement->fetchAll(fetchStyle, fetchArgument);
+        if mode == Enum::FETCH_COLUMN || mode == Enum::FETCH_FUNC {
+            return this->pdoStatement->fetchAll(mode, fetchArgument);
         }
 
-        return pdoStatement->fetchAll(fetchStyle);
+        return this->pdoStatement->fetchAll(mode);
     }
 
     /**
@@ -284,7 +288,7 @@ class PdoResult implements ResultInterface
             /**
              * MySQL and PostgreSQL properly returns the number of records
              */
-            if type == "mysql" || type == "pgsql" {
+            if type === "mysql" || type === "pgsql" {
                 let pdoStatement = this->pdoStatement,
                     rowCount = pdoStatement->rowCount();
             }
@@ -356,8 +360,11 @@ class PdoResult implements ResultInterface
      * );
      *```
      */
-    public function setFetchMode(int fetchMode, var colNoOrClassNameOrObject = null, var ctorargs = null) -> bool
-    {
+    public function setFetchMode(
+        int fetchMode,
+        var colNoOrClassNameOrObject = null,
+        var ctorargs = null
+    ) -> bool {
         var pdoStatement;
 
         let pdoStatement = this->pdoStatement;

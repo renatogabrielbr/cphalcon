@@ -65,7 +65,7 @@ class Messages implements ArrayAccess, Countable, Iterator, JsonSerializable
     {
         var currentMessages, finalMessages, message;
 
-        if typeof messages != "array" && typeof messages != "object" {
+        if typeof messages !== "array" && typeof messages !== "object" {
             throw new Exception("The messages must be iterable");
         }
 
@@ -235,13 +235,13 @@ class Messages implements ArrayAccess, Countable, Iterator, JsonSerializable
      *
      * @param \Phalcon\Messages\Message message
      */
-    public function offsetSet(mixed index, mixed message) -> void
+    public function offsetSet(mixed offset, mixed value) -> void
     {
-        if typeof message != "object" {
+        if typeof value !== "object" {
             throw new Exception("The message must be an object");
         }
 
-        let this->messages[index] = message;
+        let this->messages[offset] = value;
     }
 
     /**

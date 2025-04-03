@@ -30,7 +30,7 @@ interface RouterInterface
     /**
      * Returns the route that matches the handled URI
      */
-    public function getMatchedRoute() -> <RouteInterface>;
+    public function getMatchedRoute() -> <RouteInterface> | null;
 
     /**
      * Return the sub expressions in the regular expression matched
@@ -44,8 +44,14 @@ interface RouterInterface
 
     /**
      * Returns processed extra params
+     * @todo deprecate this in the future
      */
     public function getParams() -> array;
+
+    /**
+     * Returns processed extra params
+     */
+    public function getParameters() -> array;
 
     /**
      * Returns a route object by its id

@@ -12,9 +12,9 @@
 #include <Zend/zend_interfaces.h>
 
 #include "kernel/main.h"
-#include "kernel/object.h"
 #include "kernel/operators.h"
 #include "kernel/exception.h"
+#include "kernel/object.h"
 #include "ext/spl/spl_exceptions.h"
 #include "kernel/memory.h"
 
@@ -51,42 +51,6 @@ ZEPHIR_INIT_CLASS(Phalcon_Acl_Component)
 }
 
 /**
- * Component description
- */
-PHP_METHOD(Phalcon_Acl_Component, getDescription)
-{
-	zval *this_ptr = getThis();
-
-
-
-	RETURN_MEMBER(getThis(), "description");
-}
-
-/**
- * Component name
- */
-PHP_METHOD(Phalcon_Acl_Component, getName)
-{
-	zval *this_ptr = getThis();
-
-
-
-	RETURN_MEMBER(getThis(), "name");
-}
-
-/**
- * Component name
- */
-PHP_METHOD(Phalcon_Acl_Component, __toString)
-{
-	zval *this_ptr = getThis();
-
-
-
-	RETURN_MEMBER(getThis(), "name");
-}
-
-/**
  * Phalcon\Acl\Component constructor
  */
 PHP_METHOD(Phalcon_Acl_Component, __construct)
@@ -98,17 +62,14 @@ PHP_METHOD(Phalcon_Acl_Component, __construct)
 
 	ZVAL_UNDEF(&name);
 	ZVAL_UNDEF(&description);
-#if PHP_VERSION_ID >= 80000
 	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 2)
 		Z_PARAM_STR(name)
 		Z_PARAM_OPTIONAL
 		Z_PARAM_STR_OR_NULL(description)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 1, 1, &name_param, &description_param);
 	if (UNEXPECTED(Z_TYPE_P(name_param) != IS_STRING && Z_TYPE_P(name_param) != IS_NULL)) {
 		zephir_throw_exception_string(spl_ce_InvalidArgumentException, SL("Parameter 'name' must be of the type string"));
@@ -124,14 +85,30 @@ PHP_METHOD(Phalcon_Acl_Component, __construct)
 	} else {
 		zephir_get_strval(&description, description_param);
 	}
-
-
-	if (UNEXPECTED(ZEPHIR_IS_STRING(&name, "*"))) {
+	if (UNEXPECTED(ZEPHIR_IS_STRING_IDENTICAL(&name, "*"))) {
 		ZEPHIR_THROW_EXCEPTION_DEBUG_STR(phalcon_acl_exception_ce, "Component name cannot be '*'", "phalcon/Acl/Component.zep", 38);
 		return;
 	}
 	zephir_update_property_zval(this_ptr, ZEND_STRL("name"), &name);
 	zephir_update_property_zval(this_ptr, ZEND_STRL("description"), &description);
 	ZEPHIR_MM_RESTORE();
+}
+
+PHP_METHOD(Phalcon_Acl_Component, __toString)
+{
+
+	RETURN_MEMBER(getThis(), "name");
+}
+
+PHP_METHOD(Phalcon_Acl_Component, getDescription)
+{
+
+	RETURN_MEMBER(getThis(), "description");
+}
+
+PHP_METHOD(Phalcon_Acl_Component, getName)
+{
+
+	RETURN_MEMBER(getThis(), "name");
 }
 

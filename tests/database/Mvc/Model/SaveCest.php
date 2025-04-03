@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Tests\Integration\Mvc\Model;
+namespace Phalcon\Tests\Database\Mvc\Model;
 
 use DatabaseTester;
 use Phalcon\Mvc\Model;
@@ -21,6 +21,7 @@ use Phalcon\Tests\Fixtures\Migrations\CustomersMigration;
 use Phalcon\Tests\Fixtures\Migrations\InvoicesMigration;
 use Phalcon\Tests\Fixtures\Migrations\SourcesMigration;
 use Phalcon\Tests\Fixtures\Traits\DiTrait;
+use Phalcon\Tests\Models\Customers;
 use Phalcon\Tests\Models\CustomersDefaults;
 use Phalcon\Tests\Models\CustomersKeepSnapshots;
 use Phalcon\Tests\Models\Invoices;
@@ -28,7 +29,6 @@ use Phalcon\Tests\Models\InvoicesKeepSnapshots;
 use Phalcon\Tests\Models\InvoicesSchema;
 use Phalcon\Tests\Models\InvoicesValidationFails;
 use Phalcon\Tests\Models\Sources;
-use Phalcon\Tests\Models\Customers;
 
 use function uniqid;
 
@@ -178,7 +178,7 @@ class SaveCest
      * @author Balázs Németh <https://github.com/zsilbi>
      * @since  2020-10-31
      *
-     * @see https://github.com/phalcon/cphalcon/issues/15148
+     * @see    https://github.com/phalcon/cphalcon/issues/15148
      *
      * @group  mysql
      * @group  pgsql
@@ -390,7 +390,7 @@ class SaveCest
         /** @var \PDO $connection */
         $connection = $I->getConnection();
 
-        $invoicesMigration = new InvoicesMigration($connection);
+        $invoicesMigration  = new InvoicesMigration($connection);
         $customersMigration = new CustomersMigration($connection);
 
         $invoice = new InvoicesKeepSnapshots(
@@ -536,6 +536,7 @@ class SaveCest
      *
      * @author Phalcon Team <team@phalcon.io>
      * @since  2019-11-16
+     * @issue  #11922
      *
      * @group  mysql
      * @group  sqlite
@@ -577,6 +578,16 @@ class SaveCest
         $actual   = $model->getMessages();
         $I->assertCount($expected, $actual);
         $I->assertNotFalse($result);
+
+        /**
+         * Try now with `create()`
+         */
+        $source           = new Sources();
+        $source->id       = 2;
+        $source->username = 'llama';
+        $source->source   = 'test_source';
+        $result           = $source->create();
+        $I->assertTrue($result);
     }
 
     /**
@@ -585,7 +596,7 @@ class SaveCest
      * @author Balázs Németh <https://github.com/zsilbi>
      * @since  2020-11-04
      *
-     * @see https://github.com/phalcon/cphalcon/issues/15148
+     * @see    https://github.com/phalcon/cphalcon/issues/15148
      *
      * @group  mysql
      * @group  pgsql
@@ -631,6 +642,35 @@ class SaveCest
         $expected = 0;
         $actual   = $customer->cst_status_flag;
         $I->assertEquals($expected, $actual);
+    }
+
+    /**
+     * Tests Phalcon\Mvc\Model\ :: save() Infinite Loop
+     *
+     * @author Phalcon Team <team@phalcon.io>
+     * @since  2023-08-09
+     * @issue  https://github.com/phalcon/cphalcon/issues/16395
+     *
+     * @group  mysql
+     * @group  sqlite
+     */
+    public function infiniteSaveLoop(DatabaseTester $I)
+    {
+        $I->wantToTest('Mvc\Model - save() infinite Save loop');
+
+        /** @var \PDO $connection */
+        $connection = $I->getConnection();
+        $invoicesMigration = new InvoicesMigration($connection);
+        $invoicesMigration->insert(77, 1, 0, uniqid('inv-', true));
+
+        $customersMigration = new CustomersMigration($connection);
+        $customersMigration->insert(1, 1, 'test_firstName_1', 'test_lastName_1');
+
+        $customer = Customers::findFirst(1);
+        $invoice = Invoices::findFirst(77);
+        $invoice->customer = $customer;
+        $customer->invoices = [$invoice];
+        $customer->save();
     }
 
     /**

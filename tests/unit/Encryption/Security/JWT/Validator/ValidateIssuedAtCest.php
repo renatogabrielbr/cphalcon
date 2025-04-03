@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace Phalcon\Tests\Unit\Encryption\Security\JWT\Validator;
 
-use Phalcon\Encryption\Security\JWT\Exceptions\ValidatorException;
 use Phalcon\Encryption\Security\JWT\Validator;
 use Phalcon\Tests\Fixtures\Traits\JWTTrait;
 use UnitTester;
@@ -26,28 +25,27 @@ class ValidateIssuedAtCest
     use JWTTrait;
 
     /**
-     * Unit Tests Phalcon\Encryption\Security\JWT\Validator :: validateIssuedAt()
+     * Unit Tests Phalcon\Encryption\Security\JWT\Validator ::
+     * validateIssuedAt()
      *
      * @param UnitTester $I
      *
      * @author Phalcon Team <team@phalcon.io>
      * @since  2020-09-09
      */
-    public function httpJWTValidatorValidateIssuedAt(UnitTester $I)
+    public function encryptionSecurityJWTValidatorValidateIssuedAt(UnitTester $I)
     {
-        $I->wantToTest('Http\JWT\Validator - validateIssuedAt()');
+        $I->wantToTest('Encryption\Security\JWT\Validator - validateIssuedAt()');
 
-        $token = $this->newToken();
-        $I->expectThrowable(
-            new ValidatorException(
-                "Validation: the token cannot be used yet (future)"
-            ),
-            function () use ($token, $I) {
-                $timestamp = strtotime(("-1 day"));
-                $validator = new Validator($token);
-                $I->assertInstanceOf(Validator::class, $validator);
-                $validator->validateIssuedAt($timestamp);
-            }
-        );
+        $token     = $this->newToken();
+        $timestamp = strtotime(("-1 day"));
+        $validator = new Validator($token);
+        $I->assertInstanceOf(Validator::class, $validator);
+
+        $validator->validateIssuedAt($timestamp);
+
+        $expected = ["Validation: the token cannot be used yet (future)"];
+        $actual   = $validator->getErrors();
+        $I->assertSame($expected, $actual);
     }
 }

@@ -139,7 +139,7 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
     /**
      * Appends an 'after' middleware to be called after execute the route
      *
-     * @param callable handler
+     * @param callable|MiddlewareInterface handler
      */
     public function after(handler) -> <Micro>
     {
@@ -163,7 +163,7 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
     /**
      * Appends a before middleware to be called before execute the route
      *
-     * @param callable handler
+     * @param callable|MiddlewareInterface handler
      */
     public function before(handler) -> <Micro>
     {
@@ -310,7 +310,7 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
     /**
      * Gets model binder
      */
-    public function getModelBinder() -> <BinderInterface>|null
+    public function getModelBinder() -> <BinderInterface> | null
     {
         return this->modelBinder;
     }
@@ -330,30 +330,21 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
      */
     public function getRouter() -> <RouterInterface>
     {
-        var router;
-
-        let router = this->router;
-
-        if typeof router != "object" {
-            let router = this->getSharedService("router");
+        if this->router === null {
+            let this->router = this->getSharedService("router");
 
             /**
              * Clear the set routes if any
              */
-            router->clear();
+            this->router->clear();
 
             /**
              * Automatically remove extra slashes
              */
-            router->removeExtraSlashes(true);
-
-            /**
-             * Update the internal router
-             */
-            let this->router = router;
+            this->router->removeExtraSlashes(true);
         }
 
-        return router;
+        return this->router;
     }
 
     /**
@@ -363,17 +354,11 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
      */
     public function getService(string! serviceName)
     {
-        var container;
-
-        let container = this->container;
-
-        if typeof container != "object" {
-            let container = new FactoryDefault();
-
-            let this->container = container;
+        if this->container === null {
+            let this->container = new FactoryDefault();
         }
 
-        return container->get(serviceName);
+        return this->container->get(serviceName);
     }
 
     /**
@@ -383,17 +368,11 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
      */
     public function getSharedService(string! serviceName)
     {
-        var container;
-
-        let container = this->container;
-
-        if typeof container != "object" {
-            let container = new FactoryDefault();
-
-            let this->container = container;
+        if this->container === null {
+            let this->container = new FactoryDefault();
         }
 
-        return container->getShared(serviceName);
+        return this->container->getShared(serviceName);
     }
 
     /**
@@ -404,8 +383,8 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
      */
     public function handle(string! uri)
     {
-        var container, eventsManager, status = null, router, matchedRoute,
-            handler, beforeHandlers, params, returnedValue, e, errorHandler,
+        var container, status = null, router, matchedRoute,
+            handler, beforeHandlers, params, returnedValue, e,
             afterHandlers, notFoundHandler, finishHandlers, finish, before,
             after, response, modelBinder, routeName, realHandler = null,
             methodName, lazyReturned, afterBindingHandlers, afterBinding;
@@ -413,7 +392,7 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
 
         let container = this->container;
 
-        if unlikely typeof container != "object" {
+        if container === null {
             throw new Exception(
                 "A dependency injection container is required to access micro services"
             );
@@ -425,10 +404,8 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
             /**
              * Calling beforeHandle routing
              */
-            let eventsManager = this->eventsManager;
-
-            if typeof eventsManager == "object" {
-                if eventsManager->fire("micro:beforeHandleRoute", this) === false {
+            if this->eventsManager !== null {
+                if this->eventsManager->fire("micro:beforeHandleRoute", this) === false {
                     return false;
                 }
             }
@@ -448,7 +425,7 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
              */
             let matchedRoute = router->getMatchedRoute();
 
-            if typeof matchedRoute == "object" {
+            if matchedRoute !== null {
                 if unlikely !fetch handler, this->handlers[matchedRoute->getRouteId()] {
                     throw new Exception(
                         "Matched route doesn't have an associated handler"
@@ -463,8 +440,8 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
                 /**
                  * Calling beforeExecuteRoute event
                  */
-                if typeof eventsManager == "object" {
-                    if eventsManager->fire("micro:beforeExecuteRoute", this) === false {
+                if this->eventsManager !== null {
+                    if this->eventsManager->fire("micro:beforeExecuteRoute", this) === false {
                         return false;
                     }
 
@@ -472,14 +449,13 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
                 }
 
                 let beforeHandlers = this->beforeHandlers;
-
                 let this->stopped = false;
 
                 /**
                  * Calls the before handlers
                  */
                 for before in beforeHandlers {
-                    if typeof before == "object" && before instanceof MiddlewareInterface {
+                    if typeof before === "object" && before instanceof MiddlewareInterface {
                         /**
                          * Call the middleware
                          */
@@ -512,10 +488,10 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
                 /**
                  * Bound the app to the handler
                  */
-                if typeof handler == "object" && handler instanceof Closure {
+                if typeof handler === "object" && handler instanceof Closure {
                     let handler = Closure::bind(handler, this);
 
-                    if modelBinder != null {
+                    if modelBinder !== null {
                         let routeName = matchedRoute->getName();
 
                         if routeName != null {
@@ -535,10 +511,10 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
                 /**
                  * Calling the Handler in the PHP userland
                  */
-                if typeof handler == "array" {
+                if typeof handler === "array" {
                     let realHandler = handler[0];
 
-                    if realHandler instanceof Controller && modelBinder != null {
+                    if realHandler instanceof Controller && modelBinder !== null {
                         let methodName = handler[1];
                         let bindCacheKey = "_PHMB_" . get_class(realHandler) . "_" . methodName;
 
@@ -576,8 +552,8 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
                 /**
                  * Calling afterBinding event
                  */
-                if typeof eventsManager == "object" {
-                    if eventsManager->fire("micro:afterBinding", this) === false {
+                if this->eventsManager !== null {
+                    if this->eventsManager->fire("micro:afterBinding", this) === false {
                         return false;
                     }
                 }
@@ -590,7 +566,7 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
                  * Calls the after binding handlers
                  */
                 for afterBinding in afterBindingHandlers {
-                    if typeof afterBinding == "object" && afterBinding instanceof MiddlewareInterface {
+                    if typeof afterBinding === "object" && afterBinding instanceof MiddlewareInterface {
                         /**
                          * Call the middleware
                          */
@@ -624,8 +600,8 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
                 /**
                  * Calling afterExecuteRoute event
                  */
-                if typeof eventsManager == "object" {
-                    eventsManager->fire("micro:afterExecuteRoute", this);
+                if this->eventsManager !== null {
+                    this->eventsManager->fire("micro:afterExecuteRoute", this);
                 }
 
                 let afterHandlers = this->afterHandlers;
@@ -636,7 +612,7 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
                  * Calls the after handlers
                  */
                 for after in afterHandlers {
-                    if typeof after == "object" && after instanceof MiddlewareInterface {
+                    if typeof after === "object" && after instanceof MiddlewareInterface {
                         /**
                          * Call the middleware
                          */
@@ -659,13 +635,11 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
                     }
                 }
             } else {
-                /**
-                 * Calling beforeNotFound event
-                 */
-                let eventsManager = this->eventsManager;
-
-                if typeof eventsManager == "object" {
-                    if eventsManager->fire("micro:beforeNotFound", this) === false {
+                 /**
+                  * Calling beforeNotFound event
+                  */
+                if this->eventsManager !== null {
+                    if this->eventsManager->fire("micro:beforeNotFound", this) === false {
                         return false;
                     }
                 }
@@ -690,12 +664,11 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
             /**
              * Calling afterHandleRoute event
              */
-            if typeof eventsManager == "object" {
-                eventsManager->fire("micro:afterHandleRoute", this, returnedValue);
+            if this->eventsManager !== null {
+                this->eventsManager->fire("micro:afterHandleRoute", this, returnedValue);
             }
 
             let finishHandlers = this->finishHandlers;
-
             let this->stopped = false;
 
             /**
@@ -705,7 +678,7 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
                 /**
                  * Try to execute middleware as plugins
                  */
-                if typeof finish == "object" && finish instanceof MiddlewareInterface {
+                if typeof finish === "object" && finish instanceof MiddlewareInterface {
                     /**
                      * Call the middleware
                      */
@@ -737,10 +710,8 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
             /**
              * Calling beforeNotFound event
              */
-            let eventsManager = this->eventsManager;
-
-            if typeof eventsManager == "object" {
-                let returnedValue = eventsManager->fire(
+            if this->eventsManager !== null {
+                let returnedValue = this->eventsManager->fire(
                     "micro:beforeException",
                     this,
                     e
@@ -750,10 +721,8 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
             /**
              * Check if an errorhandler is defined and it's callable
              */
-            let errorHandler = this->errorHandler;
-
-            if errorHandler {
-                if unlikely !is_callable(errorHandler) {
+            if this->errorHandler !== null {
+                if unlikely !is_callable(this->errorHandler) {
                     throw new Exception("Error handler is not callable");
                 }
 
@@ -761,11 +730,11 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
                  * Call the Error handler
                  */
                 let returnedValue = call_user_func_array(
-                    errorHandler,
+                    this->errorHandler,
                     [e]
                 );
 
-                if typeof returnedValue == "object" {
+                if typeof returnedValue === "object" {
                     if !(returnedValue instanceof ResponseInterface) {
                         throw e;
                     }
@@ -798,7 +767,7 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
              * Check if the returned value is a string and take it as response
              * body
              */
-            if typeof returnedValue == "string" {
+            if typeof returnedValue === "string" {
                 let response = <ResponseInterface> container->getShared("response");
 
                 if !response->isSent() {
@@ -810,10 +779,8 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
             /**
              * Check if the returned object is already a response
              */
-            if typeof returnedValue == "object" && returnedValue instanceof ResponseInterface {
-                if !returnedValue->isSent() {
-                    returnedValue->send();
-                }
+            if typeof returnedValue === "object" && returnedValue instanceof ResponseInterface && !returnedValue->isSent() {
+                returnedValue->send();
             }
         }
 
@@ -825,17 +792,11 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
      */
     public function hasService(string! serviceName) -> bool
     {
-        var container;
-
-        let container = this->container;
-
-        if typeof container != "object" {
-            let container = new FactoryDefault();
-
-            let this->container = container;
+        if this->container === null {
+            let this->container = new FactoryDefault();
         }
 
-        return container->has(serviceName);
+        return this->container->has(serviceName);
     }
 
     /**
@@ -936,7 +897,7 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
         let prefix = collection->getPrefix();
 
         for handler in handlers {
-            if unlikely typeof handler != "array" {
+            if unlikely typeof handler !== "array" {
                 throw new Exception(
                     "One of the registered handlers is invalid"
                 );
@@ -953,7 +914,7 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
             let realHandler = [lazyHandler, subHandler];
 
             if !empty prefix {
-                if pattern == "/" {
+                if pattern === "/" {
                     let prefixedPattern = prefix;
                 } else {
                     let prefixedPattern = prefix . pattern;
@@ -967,11 +928,11 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
              */
             let route = this->map(prefixedPattern, realHandler);
 
-            if (typeof methods == "string" && methods != "") || typeof methods == "array" {
+            if (typeof methods === "string" && methods !== "") || typeof methods === "array" {
                 route->via(methods);
             }
 
-            if typeof name == "string" {
+            if typeof name === "string" {
                 route->setName(name);
             }
         }
@@ -1181,13 +1142,6 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
      */
     public function setDI(<DiInterface> container) -> void
     {
-        /**
-         * We automatically set ourselves as application service
-         */
-        if !container->has("application") {
-            container->set("application", this);
-        }
-
         let this->container = container;
     }
 
@@ -1205,7 +1159,7 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
      */
     public function setModelBinder(<BinderInterface> modelBinder, var cache = null) -> <Micro>
     {
-        if typeof cache == "string" {
+        if typeof cache === "string" {
             let cache = this->getService(cache);
         }
 
@@ -1236,24 +1190,18 @@ class Micro extends Injectable implements ArrayAccess, EventsAwareInterface
      */
     public function setService(string! serviceName, var definition, bool shared = false) -> <ServiceInterface>
     {
-        var container;
-
-        let container = this->container;
-
-        if typeof container != "object" {
-            let container = new FactoryDefault();
-
-            let this->container = container;
+        if this->container === null {
+            let this->container = new FactoryDefault();
         }
 
-        return container->set(serviceName, definition, shared);
+        return this->container->set(serviceName, definition, shared);
     }
 
     /**
      * Stops the middleware execution avoiding than other middlewares be
      * executed
      */
-    public function stop()
+    public function stop() -> void
     {
         let this->stopped = true;
     }

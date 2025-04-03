@@ -12,9 +12,9 @@
 #include <Zend/zend_interfaces.h>
 
 #include "kernel/main.h"
-#include "kernel/object.h"
 #include "kernel/operators.h"
 #include "kernel/exception.h"
+#include "kernel/object.h"
 #include "ext/spl/spl_exceptions.h"
 #include "kernel/memory.h"
 
@@ -35,55 +35,19 @@ ZEPHIR_INIT_CLASS(Phalcon_Acl_Role)
 	ZEPHIR_REGISTER_CLASS(Phalcon\\Acl, Role, phalcon, acl_role, phalcon_acl_role_method_entry, 0);
 
 	/**
-	 * Role name
-	 *
-	 * @var string
-	 */
-	zend_declare_property_null(phalcon_acl_role_ce, SL("name"), ZEND_ACC_PRIVATE);
-	/**
 	 * Role description
 	 *
 	 * @var string
 	 */
 	zend_declare_property_null(phalcon_acl_role_ce, SL("description"), ZEND_ACC_PRIVATE);
+	/**
+	 * Role name
+	 *
+	 * @var string
+	 */
+	zend_declare_property_null(phalcon_acl_role_ce, SL("name"), ZEND_ACC_PRIVATE);
 	zend_class_implements(phalcon_acl_role_ce, 1, phalcon_acl_roleinterface_ce);
 	return SUCCESS;
-}
-
-/**
- * Role name
- */
-PHP_METHOD(Phalcon_Acl_Role, getName)
-{
-	zval *this_ptr = getThis();
-
-
-
-	RETURN_MEMBER(getThis(), "name");
-}
-
-/**
- * Role name
- */
-PHP_METHOD(Phalcon_Acl_Role, __toString)
-{
-	zval *this_ptr = getThis();
-
-
-
-	RETURN_MEMBER(getThis(), "name");
-}
-
-/**
- * Role description
- */
-PHP_METHOD(Phalcon_Acl_Role, getDescription)
-{
-	zval *this_ptr = getThis();
-
-
-
-	RETURN_MEMBER(getThis(), "description");
 }
 
 /**
@@ -98,17 +62,14 @@ PHP_METHOD(Phalcon_Acl_Role, __construct)
 
 	ZVAL_UNDEF(&name);
 	ZVAL_UNDEF(&description);
-#if PHP_VERSION_ID >= 80000
 	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 2)
 		Z_PARAM_STR(name)
 		Z_PARAM_OPTIONAL
 		Z_PARAM_STR_OR_NULL(description)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 1, 1, &name_param, &description_param);
 	if (UNEXPECTED(Z_TYPE_P(name_param) != IS_STRING && Z_TYPE_P(name_param) != IS_NULL)) {
 		zephir_throw_exception_string(spl_ce_InvalidArgumentException, SL("Parameter 'name' must be of the type string"));
@@ -124,14 +85,30 @@ PHP_METHOD(Phalcon_Acl_Role, __construct)
 	} else {
 		zephir_get_strval(&description, description_param);
 	}
-
-
-	if (UNEXPECTED(ZEPHIR_IS_STRING(&name, "*"))) {
+	if (UNEXPECTED(ZEPHIR_IS_STRING_IDENTICAL(&name, "*"))) {
 		ZEPHIR_THROW_EXCEPTION_DEBUG_STR(phalcon_acl_exception_ce, "Role name cannot be '*'", "phalcon/Acl/Role.zep", 38);
 		return;
 	}
 	zephir_update_property_zval(this_ptr, ZEND_STRL("name"), &name);
 	zephir_update_property_zval(this_ptr, ZEND_STRL("description"), &description);
 	ZEPHIR_MM_RESTORE();
+}
+
+PHP_METHOD(Phalcon_Acl_Role, __toString)
+{
+
+	RETURN_MEMBER(getThis(), "name");
+}
+
+PHP_METHOD(Phalcon_Acl_Role, getDescription)
+{
+
+	RETURN_MEMBER(getThis(), "description");
+}
+
+PHP_METHOD(Phalcon_Acl_Role, getName)
+{
+
+	RETURN_MEMBER(getThis(), "name");
 }
 

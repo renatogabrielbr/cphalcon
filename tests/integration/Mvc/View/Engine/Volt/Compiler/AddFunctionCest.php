@@ -95,7 +95,7 @@ class AddFunctionCest
                 'strtotime',
                 'strtotime',
                 '{{ strtotime("now") }}',
-                "<?= strtotime('now') ?>",
+                '<?= strtotime(\'now\') ?>',
             ],
         ];
     }

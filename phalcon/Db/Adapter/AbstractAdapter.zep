@@ -23,7 +23,49 @@ use Phalcon\Events\EventsAwareInterface;
 use Phalcon\Events\ManagerInterface;
 
 /**
- * Base class for Phalcon\Db\Adapter adapters
+ * Base class for Phalcon\Db\Adapter adapters.
+ *
+ * This class and its related classes provide a simple SQL database interface
+ * for Phalcon Framework. The Phalcon\Db is the basic class you use to connect
+ * your PHP application to an RDBMS. There is a different adapter class for each
+ * brand of RDBMS.
+ *
+ * This component is intended to lower level database operations. If you want to
+ * interact with databases using higher level of abstraction use
+ * Phalcon\Mvc\Model.
+ *
+ * Phalcon\Db\AbstractDb is an abstract class. You only can use it with a
+ * database adapter like Phalcon\Db\Adapter\Pdo
+ *
+ *```php
+ * use Phalcon\Db;
+ * use Phalcon\Db\Exception;
+ * use Phalcon\Db\Adapter\Pdo\Mysql as MysqlConnection;
+ *
+ * try {
+ *     $connection = new MysqlConnection(
+ *         [
+ *             "host"     => "192.168.0.11",
+ *             "username" => "sigma",
+ *             "password" => "secret",
+ *             "dbname"   => "blog",
+ *             "port"     => "3306",
+ *         ]
+ *     );
+ *
+ *     $result = $connection->query(
+ *         "SELECT * FROM co_invoices LIMIT 5"
+ *     );
+ *
+ *     $result->setFetchMode(Enum::FETCH_NUM);
+ *
+ *     while ($invoice = $result->fetch()) {
+ *         print_r($invoice);
+ *     }
+ * } catch (Exception $e) {
+ *     echo $e->getMessage(), PHP_EOL;
+ * }
+ * ```
  */
 abstract class AbstractAdapter implements AdapterInterface, EventsAwareInterface
 {
@@ -60,7 +102,7 @@ abstract class AbstractAdapter implements AdapterInterface, EventsAwareInterface
      *
      * @var string
      */
-    protected dialectType { get };
+    protected dialectType;
 
     /**
      * Event Manager
@@ -116,7 +158,7 @@ abstract class AbstractAdapter implements AdapterInterface, EventsAwareInterface
      *
      * @var string
      */
-    protected type { get };
+    protected type;
 
     /**
      * Phalcon\Db\Adapter constructor
@@ -151,13 +193,17 @@ abstract class AbstractAdapter implements AdapterInterface, EventsAwareInterface
         /**
          * Create the instance only if the dialect is a string
          */
-        if typeof dialectClass == "string" {
+        if typeof dialectClass === "string" {
             let this->dialect = create_instance(dialectClass);
-        } elseif typeof dialectClass == "object" {
+        } elseif typeof dialectClass === "object" {
             let this->dialect = dialectClass;
         }
 
         let this->descriptor = descriptor;
+
+        if (isset (descriptor["options"]) && typeof descriptor["options"] === "array") {
+            self::setup(descriptor["options"]);
+        }
     }
 
     /**
@@ -733,6 +779,14 @@ abstract class AbstractAdapter implements AdapterInterface, EventsAwareInterface
     }
 
     /**
+     * Name of the dialect used
+     */
+    public function getDialectType() -> string
+    {
+        return this->dialectType;
+    }
+
+    /**
      * Returns the internal event manager
      */
     public function getEventsManager() -> <ManagerInterface> | null
@@ -778,6 +832,14 @@ abstract class AbstractAdapter implements AdapterInterface, EventsAwareInterface
     public function getSQLVariables() -> array
     {
         return this->sqlVariables;
+    }
+
+    /**
+     * Type of database system the adapter is used for
+     */
+    public function getType() -> string
+    {
+        return this->type;
     }
 
     /**
@@ -1083,6 +1145,28 @@ abstract class AbstractAdapter implements AdapterInterface, EventsAwareInterface
         let this->transactionsWithSavepoints = nestedTransactionsWithSavepoints;
 
         return this;
+    }
+
+    /**
+     * Enables/disables options in the Database component
+     */
+    public static function setup(array! options) -> void
+    {
+        var escapeIdentifiers, forceCasting;
+
+        /**
+         * Enables/Disables globally the escaping of SQL identifiers
+         */
+        if fetch escapeIdentifiers, options["escapeSqlIdentifiers"] {
+            globals_set("db.escape_identifiers", escapeIdentifiers);
+        }
+
+        /**
+         * Force cast bound values in the PHP userland
+         */
+        if fetch forceCasting, options["forceCasting"] {
+            globals_set("db.force_casting", forceCasting);
+        }
     }
 
     /**

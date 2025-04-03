@@ -39,14 +39,14 @@ use Phalcon\Cli\Router\RouteInterface;
 class Router extends AbstractInjectionAware
 {
     /**
-     * @var string|null
+     * @var string
      */
-    protected action = null;
+    protected action = "";
 
     /**
-     * @var string|null
+     * @var string
      */
-    protected defaultAction = null;
+    protected defaultAction = "";
 
     /**
      * @var string
@@ -59,9 +59,9 @@ class Router extends AbstractInjectionAware
     protected defaultParams = [];
 
     /**
-     * @var string|null
+     * @var string
      */
-    protected defaultTask = null;
+    protected defaultTask = "";
 
     /**
      * @var RouteInterface|null
@@ -69,10 +69,9 @@ class Router extends AbstractInjectionAware
     protected matchedRoute = null;
 
     /**
-     * @var array|null
-     * TODO: make always array
+     * @var array
      */
-    protected matches = null;
+    protected matches = [];
 
     /**
      * @var string
@@ -90,9 +89,9 @@ class Router extends AbstractInjectionAware
     protected routes = [];
 
     /**
-     * @var string|null
+     * @var string
      */
-    protected task = null;
+    protected task = "";
 
     /**
      * @var bool
@@ -162,7 +161,7 @@ class Router extends AbstractInjectionAware
     /**
      * Returns the route that matches the handled URI
      */
-    public function getMatchedRoute() -> <RouteInterface>
+    public function getMatchedRoute() -> <RouteInterface> | null
     {
         return this->matchedRoute;
     }
@@ -185,8 +184,18 @@ class Router extends AbstractInjectionAware
 
     /**
      * Returns processed extra params
+     *
+     * @todo deprecate this in future versions
      */
     public function getParams() -> array
+    {
+        return this->getParameters();
+    }
+
+    /**
+     * Returns processed extra params
+     */
+    public function getParameters() -> array
     {
         return this->params;
     }
@@ -259,7 +268,7 @@ class Router extends AbstractInjectionAware
             this->wasMatched = false,
             this->matchedRoute = null;
 
-        if typeof arguments != "array" {
+        if typeof arguments !== "array" {
             if unlikely (typeof arguments != "string" && arguments !== null) {
                 throw new Exception("Arguments must be an array or string");
             }
@@ -452,17 +461,20 @@ class Router extends AbstractInjectionAware
     /**
      * Sets the default action name
      */
-    public function setDefaultAction(string actionName)
+    public function setDefaultAction(string actionName) -> <Router>
     {
         let this->defaultAction = actionName;
+        
+        return this;
     }
 
     /**
      * Sets the name of the default module
      */
-    public function setDefaultModule(string moduleName)
+    public function setDefaultModule(string moduleName) -> <Router>
     {
         let this->defaultModule = moduleName;
+        return this;
     }
 
     /**

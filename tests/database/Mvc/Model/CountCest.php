@@ -30,7 +30,7 @@ class CountCest
     /**
      * @var InvoicesMigration
      */
-    private $invoiceMigration;
+    private InvoicesMigration $invoiceMigration;
 
     /**
      * Executed before each test
@@ -63,7 +63,7 @@ class CountCest
      * @group  pgsql
      * @group  sqlite
      */
-    public function mvcModelCount(DatabaseTester $I)
+    public function mvcModelCount(DatabaseTester $I): void
     {
         /**
          * TODO: The following tests need to skip sqlite because we will get
@@ -94,12 +94,25 @@ class CountCest
             ]
         );
         $I->assertInstanceOf(Simple::class, $results);
-        $I->assertEquals(1, (int) $results[0]->inv_cst_id);
-        $I->assertEquals(20, (int) $results[0]->rowcount);
-        $I->assertEquals(2, (int) $results[1]->inv_cst_id);
-        $I->assertEquals(12, (int) $results[1]->rowcount);
-        $I->assertEquals(3, (int) $results[2]->inv_cst_id);
-        $I->assertEquals(1, (int) $results[2]->rowcount);
+
+        if ('pgsql' !== $I->getDriver()) {
+            $matrix = [
+                0 => [1, 20],
+                1 => [2, 12],
+                2 => [3, 1],
+            ];
+        } else {
+            $matrix = [
+                0 => [3, 1],
+                1 => [2, 12],
+                2 => [1, 20],
+            ];
+        }
+
+        foreach ($matrix as $id => $expected) {
+            $I->assertSame($expected[0], (int) $results[$id]->inv_cst_id);
+            $I->assertSame($expected[1], (int) $results[$id]->rowcount);
+        }
 
         $results = Invoices::count(
             [
@@ -108,12 +121,11 @@ class CountCest
             ]
         );
         $I->assertInstanceOf(Simple::class, $results);
-        $I->assertEquals(3, (int) $results[0]->inv_cst_id);
-        $I->assertEquals(1, (int) $results[0]->rowcount);
-        $I->assertEquals(2, (int) $results[1]->inv_cst_id);
-        $I->assertEquals(12, (int) $results[1]->rowcount);
-        $I->assertEquals(1, (int) $results[2]->inv_cst_id);
-        $I->assertEquals(20, (int) $results[2]->rowcount);
+
+        foreach ($matrix as $id => $expected) {
+            $I->assertSame($expected[0], (int) $results[$id]->inv_cst_id);
+            $I->assertSame($expected[1], (int) $results[$id]->rowcount);
+        }
 
         /**
          * @issue https://github.com/phalcon/cphalcon/issues/15486
@@ -126,7 +138,26 @@ class CountCest
                 ],
             ]
         );
-        $I->assertEquals(12, $total);
+
+        $actual   = $total;
+        $expected = 12;
+        $I->assertEquals($expected, $actual);
+
+        /**
+         * Checking the countable
+         */
+        $total = Invoices::find(
+            [
+                'conditions' => 'inv_cst_id IN ({ids:array})',
+                'bind' => [
+                    'ids' => [2],
+                ],
+            ]
+        );
+
+        $actual   = count($total);
+        $expected = 12;
+        $I->assertEquals($expected, $actual);
     }
 
     /**
@@ -135,12 +166,13 @@ class CountCest
      * @param  DatabaseTester $I
      *
      * @author Phalcon Team <team@phalcon.io>
-     * @since  2020-01-29
+     * @since  2023-12-26
+     * @issue  https://github.com/phalcon/cphalcon/issues/16471
      *
      * @group  mysql
      * @group  pgsql
      */
-    public function mvcModelCountColumnMap(DatabaseTester $I)
+    public function mvcModelCountColumnMap(DatabaseTester $I): void
     {
         /**
          * @todo The following tests need to skip sqlite because we will get
@@ -171,12 +203,29 @@ class CountCest
             ]
         );
         $I->assertInstanceOf(Simple::class, $results);
-        $I->assertEquals(1, (int) $results[0]->cst_id);
-        $I->assertEquals(20, (int) $results[0]->rowcount);
-        $I->assertEquals(2, (int) $results[1]->cst_id);
-        $I->assertEquals(12, (int) $results[1]->rowcount);
-        $I->assertEquals(3, (int) $results[2]->cst_id);
-        $I->assertEquals(1, (int) $results[2]->rowcount);
+
+        /**
+         * This is here because each engine sorts their groupped results
+         * differently
+         */
+        if ('mysql' !== $I->getDriver()) {
+            $matrix = [
+                0 => [3, 1],
+                1 => [2, 12],
+                2 => [1, 20],
+            ];
+        } else {
+            $matrix = [
+                0 => [1, 20],
+                1 => [2, 12],
+                2 => [3, 1],
+            ];
+        }
+
+        foreach ($matrix as $id => $expected) {
+            $I->assertSame($expected[0], (int) $results[$id]->cst_id);
+            $I->assertSame($expected[1], (int) $results[$id]->rowcount);
+        }
 
         $results = InvoicesMap::count(
             [
@@ -185,15 +234,19 @@ class CountCest
             ]
         );
         $I->assertInstanceOf(Simple::class, $results);
-        $I->assertEquals(3, (int) $results[0]->cst_id);
-        $I->assertEquals(1, (int) $results[0]->rowcount);
-        $I->assertEquals(2, (int) $results[1]->cst_id);
-        $I->assertEquals(12, (int) $results[1]->rowcount);
-        $I->assertEquals(1, (int) $results[2]->cst_id);
-        $I->assertEquals(20, (int) $results[2]->rowcount);
+
+        foreach ($matrix as $id => $expected) {
+            $I->assertSame($expected[0], (int) $results[$id]->cst_id);
+            $I->assertSame($expected[1], (int) $results[$id]->rowcount);
+        }
     }
 
-    private function seed(string $invId)
+    /**
+     * @param string $invId
+     *
+     * @return void
+     */
+    private function seed(string $invId): void
     {
         $this->insertDataInvoices($this->invoiceMigration, 7, $invId, 2, 'ccc');
         $this->insertDataInvoices($this->invoiceMigration, 1, $invId, 3, 'aaa');

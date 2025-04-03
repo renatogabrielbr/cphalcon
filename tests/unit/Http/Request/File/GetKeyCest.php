@@ -35,13 +35,13 @@ class GetKeyCest
             [
                 'name'     => 'test',
                 'type'     => 'text/plain',
-                'tmp_name' => dataDir('/assets/images/phalconphp.jpg'),
+                'tmp_name' => dataDir('/assets/images/example-jpg.jpg'),
                 'size'     => 1,
                 'error'    => 0,
             ],
             'abcde'
         );
 
-        $I->assertEquals('abcde', $file->getKey());
+        $I->assertSame('abcde', $file->getKey());
     }
 }

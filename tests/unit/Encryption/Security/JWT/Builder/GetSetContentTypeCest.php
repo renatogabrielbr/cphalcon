@@ -23,16 +23,17 @@ use UnitTester;
 class GetSetContentTypeCest
 {
     /**
-     * Unit Tests Phalcon\Encryption\Security\JWT\Builder :: getContentType()/setContentType()
+     * Unit Tests Phalcon\Encryption\Security\JWT\Builder ::
+     * getContentType()/setContentType()
      *
      * @param UnitTester $I
      *
      * @author Phalcon Team <team@phalcon.io>
      * @since  2020-09-09
      */
-    public function httpJWTBuilderGetSetContentType(UnitTester $I)
+    public function encryptionSecurityJWTBuilderGetSetContentType(UnitTester $I)
     {
-        $I->wantToTest('Http\JWT\Builder - getContentType()/setContentType()');
+        $I->wantToTest('Encryption\Security\JWT\Builder - getContentType()/setContentType()');
 
         $signer  = new Hmac();
         $builder = new Builder($signer);
@@ -40,6 +41,6 @@ class GetSetContentTypeCest
         $I->assertNull($builder->getContentType());
 
         $builder->setContentType('abcde');
-        $I->assertEquals('abcde', $builder->getContentType());
+        $I->assertSame('abcde', $builder->getContentType());
     }
 }

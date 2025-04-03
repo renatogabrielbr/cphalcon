@@ -19,6 +19,7 @@ use Phalcon\Events\ManagerInterface;
 use Phalcon\Filter\FilterInterface;
 use Phalcon\Mvc\Model\Binder;
 use Phalcon\Mvc\Model\BinderInterface;
+use Phalcon\Support\Collection;
 
 /**
  * This is the base class for Phalcon\Mvc\Dispatcher and Phalcon\Cli\Dispatcher.
@@ -38,9 +39,9 @@ abstract class AbstractDispatcher extends AbstractInjectionAware implements Disp
     protected activeMethodMap = [];
 
     /**
-     * @var string|null
+     * @var string
      */
-    protected actionName = null;
+    protected actionName = "";
 
     /**
      * @var string
@@ -58,14 +59,14 @@ abstract class AbstractDispatcher extends AbstractInjectionAware implements Disp
     protected defaultAction = "";
 
     /**
-     * @var string|null
+     * @var string
      */
-    protected defaultNamespace = null;
+    protected defaultNamespace = "";
 
     /**
-     * @var string|null
+     * @var string
      */
-    protected defaultHandler = null;
+    protected defaultHandler = "";
 
     /**
      * @var array
@@ -73,9 +74,9 @@ abstract class AbstractDispatcher extends AbstractInjectionAware implements Disp
     protected handlerHashes = [];
 
     /**
-     * @var string|null
+     * @var string
      */
-    protected handlerName = null;
+    protected handlerName = "";
 
     /**
      * @var string
@@ -118,14 +119,14 @@ abstract class AbstractDispatcher extends AbstractInjectionAware implements Disp
     protected modelBinding = false;
 
     /**
-     * @var string|null
+     * @var string
      */
-    protected moduleName = null;
+    protected moduleName = "";
 
     /**
-     * @var string|null
+     * @var string
      */
-    protected namespaceName = null;
+    protected namespaceName = "";
 
     /**
      * @var array
@@ -135,17 +136,17 @@ abstract class AbstractDispatcher extends AbstractInjectionAware implements Disp
     /**
      * @var string|null
      */
-    protected previousActionName = null;
+    protected previousActionName = "";
 
     /**
      * @var string|null
      */
-    protected previousHandlerName = null;
+    protected previousHandlerName = "";
 
     /**
      * @var string|null
      */
-    protected previousNamespaceName = null;
+    protected previousNamespaceName = "";
 
     /**
      * @var string|null
@@ -154,10 +155,52 @@ abstract class AbstractDispatcher extends AbstractInjectionAware implements Disp
 
     public function callActionMethod(handler, string actionMethod, array! params = [])
     {
-        return call_user_func_array(
-            [handler, actionMethod],
-            params
+        var result, observer, altHandler, altAction, altParams;
+
+        let altHandler = handler;
+        let altAction = actionMethod;
+        let altParams = params;
+
+        if this->eventsManager !== null && this->eventsManager instanceof ManagerInterface {
+            let observer = <Collection> this->getDi()->get(
+                "Phalcon\Support\Collection",
+                [[
+                    "handler": handler,
+                    "action": actionMethod,
+                    "params": params
+                ]]
+            );
+
+            this->eventsManager->fire(
+                "dispatch:beforeCallAction",
+                this,
+                observer
+            );
+
+            let altHandler = observer->get("handler");
+            let altAction = observer->get("action");
+            let altParams = observer->get("params", [], "array");
+        }
+
+        let result = call_user_func_array(
+            [
+                altHandler,
+                altAction
+            ],
+            array_values(altParams)
         );
+
+        if this->eventsManager !== null && this->eventsManager instanceof ManagerInterface {
+            let observer["result"] = result;
+
+            this->eventsManager->fire(
+                "dispatch:afterCallAction",
+                this,
+                observer
+            );
+        }
+
+        return result;
     }
 
     /**
@@ -180,7 +223,7 @@ abstract class AbstractDispatcher extends AbstractInjectionAware implements Disp
 
         let container = <DiInterface> this->container;
 
-        if typeof container != "object" {
+        if container === null {
             this->{"throwDispatchException"}(
                 "A dependency injection container is required to access related dispatching services",
                 PhalconException::EXCEPTION_NO_DI
@@ -277,13 +320,12 @@ abstract class AbstractDispatcher extends AbstractInjectionAware implements Disp
              * Container
              */
             let hasService = (bool) container->has(handlerClass);
-
             if !hasService {
                 /**
                  * DI doesn't have a service with that name, try to load it
                  * using an autoloader
                  */
-                let hasService = (bool) class_exists(handlerClass);
+                let hasService = class_exists(handlerClass);
             }
 
             // If the service can be loaded we throw an exception
@@ -334,7 +376,7 @@ abstract class AbstractDispatcher extends AbstractInjectionAware implements Disp
             /**
              * Check if the params is an array
              */
-            if unlikely typeof this->params != "array" {
+            if unlikely typeof this->params !== "array" {
                 /**
                  * An invalid parameter variable was passed throw an exception
                  */
@@ -748,15 +790,11 @@ abstract class AbstractDispatcher extends AbstractInjectionAware implements Disp
      */
     public function getBoundModels() -> array
     {
-        var modelBinder;
-
-        let modelBinder = this->modelBinder;
-
-        if modelBinder == null {
+        if this->modelBinder === null {
             return [];
         }
 
-        return modelBinder->getBoundModels();
+        return this->modelBinder->getBoundModels();
     }
 
     /**
@@ -794,7 +832,7 @@ abstract class AbstractDispatcher extends AbstractInjectionAware implements Disp
     /**
      * Gets the module where the controller class is
      */
-    public function getModuleName() -> string
+    public function getModuleName() -> string | null
     {
         return this->moduleName;
     }
@@ -814,10 +852,25 @@ abstract class AbstractDispatcher extends AbstractInjectionAware implements Disp
      * @param  string|array filters
      * @param  mixed defaultValue
      * @return mixed
+     *
+     * @todo remove this in future versions
      */
     public function getParam(var param, filters = null, defaultValue = null) -> var
     {
-        var params, filter, paramValue, container;
+        return this->getParameter(param, filters, defaultValue);
+    }
+
+    /**
+     * Gets a param by its name or numeric index
+     *
+     * @param  mixed param
+     * @param  string|array filters
+     * @param  mixed defaultValue
+     * @return mixed
+     */
+    public function getParameter(var param, var filters = null, var defaultValue = null) -> var
+    {
+        var params, filter, paramValue;
 
         let params = this->params;
 
@@ -829,32 +882,49 @@ abstract class AbstractDispatcher extends AbstractInjectionAware implements Disp
             return paramValue;
         }
 
-        let container = this->container;
-
-        if typeof container != "object" {
+        if this->container === null {
             this->{"throwDispatchException"}(
                 "A dependency injection container is required to access the 'filter' service",
                 PhalconException::EXCEPTION_NO_DI
             );
         }
 
-        let filter = <FilterInterface> container->getShared("filter");
+        let filter = <FilterInterface> this->container->getShared("filter");
 
         return filter->sanitize(paramValue, filters);
     }
 
     /**
      * Gets action params
+     *
+     * @todo remove this in future versions
      */
     public function getParams() -> array
+    {
+        return this->getParameters();
+    }
+
+    /**
+     * Gets action params
+     */
+    public function getParameters() -> array
     {
         return this->params;
     }
 
     /**
      * Check if a param exists
+     * @todo deprecate this in the future
      */
     public function hasParam(var param) -> bool
+    {
+        return this->hasParameter(param);
+    }
+
+    /**
+     * Check if a param exists
+     */
+    public function hasParameter(var param) -> bool
     {
         return isset this->params[param];
     }
@@ -930,16 +1000,34 @@ abstract class AbstractDispatcher extends AbstractInjectionAware implements Disp
 
     /**
      * Set a param by its name or numeric index
+     * @todo deprecate this in the future
      */
     public function setParam(var param, var value) -> void
+    {
+        this->setParameter(param, value);
+    }
+
+    /**
+     * Set a param by its name or numeric index
+     */
+    public function setParameter(var param, var value) -> void
     {
         let this->params[param] = value;
     }
 
     /**
      * Sets action params to be dispatched
+     * @todo deprecate this in the future
      */
     public function setParams(array params) -> void
+    {
+        this->setParameters(params);
+    }
+
+    /**
+     * Sets action params to be dispatched
+     */
+    public function setParameters(array params) -> void
     {
         let this->params = params;
     }
@@ -999,7 +1087,7 @@ abstract class AbstractDispatcher extends AbstractInjectionAware implements Disp
     {
         var container;
 
-        if typeof cache == "string" {
+        if typeof cache === "string" {
             let container = this->container;
 
             let cache = container->get(cache);
@@ -1018,7 +1106,7 @@ abstract class AbstractDispatcher extends AbstractInjectionAware implements Disp
     /**
      * Sets the module where the controller is (only informative)
      */
-    public function setModuleName(string moduleName) -> void
+    public function setModuleName(string moduleName = null) -> void
     {
         let this->moduleName = moduleName;
     }

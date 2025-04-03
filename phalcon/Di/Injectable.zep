@@ -10,6 +10,7 @@
 
 namespace Phalcon\Di;
 
+use stdClass;
 use Phalcon\Di\Di;
 use Phalcon\Session\BagInterface;
 
@@ -31,18 +32,18 @@ use Phalcon\Session\BagInterface;
  * @property \Phalcon\Db\Adapter\AdapterInterface $db
  * @property \Phalcon\Encryption\Security $security
  * @property \Phalcon\Encryption\Crypt|\Phalcon\Encryption\Crypt\CryptInterface $crypt
- * @property \Phalcon\Tag $tag
+ * @property \Phalcon\Html\TagFactory $tag
  * @property \Phalcon\Html\Escaper|\Phalcon\Html\Escaper\EscaperInterface $escaper
  * @property \Phalcon\Annotations\Adapter\Memory|\Phalcon\Annotations\Adapter $annotations
  * @property \Phalcon\Mvc\Model\Manager|\Phalcon\Mvc\Model\ManagerInterface $modelsManager
  * @property \Phalcon\Mvc\Model\MetaData\Memory|\Phalcon\Mvc\Model\MetadataInterface $modelsMetadata
  * @property \Phalcon\Mvc\Model\Transaction\Manager|\Phalcon\Mvc\Model\Transaction\ManagerInterface $transactionManager
  * @property \Phalcon\Assets\Manager $assets
- * @property \Phalcon\Di\Di|\Phalcon\Di\Di\DiInterface $di
+ * @property \Phalcon\Di\Di|\Phalcon\Di\DiInterface $di
  * @property \Phalcon\Session\Bag|\Phalcon\Session\BagInterface $persistent
  * @property \Phalcon\Mvc\View|\Phalcon\Mvc\ViewInterface $view
  */
-abstract class Injectable implements InjectionAwareInterface
+abstract class Injectable extends stdClass implements InjectionAwareInterface
 {
     /**
      * Dependency Injector
@@ -60,7 +61,7 @@ abstract class Injectable implements InjectionAwareInterface
 
         let container = <DiInterface> this->getDI();
 
-        if propertyName == "di" {
+        if propertyName === "di" {
             let this->{"di"} = container;
 
             return container;
@@ -69,7 +70,7 @@ abstract class Injectable implements InjectionAwareInterface
         /**
          * Accessing the persistent property will create a session bag on any class
          */
-        if propertyName == "persistent" {
+        if propertyName === "persistent" {
             let this->{"persistent"} = <BagInterface> container->get(
                 "sessionBag",
                 [
@@ -116,7 +117,7 @@ abstract class Injectable implements InjectionAwareInterface
 
         let container = <DiInterface> this->container;
 
-        if typeof container != "object" {
+        if container === null {
             let container = Di::getDefault();
 
             if unlikely typeof container != "object" {

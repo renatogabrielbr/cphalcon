@@ -54,8 +54,8 @@ class UnderscoreInvokeCest
         }
 
         $expected = $example['result'];
-        $actual   = (string) $result;
-        $I->assertEquals($expected, $actual);
+        $actual   = (string)$result;
+        $I->assertSame($expected, $actual);
 
         /**
          * Try the TagFactory
@@ -69,8 +69,50 @@ class UnderscoreInvokeCest
             $result->add($add[0], $add[1]);
         }
 
-        $actual = (string) $result;
-        $I->assertEquals($expected, $actual);
+        $actual = (string)$result;
+        $I->assertSame($expected, $actual);
+    }
+
+    /**
+     * Tests Phalcon\Html\Helper\Style :: __invoke() - reset
+     *
+     * @param UnitTester $I
+     *
+     * @throws Exception
+     *
+     * @author       Phalcon Team <team@phalcon.io>
+     * @since        2023-10-24
+     */
+    public function htmlHelperStyleUnderscoreInvokeReset(UnitTester $I)
+    {
+        $I->wantToTest('Html\Helper\Style - __invoke() - reset');
+
+        $escaper = new Escaper();
+        $helper  = new Style($escaper);
+        $helper->add('custom.css');
+
+        $expected = "    <link rel=\"stylesheet\" type=\"text/css\" "
+            . "href=\"custom.css\" media=\"screen\" />" . PHP_EOL;
+        $actual = (string)$helper;
+        $I->assertSame($expected, $actual);
+
+        $helper->add('print.css', ['media' => 'print']);
+
+        $expected = "    <link rel=\"stylesheet\" type=\"text/css\" "
+            . "href=\"custom.css\" media=\"screen\" />" . PHP_EOL
+            . "    <link rel=\"stylesheet\" type=\"text/css\" "
+            . "href=\"print.css\" media=\"print\" />" . PHP_EOL;
+        $actual = (string)$helper;
+        $I->assertSame($expected, $actual);
+
+        $helper->reset();
+
+        $helper->add('print.css', ['media' => 'print']);
+
+        $expected = "    <link rel=\"stylesheet\" type=\"text/css\" "
+            . "href=\"print.css\" media=\"print\" />" . PHP_EOL;
+        $actual = (string)$helper;
+        $I->assertSame($expected, $actual);
     }
 
     /**

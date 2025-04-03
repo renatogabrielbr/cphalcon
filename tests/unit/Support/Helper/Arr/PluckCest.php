@@ -43,7 +43,7 @@ class PluckCest
 
         $expected = ['Desk', 'Chair'];
         $actual   = $object($collection, 'name');
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
     }
 
     /**
@@ -60,12 +60,12 @@ class PluckCest
 
         $object     = new Pluck();
         $collection = [
-            (object) ['product_id' => 'prod-100', 'name' => 'Desk'],
-            (object) ['product_id' => 'prod-200', 'name' => 'Chair'],
+            (object)['product_id' => 'prod-100', 'name' => 'Desk'],
+            (object)['product_id' => 'prod-200', 'name' => 'Chair'],
         ];
 
         $expected = ['Desk', 'Chair'];
         $actual   = $object($collection, 'name');
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
     }
 }

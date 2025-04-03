@@ -45,9 +45,9 @@ class ToStringCest
             ]
         );
 
-        $I->assertEquals(
+        $I->assertSame(
             'type="text" name="q" value="" class="form-control" ',
-            (string) $attributes
+            (string)$attributes
         );
     }
 }

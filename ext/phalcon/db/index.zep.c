@@ -83,42 +83,6 @@ ZEPHIR_INIT_CLASS(Phalcon_Db_Index)
 }
 
 /**
- * Index columns
- */
-PHP_METHOD(Phalcon_Db_Index, getColumns)
-{
-	zval *this_ptr = getThis();
-
-
-
-	RETURN_MEMBER(getThis(), "columns");
-}
-
-/**
- * Index name
- */
-PHP_METHOD(Phalcon_Db_Index, getName)
-{
-	zval *this_ptr = getThis();
-
-
-
-	RETURN_MEMBER(getThis(), "name");
-}
-
-/**
- * Index type
- */
-PHP_METHOD(Phalcon_Db_Index, getType)
-{
-	zval *this_ptr = getThis();
-
-
-
-	RETURN_MEMBER(getThis(), "type");
-}
-
-/**
  * Phalcon\Db\Index constructor
  */
 PHP_METHOD(Phalcon_Db_Index, __construct)
@@ -132,18 +96,14 @@ PHP_METHOD(Phalcon_Db_Index, __construct)
 	ZVAL_UNDEF(&name);
 	ZVAL_UNDEF(&type);
 	ZVAL_UNDEF(&columns);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(2, 3)
 		Z_PARAM_STR(name)
 		Z_PARAM_ARRAY(columns)
 		Z_PARAM_OPTIONAL
 		Z_PARAM_STR(type)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 2, 1, &name_param, &columns_param, &type_param);
 	if (UNEXPECTED(Z_TYPE_P(name_param) != IS_STRING && Z_TYPE_P(name_param) != IS_NULL)) {
 		zephir_throw_exception_string(spl_ce_InvalidArgumentException, SL("Parameter 'name' must be of the type string"));
@@ -161,11 +121,36 @@ PHP_METHOD(Phalcon_Db_Index, __construct)
 	} else {
 		zephir_get_strval(&type, type_param);
 	}
-
-
 	zephir_update_property_zval(this_ptr, ZEND_STRL("name"), &name);
 	zephir_update_property_zval(this_ptr, ZEND_STRL("columns"), &columns);
 	zephir_update_property_zval(this_ptr, ZEND_STRL("type"), &type);
 	ZEPHIR_MM_RESTORE();
+}
+
+/**
+ * Index columns
+ */
+PHP_METHOD(Phalcon_Db_Index, getColumns)
+{
+
+	RETURN_MEMBER(getThis(), "columns");
+}
+
+/**
+ * Index name
+ */
+PHP_METHOD(Phalcon_Db_Index, getName)
+{
+
+	RETURN_MEMBER(getThis(), "name");
+}
+
+/**
+ * Index type
+ */
+PHP_METHOD(Phalcon_Db_Index, getType)
+{
+
+	RETURN_MEMBER(getThis(), "type");
 }
 

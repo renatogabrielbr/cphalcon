@@ -48,9 +48,9 @@ class CheckboxUnderscoreInvokeCest
             $result->label($example['label']);
         }
 
-        $I->assertEquals(
+        $I->assertSame(
             sprintf($example['render'], $example['render']),
-            (string) $result
+            (string)$result
         );
     }
 
@@ -78,9 +78,9 @@ class CheckboxUnderscoreInvokeCest
             $result->label($example['label']);
         }
 
-        $I->assertEquals(
+        $I->assertSame(
             sprintf($example['render'], $example['render']),
-            (string) $result
+            (string)$result
         );
     }
 

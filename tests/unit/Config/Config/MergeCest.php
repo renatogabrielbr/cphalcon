@@ -69,8 +69,9 @@ class MergeCest
          */
         $expected = $example['expected'];
         $actual   = $source->merge($target)
-                           ->toArray();
-        $I->assertEquals($expected, $actual);
+                           ->toArray()
+        ;
+        $I->assertSame($expected, $actual);
 
         /**
          * As array
@@ -78,8 +79,9 @@ class MergeCest
         $expected = $example['expected'];
         $target   = $example['target'];
         $actual   = $source->merge($target)
-                           ->toArray();
-        $I->assertEquals($expected, $actual);
+                           ->toArray()
+        ;
+        $I->assertSame($expected, $actual);
     }
 
     /**
@@ -94,7 +96,7 @@ class MergeCest
 
         $config = new Config(
             [
-                'my' => 'config'
+                'my' => 'config',
             ]
         );
 
@@ -355,22 +357,22 @@ class MergeCest
                     'test'     => 123,
                     'empty'    => [],
                     'nonEmpty' => [
-                        5 => 'test'
-                    ]
+                        5 => 'test',
+                    ],
                 ],
                 'target'   => [
                     'empty' => [
-                        3 => 'toEmpty'
+                        3 => 'toEmpty',
                     ],
                 ],
                 'expected' => [
                     'test'     => 123,
                     'empty'    => [
-                        3 => 'toEmpty'
+                        3 => 'toEmpty',
                     ],
                     'nonEmpty' => [
-                        5 => 'test'
-                    ]
+                        5 => 'test',
+                    ],
                 ],
             ],
             [
@@ -379,12 +381,12 @@ class MergeCest
                     'test'     => 123,
                     'empty'    => [],
                     'nonEmpty' => [
-                        5 => 'test'
-                    ]
+                        5 => 'test',
+                    ],
                 ],
                 'target'   => [
                     'nonEmpty' => [
-                        3 => 'toNonEmpty'
+                        3 => 'toNonEmpty',
                     ],
                 ],
                 'expected' => [
@@ -392,8 +394,8 @@ class MergeCest
                     'empty'    => [],
                     'nonEmpty' => [
                         5 => 'test',
-                        3 => 'toNonEmpty'
-                    ]
+                        3 => 'toNonEmpty',
+                    ],
                 ],
             ],
         ];

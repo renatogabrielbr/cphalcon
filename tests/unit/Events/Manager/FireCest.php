@@ -55,8 +55,9 @@ class FireCest
 
         $expected = ['three', 'two', 'one'];
         $actual   = $component->getEventsManager()
-                              ->getResponses();
-        $I->assertEquals($expected, $actual);
+                              ->getResponses()
+        ;
+        $I->assertSame($expected, $actual);
     }
 
     /**
@@ -90,8 +91,9 @@ class FireCest
 
         $expected = ['one', 'two', 'three'];
         $actual   = $component->getEventsManager()
-                              ->getResponses();
-        $I->assertEquals($expected, $actual);
+                              ->getResponses()
+        ;
+        $I->assertSame($expected, $actual);
     }
 
     /**

@@ -10,6 +10,7 @@ PHP_METHOD(Phalcon_Cli_Router, getMatchedRoute);
 PHP_METHOD(Phalcon_Cli_Router, getMatches);
 PHP_METHOD(Phalcon_Cli_Router, getModuleName);
 PHP_METHOD(Phalcon_Cli_Router, getParams);
+PHP_METHOD(Phalcon_Cli_Router, getParameters);
 PHP_METHOD(Phalcon_Cli_Router, getRouteById);
 PHP_METHOD(Phalcon_Cli_Router, getRouteByName);
 PHP_METHOD(Phalcon_Cli_Router, getRoutes);
@@ -34,7 +35,7 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_cli_router_getactionname, 0, 0, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_phalcon_cli_router_getmatchedroute, 0, 0, Phalcon\\Cli\\Router\\RouteInterface, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_phalcon_cli_router_getmatchedroute, 0, 0, Phalcon\\Cli\\Router\\RouteInterface, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_cli_router_getmatches, 0, 0, IS_ARRAY, 0)
@@ -44,6 +45,9 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_cli_router_getmodulename
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_cli_router_getparams, 0, 0, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_phalcon_cli_router_getparameters, 0, 0, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_phalcon_cli_router_getroutebyid, 0, 0, 1)
@@ -64,11 +68,11 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_phalcon_cli_router_handle, 0, 0, 0)
 	ZEND_ARG_INFO(0, arguments)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_phalcon_cli_router_setdefaultaction, 0, 0, 1)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_phalcon_cli_router_setdefaultaction, 0, 1, Phalcon\\Cli\\Router, 0)
 	ZEND_ARG_TYPE_INFO(0, actionName, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_phalcon_cli_router_setdefaultmodule, 0, 0, 1)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_phalcon_cli_router_setdefaultmodule, 0, 1, Phalcon\\Cli\\Router, 0)
 	ZEND_ARG_TYPE_INFO(0, moduleName, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
@@ -95,6 +99,7 @@ ZEPHIR_INIT_FUNCS(phalcon_cli_router_method_entry) {
 	PHP_ME(Phalcon_Cli_Router, getMatches, arginfo_phalcon_cli_router_getmatches, ZEND_ACC_PUBLIC)
 	PHP_ME(Phalcon_Cli_Router, getModuleName, arginfo_phalcon_cli_router_getmodulename, ZEND_ACC_PUBLIC)
 	PHP_ME(Phalcon_Cli_Router, getParams, arginfo_phalcon_cli_router_getparams, ZEND_ACC_PUBLIC)
+	PHP_ME(Phalcon_Cli_Router, getParameters, arginfo_phalcon_cli_router_getparameters, ZEND_ACC_PUBLIC)
 	PHP_ME(Phalcon_Cli_Router, getRouteById, arginfo_phalcon_cli_router_getroutebyid, ZEND_ACC_PUBLIC)
 	PHP_ME(Phalcon_Cli_Router, getRouteByName, arginfo_phalcon_cli_router_getroutebyname, ZEND_ACC_PUBLIC)
 	PHP_ME(Phalcon_Cli_Router, getRoutes, arginfo_phalcon_cli_router_getroutes, ZEND_ACC_PUBLIC)

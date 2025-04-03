@@ -64,8 +64,10 @@ class LoadCest
         $I->assertInstanceOf($class, $ini);
 
         /** @var Ini $ini */
-        $ini = (new ConfigFactory())->load($ini->get('config')
-                                               ->toArray());
+        $ini = (new ConfigFactory())->load(
+            $ini->get('config')
+                ->toArray()
+        );
         $I->assertInstanceOf($class, $ini);
     }
 
@@ -215,13 +217,13 @@ class LoadCest
 
         $expected = "/phalcon/";
         $actual   = $config->get('phalcon')->baseUri;
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
 
         $configFile2 = dataDir('assets/config/config-2.php');
         $config2     = $factory->load($configFile2);
 
         $expected = "/phalcon4/";
         $actual   = $config2->get('phalcon')->baseUri;
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
     }
 }

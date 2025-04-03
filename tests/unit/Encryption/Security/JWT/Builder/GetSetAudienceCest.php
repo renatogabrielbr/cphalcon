@@ -24,16 +24,17 @@ use UnitTester;
 class GetSetAudienceCest
 {
     /**
-     * Unit Tests Phalcon\Encryption\Security\JWT\Builder :: getAudience()/setAudience()
+     * Unit Tests Phalcon\Encryption\Security\JWT\Builder ::
+     * getAudience()/setAudience()
      *
      * @param UnitTester $I
      *
      * @author Phalcon Team <team@phalcon.io>
      * @since  2020-09-09
      */
-    public function httpJWTBuilderGetSetAudience(UnitTester $I)
+    public function encryptionSecurityJWTBuilderGetSetAudience(UnitTester $I)
     {
-        $I->wantToTest('Http\JWT\Builder - getAudience()/setAudience()');
+        $I->wantToTest('Encryption\Security\JWT\Builder - getAudience()/setAudience()');
 
         $signer  = new Hmac();
         $builder = new Builder($signer);
@@ -43,25 +44,26 @@ class GetSetAudienceCest
         $return = $builder->setAudience('audience');
         $I->assertInstanceOf(Builder::class, $return);
 
-        $I->assertEquals(['audience'], $builder->getAudience());
+        $I->assertSame(['audience'], $builder->getAudience());
 
         $return = $builder->setAudience(['audience']);
         $I->assertInstanceOf(Builder::class, $return);
 
-        $I->assertEquals(['audience'], $builder->getAudience());
+        $I->assertSame(['audience'], $builder->getAudience());
     }
 
     /**
-     * Unit Tests Phalcon\Encryption\Security\JWT\Builder :: setAudience() - exception
+     * Unit Tests Phalcon\Encryption\Security\JWT\Builder :: setAudience() -
+     * exception
      *
      * @param UnitTester $I
      *
      * @author Phalcon Team <team@phalcon.io>
      * @since  2020-09-09
      */
-    public function httpJWTBuilderSetAudienceException(UnitTester $I)
+    public function encryptionSecurityJWTBuilderSetAudienceException(UnitTester $I)
     {
-        $I->wantToTest('Http\JWT\Builder - setAudience() - exception');
+        $I->wantToTest('Encryption\Security\JWT\Builder - setAudience() - exception');
 
         $I->expectThrowable(
             new ValidatorException(

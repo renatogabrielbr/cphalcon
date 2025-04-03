@@ -22,11 +22,6 @@ use Phalcon\Html\TagFactory;
 
 /**
  * Manages collections of CSS/JavaScript assets
- *
- * @property array      $collections
- * @property bool       $implicitOutput
- * @property array      $options
- * @property TagFactory $tagFactory
  */
 class Manager extends AbstractInjectionAware
 {
@@ -1013,7 +1008,7 @@ class Manager extends AbstractInjectionAware
         string type,
         string name
     ) -> string {
-        var helper, params, tag;
+        var helper, output, params, tag;
 
         let params = parameters;
 
@@ -1066,6 +1061,13 @@ class Manager extends AbstractInjectionAware
         helper->__invoke(""); // no indentation
         helper->add(tag, params);
 
-        return (string) helper;
+        let output = (string) helper;
+
+        /**
+         * This is because the helper no longer resets the store automatically
+         */
+        helper->reset();
+
+        return output;
     }
 }

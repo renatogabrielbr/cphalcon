@@ -17,7 +17,7 @@ class Igbinary extends AbstractSerializer
      *
      * @return string
      */
-    public function serialize()
+    public function serialize() -> string
     {
         var result;
 
@@ -30,6 +30,8 @@ class Igbinary extends AbstractSerializer
         if unlikely null === result {
             let this->isSuccess = false,
                 result          = "";
+        } else {
+            let this->isSuccess = true;
         }
 
         return result;
@@ -75,6 +77,8 @@ class Igbinary extends AbstractSerializer
             if unlikely globals_get("warning.enable") || false === result {
                 let this->isSuccess = false,
                     result          = "";
+            } else {
+                let this->isSuccess = true;
             }
 
             let this->data = result;

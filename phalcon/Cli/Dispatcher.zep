@@ -39,6 +39,9 @@ use Phalcon\Filter\FilterInterface;
  */
 class Dispatcher extends CliDispatcher implements DispatcherInterface
 {
+    /**
+     * @var string
+     */
     protected defaultHandler = "main";
 
     /**
@@ -113,7 +116,7 @@ class Dispatcher extends CliDispatcher implements DispatcherInterface
 
         let container = this->container;
 
-        if typeof container != "object" {
+        if container === null {
             this->{"throwDispatchException"}(
                 "A dependency injection container is required to access the 'filter' service",
                 Exception::EXCEPTION_NO_DI
@@ -198,7 +201,7 @@ class Dispatcher extends CliDispatcher implements DispatcherInterface
 
         let eventsManager = <ManagerInterface> this->eventsManager;
 
-        if typeof eventsManager == "object" {
+        if eventsManager !== null {
             if eventsManager->fire("dispatch:beforeException", this, exception) === false {
                 return false;
             }

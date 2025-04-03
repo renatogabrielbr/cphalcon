@@ -31,9 +31,9 @@ class UuidCest
      * @author Phalcon Team <team@phalcon.io>
      * @since  2020-09-09
      */
-    public function securityRandomUuid(UnitTester $I)
+    public function encryptionSecurityRandomUuid(UnitTester $I)
     {
-        $I->wantToTest("Security\Random - uuid()");
+        $I->wantToTest("Encryption\Security\Random - uuid()");
 
         $random = new Random();
 
@@ -48,16 +48,17 @@ class UuidCest
     }
 
     /**
-     * Tests Phalcon\Encryption\Security\Random :: uuid() produces different results
+     * Tests Phalcon\Encryption\Security\Random :: uuid() produces different
+     * results
      *
      * @param UnitTester $I
      *
      * @author Phalcon Team <team@phalcon.io>
      * @since  2020-09-09
      */
-    public function securityRandomUuidDifferentResults(UnitTester $I)
+    public function encryptionSecurityRandomUuidDifferentResults(UnitTester $I)
     {
-        $I->wantToTest("Security\Random - uuid() produces different results");
+        $I->wantToTest("Encryption\Security\Random - uuid() produces different results");
 
         $random = new Random();
 

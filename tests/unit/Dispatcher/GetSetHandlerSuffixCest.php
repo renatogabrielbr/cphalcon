@@ -31,13 +31,13 @@ class GetSetHandlerSuffixCest
         $dispatcher = new Dispatcher();
 
         $expected = 'Controller';
-        $actual = $dispatcher->getHandlerSuffix();
-        $I->assertEquals($expected, $actual);
+        $actual   = $dispatcher->getHandlerSuffix();
+        $I->assertSame($expected, $actual);
 
         $dispatcher->setHandlerSuffix('two');
 
         $expected = 'two';
         $actual   = $dispatcher->getHandlerSuffix();
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
     }
 }

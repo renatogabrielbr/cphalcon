@@ -34,12 +34,12 @@ class GetTypeCest
             [
                 'name'     => 'test',
                 'type'     => 'text/plain',
-                'tmp_name' => dataDir('/assets/images/phalconphp.jpg'),
+                'tmp_name' => dataDir('/assets/images/example-jpg.jpg'),
                 'size'     => 1,
                 'error'    => 0,
             ]
         );
 
-        $I->assertEquals('text/plain', $file->getType());
+        $I->assertSame('text/plain', $file->getType());
     }
 }

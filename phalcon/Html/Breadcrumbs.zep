@@ -18,6 +18,9 @@ use Phalcon\Di\DiInterface;
  * This component offers an easy way to create breadcrumbs for your application.
  * The resulting HTML when calling `render()` will have each breadcrumb enclosed
  * in `<dt>` tags, while the whole string is enclosed in `<dl>` tags.
+ *
+ * @deprecated Will be removed in future version
+ * Use {@see Phalcon\Html\Helper\Breadcrumbs} instead.
  */
 class Breadcrumbs
 {
@@ -33,7 +36,7 @@ class Breadcrumbs
      *
      * @var string
      */
-    private separator = " / " { get, set };
+    private separator = " / ";
 
     /**
      * The HTML template to use to render the breadcrumbs.
@@ -70,6 +73,16 @@ class Breadcrumbs
     public function clear() -> void
     {
         let this->elements = [];
+    }
+
+    /**
+     * Crumb separator
+     *
+     * @return string
+     */
+    public function getSeparator() -> string
+    {
+        return this->separator;
     }
 
     /**
@@ -149,6 +162,17 @@ class Breadcrumbs
         return "<dl>" . implode("<dt>" . this->separator . "</dt>", output) . "</dl>";
     }
 
+    /**
+     * @param string $separator
+     *
+     * @return Breadcrumbs
+     */
+    public function setSeparator(string separator) -> <Breadcrumbs>
+    {
+        let this->separator = separator;
+
+        return this;
+    }
     /**
      * Returns the internal breadcrumbs array
      */

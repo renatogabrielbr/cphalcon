@@ -38,7 +38,7 @@ class IsValidHandlerCest
         $handler  = $example[2];
         $expected = $example[1];
         $actual   = $manager->isValidHandler($handler);
-        $I->assertEquals($expected, $actual);
+        $I->assertSame($expected, $actual);
     }
 
     /**
@@ -55,7 +55,7 @@ class IsValidHandlerCest
             [
                 'string',
                 false,
-                'handler'
+                'handler',
             ],
             [
                 'integer',
@@ -70,12 +70,12 @@ class IsValidHandlerCest
             [
                 'callable - method',
                 true,
-                [$objectHandler, 'hasListeners']
+                [$objectHandler, 'hasListeners'],
             ],
             [
                 'closure',
                 true,
-                $closureHandler
+                $closureHandler,
             ],
         ];
     }

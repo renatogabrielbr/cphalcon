@@ -20,14 +20,14 @@ use Phalcon\Mvc\Model\BinderInterface;
 class LazyLoader
 {
     /**
-     * @var object|null
-     */
-    protected handler = null { get };
-
-    /**
      * @var string
      */
-    protected definition { get };
+    protected definition;
+
+    /**
+     * @var object|null
+     */
+    protected handler = null;
 
     /**
      * Phalcon\Mvc\Micro\LazyLoader constructor
@@ -76,7 +76,23 @@ class LazyLoader
          */
         return call_user_func_array(
             [handler, method],
-            arguments
+            array_values(arguments)
         );
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefinition() -> string
+    {
+        return this->definition;
+    }
+
+    /**
+     * @return object|null
+     */
+    public function getHandler() -> object | null
+    {
+        return this->handler;
     }
 }

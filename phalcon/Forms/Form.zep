@@ -82,12 +82,12 @@ class Form extends Injectable implements Countable, Iterator, AttributesInterfac
     /**
      * @var ValidationInterface|null
      */
-    protected validation = null { get };
+    protected validation = null;
 
     /**
      * @var array
      */
-    protected whitelist = [] { get };
+    protected whitelist = [];
 
     /**
      * Phalcon\Forms\Form constructor
@@ -254,7 +254,15 @@ class Form extends Injectable implements Countable, Iterator, AttributesInterfac
                 /**
                  * Use the public property if it doesn't have a setter
                  */
-                let entity->{key} = filteredValue;
+                if (!globals_get("form.strict_entity_property_check")) {
+                    let entity->{key} = filteredValue;
+
+                    continue;
+                }
+
+                if (property_exists(entity, key)) {
+                    let entity->{key} = filteredValue;
+                }
             }
         }
 
@@ -273,7 +281,7 @@ class Form extends Injectable implements Countable, Iterator, AttributesInterfac
     {
         var elements, element, data, field;
 
-        let data = this->data,
+        let data     = this->data,
             elements = this->elements;
 
         /**
@@ -281,11 +289,11 @@ class Form extends Injectable implements Countable, Iterator, AttributesInterfac
          * If it's array, clear only fields in array.
          * If null, clear all
          */
-        if fields === null {
+        if null === fields {
             let data = [];
 
             for element in elements {
-                element->clear();
+                let data[element->getName()] = element->getDefault();
             }
         } else {
             if typeof fields != "array" {
@@ -298,7 +306,7 @@ class Form extends Injectable implements Countable, Iterator, AttributesInterfac
                 }
 
                 if fetch element, elements[field] {
-                    element->clear();
+                    let data[element->getName()] = element->getDefault();
                 }
             }
         }
@@ -508,7 +516,7 @@ class Form extends Injectable implements Countable, Iterator, AttributesInterfac
         string method;
 
         let entity = this->entity;
-        let data = this->data;
+        let data   = this->data;
 
         /**
          * Check if form has a getter
@@ -584,6 +592,22 @@ class Form extends Injectable implements Countable, Iterator, AttributesInterfac
         }
 
         return null;
+    }
+
+    /**
+     * return ValidationInterface|null
+     */
+    public function getValidation() -> <ValidationInterface> | null
+    {
+        return this->validation;
+    }
+
+    /**
+     * return array
+     */
+    public function getWhitelist() -> array
+    {
+        return this->whitelist;
     }
 
     /**
@@ -695,7 +719,8 @@ class Form extends Injectable implements Countable, Iterator, AttributesInterfac
         /**
         * Perform the validation
         */
-        let messages = validation->validate(data, entity);
+        validation->validate(data, entity);
+        let messages = validation->getMessages();
         if messages->count() {
             // Add validation messages to relevant elements
             for elementMessage in iterator(messages) {
@@ -738,7 +763,7 @@ class Form extends Injectable implements Countable, Iterator, AttributesInterfac
     /**
      * Generate the label of an element added to the form including HTML
      */
-    public function label(string! name, array attributes = null) -> string
+    public function label(string! name, array attributes = []) -> string
     {
         var element;
 

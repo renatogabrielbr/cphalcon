@@ -35,8 +35,6 @@
  */
 /**
  * A memory-based logger.
- *
- * @property array $messages
  */
 ZEPHIR_INIT_CLASS(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger)
 {
@@ -68,17 +66,13 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, alert)
 	ZVAL_UNDEF(&message);
 	ZVAL_UNDEF(&_0);
 	ZVAL_UNDEF(&context);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 2)
 		Z_PARAM_STR(message)
 		Z_PARAM_OPTIONAL
 		Z_PARAM_ARRAY(context)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 1, 1, &message_param, &context_param);
 	zephir_get_strval(&message, message_param);
 	if (!context_param) {
@@ -87,8 +81,6 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, alert)
 	} else {
 		zephir_get_arrval(&context, context_param);
 	}
-
-
 	ZVAL_LONG(&_0, 2);
 	ZEPHIR_CALL_METHOD(NULL, this_ptr, "log", NULL, 0, &_0, &message, &context);
 	zephir_check_call_status();
@@ -111,17 +103,13 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, critical)
 	ZVAL_UNDEF(&message);
 	ZVAL_UNDEF(&_0);
 	ZVAL_UNDEF(&context);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 2)
 		Z_PARAM_STR(message)
 		Z_PARAM_OPTIONAL
 		Z_PARAM_ARRAY(context)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 1, 1, &message_param, &context_param);
 	zephir_get_strval(&message, message_param);
 	if (!context_param) {
@@ -130,8 +118,6 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, critical)
 	} else {
 		zephir_get_arrval(&context, context_param);
 	}
-
-
 	ZVAL_LONG(&_0, 1);
 	ZEPHIR_CALL_METHOD(NULL, this_ptr, "log", NULL, 0, &_0, &message, &context);
 	zephir_check_call_status();
@@ -154,17 +140,13 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, debug)
 	ZVAL_UNDEF(&message);
 	ZVAL_UNDEF(&_0);
 	ZVAL_UNDEF(&context);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 2)
 		Z_PARAM_STR(message)
 		Z_PARAM_OPTIONAL
 		Z_PARAM_ARRAY(context)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 1, 1, &message_param, &context_param);
 	zephir_get_strval(&message, message_param);
 	if (!context_param) {
@@ -173,8 +155,6 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, debug)
 	} else {
 		zephir_get_arrval(&context, context_param);
 	}
-
-
 	ZVAL_LONG(&_0, 7);
 	ZEPHIR_CALL_METHOD(NULL, this_ptr, "log", NULL, 0, &_0, &message, &context);
 	zephir_check_call_status();
@@ -197,17 +177,13 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, emergency)
 	ZVAL_UNDEF(&message);
 	ZVAL_UNDEF(&_0);
 	ZVAL_UNDEF(&context);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 2)
 		Z_PARAM_STR(message)
 		Z_PARAM_OPTIONAL
 		Z_PARAM_ARRAY(context)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 1, 1, &message_param, &context_param);
 	zephir_get_strval(&message, message_param);
 	if (!context_param) {
@@ -216,8 +192,6 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, emergency)
 	} else {
 		zephir_get_arrval(&context, context_param);
 	}
-
-
 	ZVAL_LONG(&_0, 0);
 	ZEPHIR_CALL_METHOD(NULL, this_ptr, "log", NULL, 0, &_0, &message, &context);
 	zephir_check_call_status();
@@ -240,17 +214,13 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, error)
 	ZVAL_UNDEF(&message);
 	ZVAL_UNDEF(&_0);
 	ZVAL_UNDEF(&context);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 2)
 		Z_PARAM_STR(message)
 		Z_PARAM_OPTIONAL
 		Z_PARAM_ARRAY(context)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 1, 1, &message_param, &context_param);
 	zephir_get_strval(&message, message_param);
 	if (!context_param) {
@@ -259,8 +229,6 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, error)
 	} else {
 		zephir_get_arrval(&context, context_param);
 	}
-
-
 	ZVAL_LONG(&_0, 3);
 	ZEPHIR_CALL_METHOD(NULL, this_ptr, "log", NULL, 0, &_0, &message, &context);
 	zephir_check_call_status();
@@ -280,22 +248,15 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, getAdapter)
 	zend_long ZEPHIR_LAST_CALL_STATUS;
 	zval *name_param = NULL;
 	zval name;
-	zval *this_ptr = getThis();
 
 	ZVAL_UNDEF(&name);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_STR(name)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 1, 0, &name_param);
 	zephir_get_strval(&name, name_param);
-
-
 	object_init_ex(return_value, phalcon_logger_adapter_noop_ce);
 	if (zephir_has_constructor(return_value)) {
 		ZEPHIR_CALL_METHOD(NULL, return_value, "__construct", NULL, 0);
@@ -312,9 +273,6 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, getAdapter)
  */
 PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, getAdapters)
 {
-	zval *this_ptr = getThis();
-
-
 
 	array_init(return_value);
 	return;
@@ -325,9 +283,6 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, getAdapters)
  */
 PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, getLogLevel)
 {
-	zval *this_ptr = getThis();
-
-
 
 	RETURN_LONG(8);
 }
@@ -339,9 +294,6 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, getLogLevel)
  */
 PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, getMessages)
 {
-	zval *this_ptr = getThis();
-
-
 
 	RETURN_MEMBER(getThis(), "messages");
 }
@@ -351,9 +303,6 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, getMessages)
  */
 PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, getName)
 {
-	zval *this_ptr = getThis();
-
-
 
 	RETURN_STRING("memory logger");
 }
@@ -374,17 +323,13 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, info)
 	ZVAL_UNDEF(&message);
 	ZVAL_UNDEF(&_0);
 	ZVAL_UNDEF(&context);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 2)
 		Z_PARAM_STR(message)
 		Z_PARAM_OPTIONAL
 		Z_PARAM_ARRAY(context)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 1, 1, &message_param, &context_param);
 	zephir_get_strval(&message, message_param);
 	if (!context_param) {
@@ -393,8 +338,6 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, info)
 	} else {
 		zephir_get_arrval(&context, context_param);
 	}
-
-
 	ZVAL_LONG(&_0, 6);
 	ZEPHIR_CALL_METHOD(NULL, this_ptr, "log", NULL, 0, &_0, &message, &context);
 	zephir_check_call_status();
@@ -417,17 +360,13 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, notice)
 	ZVAL_UNDEF(&message);
 	ZVAL_UNDEF(&_0);
 	ZVAL_UNDEF(&context);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 2)
 		Z_PARAM_STR(message)
 		Z_PARAM_OPTIONAL
 		Z_PARAM_ARRAY(context)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 1, 1, &message_param, &context_param);
 	zephir_get_strval(&message, message_param);
 	if (!context_param) {
@@ -436,8 +375,6 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, notice)
 	} else {
 		zephir_get_arrval(&context, context_param);
 	}
-
-
 	ZVAL_LONG(&_0, 5);
 	ZEPHIR_CALL_METHOD(NULL, this_ptr, "log", NULL, 0, &_0, &message, &context);
 	zephir_check_call_status();
@@ -460,17 +397,13 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, warning)
 	ZVAL_UNDEF(&message);
 	ZVAL_UNDEF(&_0);
 	ZVAL_UNDEF(&context);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(1, 2)
 		Z_PARAM_STR(message)
 		Z_PARAM_OPTIONAL
 		Z_PARAM_ARRAY(context)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 1, 1, &message_param, &context_param);
 	zephir_get_strval(&message, message_param);
 	if (!context_param) {
@@ -479,8 +412,6 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, warning)
 	} else {
 		zephir_get_arrval(&context, context_param);
 	}
-
-
 	ZVAL_LONG(&_0, 4);
 	ZEPHIR_CALL_METHOD(NULL, this_ptr, "log", NULL, 0, &_0, &message, &context);
 	zephir_check_call_status();
@@ -515,18 +446,14 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, log)
 	ZVAL_UNDEF(&message);
 	ZVAL_UNDEF(&context);
 	ZVAL_UNDEF(&replace);
-#if PHP_VERSION_ID >= 80000
-	bool is_null_true = 1;
 	ZEND_PARSE_PARAMETERS_START(2, 3)
 		Z_PARAM_ZVAL(level)
 		Z_PARAM_STR(message)
 		Z_PARAM_OPTIONAL
 		Z_PARAM_ARRAY(context)
 	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-
-	ZEPHIR_MM_GROW();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	zephir_fetch_params(1, 2, 1, &level, &message_param, &context_param);
 	zephir_get_strval(&message, message_param);
 	if (!context_param) {
@@ -535,11 +462,9 @@ PHP_METHOD(Phalcon_DataMapper_Pdo_Profiler_MemoryLogger, log)
 	} else {
 		zephir_get_arrval(&context, context_param);
 	}
-
-
 	ZEPHIR_INIT_VAR(&replace);
 	array_init(&replace);
-	zephir_is_iterable(&context, 0, "phalcon/DataMapper/Pdo/Profiler/MemoryLogger.zep", 172);
+	zephir_is_iterable(&context, 0, "phalcon/DataMapper/Pdo/Profiler/MemoryLogger.zep", 170);
 	if (Z_TYPE_P(&context) == IS_ARRAY) {
 		ZEND_HASH_FOREACH_KEY_VAL(Z_ARRVAL_P(&context), _2, _3, _0)
 		{
@@ -591,7 +516,8 @@ zend_object *zephir_init_properties_Phalcon_DataMapper_Pdo_Profiler_MemoryLogger
 	ZVAL_UNDEF(&_1$$3);
 	
 
-		ZEPHIR_MM_GROW();
+		ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+		zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
 	
 	{
 		zval local_this_ptr, *this_ptr = &local_this_ptr;

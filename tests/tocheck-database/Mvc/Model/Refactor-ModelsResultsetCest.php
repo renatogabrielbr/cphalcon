@@ -398,7 +398,7 @@ class ModelsResultsetCest
     {
         $this->setDiMysql();
 
-        // see http://php.net/manual/en/appenditerator.construct.php
+        // see https://php.net/manual/en/appenditerator.construct.php
         $iterator      = new AppendIterator();
         $robots_first  = Robots::find(['limit' => 2]);
         $robots_second = Robots::find(['limit' => 1, 'offset' => 2]);
@@ -439,7 +439,7 @@ class ModelsResultsetCest
     {
         $this->setDiSqlite();
 
-        // Resultsets count > 25 use fetch for one row at a time
+        // resultsets count > 25 use fetch for one row at a time
         $personas = Personas::find([
             'limit' => 33,
         ]);
